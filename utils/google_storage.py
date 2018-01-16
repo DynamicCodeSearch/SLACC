@@ -8,7 +8,7 @@ __author__ = "bigfatnoob"
 
 from utils import lib
 from google.cloud import storage
-from utils.cache import mkdir
+from utils.cache import mkdir, file_exists
 from joblib import Parallel, delayed
 
 
@@ -37,15 +37,18 @@ def download_blob(name, download_path):
   :param name: Name of Blob
   :param download_path: Path to be saved
   """
-
   blob = get_blob(name)
   name = blob.name.rsplit("/", 1)[-1]
   if download_path[-1] == "/":
     destination_file = "%s%s" % (download_path, name)
   else:
     destination_file = "%s/%s" % (download_path, name)
-  blob.download_to_filename(destination_file)
-  print('Blob {} downloaded to {}.'.format(name, destination_file))
+  if file_exists(destination_file):
+    print("%s already exists" % destination_file)
+    return name
+  else:
+    blob.download_to_filename(destination_file)
+    print('Blob {} downloaded to {}.'.format(name, destination_file))
   return name
 
 
