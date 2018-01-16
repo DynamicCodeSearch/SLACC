@@ -59,3 +59,16 @@ class O:
     :param value: Value at key
     """
     self.has()[key] = value
+
+
+def is_int(string):
+  """
+  Check if string is an integer
+  :param string:
+  :return: True or false
+  """
+  try:
+    int(string)
+    return True
+  except ValueError:
+    return False
