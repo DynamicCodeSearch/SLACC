@@ -58,6 +58,7 @@ def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_para
   :param download_path:
   :param n_jobs:
   :param max_results:
+  :param do_parallel
   :return:
   """
   mkdir(download_path)

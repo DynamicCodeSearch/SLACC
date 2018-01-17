@@ -62,6 +62,8 @@ def list_files(directory, is_relative=False):
   """
   if not os.path.exists(directory):
     return []
+  if directory[-1] == "/":
+    directory = directory[:-1]
   prefix = "%s/" % directory if not is_relative else ""
   return ["%s%s"%(prefix, f) for f in os.listdir(directory)]
 
