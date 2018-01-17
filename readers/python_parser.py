@@ -53,7 +53,7 @@ def parse_file(file_name, destination_path):
   with open(file_name, "rb") as csv_file:
     header_reader = handled_csv_reader(csv.reader(csv_file))
     for _ in header_reader: break
-    reader = csv.DictReader(csv_file, header)
+    reader = handled_csv_reader(csv.DictReader(csv_file, header))
     cnt = 0
     errors = 0
     func_objects = []
