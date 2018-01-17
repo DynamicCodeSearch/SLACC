@@ -60,7 +60,11 @@ def mkdir(directory):
   Create Directory if it does not exist
   """
   if not os.path.exists(directory):
-    os.makedirs(directory)
+    try:
+      os.makedirs(directory)
+    except OSError, e:
+      if e.errno != os.errno.EEXIST:
+        raise
 
 
 def list_files(directory, is_relative=False):
