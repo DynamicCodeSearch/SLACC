@@ -18,10 +18,20 @@ logger = get_logger(__name__, LOG_LEVEL)
 csv.field_size_limit(sys.maxsize)
 
 
+def handled_csv_reader(csv_reader):
+  while True:
+    try:
+      yield next(csv_reader)
+    except csv.Error:
+      pass
+    continue
+  return
+
+
 def get_header_and_row_count(file_name):
   with open(file_name, "rb") as csv_file:
     header = None
-    header_reader = csv.reader(csv_file)
+    header_reader = handled_csv_reader(csv.reader(csv_file))
     cnt = 0
     for row in header_reader:
       if header is None:
@@ -41,7 +51,7 @@ def parse_file(file_name, destination_path):
     logger.info("%s file exists" % destination_file)
   header, row_count = get_header_and_row_count(file_name)
   with open(file_name, "rb") as csv_file:
-    header_reader = csv.reader(csv_file)
+    header_reader = handled_csv_reader(csv.reader(csv_file))
     for _ in header_reader: break
     reader = csv.DictReader(csv_file, header)
     cnt = 0
@@ -95,6 +105,6 @@ def _parse_files():
   parse_files(folder, destination_path, n_jobs)
 
 if __name__ == "__main__":
-  # parse_file("data/pyfiles_dump/csv/000000000000.csv", "data/pyfiles_dump/functions/")
+  # parse_file("data/pyfiles_dump/csv/000000000002.csv", "data/pyfiles_dump/functions/")
   # validate("data/pyfiles_dump/functions/000000000000.pkl")
   _parse_files()
