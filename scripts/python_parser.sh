@@ -5,4 +5,4 @@
 #SBATCH -p broadwell
 # Use modules to set the software environment
 
-python utils/python_parser.py 8
+python readers/python_parser.py 8
