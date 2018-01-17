@@ -5,4 +5,4 @@
 #SBATCH -p broadwell
 # Use modules to set the software environment
 
-python utils/google_storage.py 8
+python utils/python_parser.py 8
