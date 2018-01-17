@@ -36,6 +36,16 @@ def save(file_name, obj):
     cPkl.dump(obj, f, cPkl.HIGHEST_PROTOCOL)
 
 
+def delete(file_name):
+  """
+  Delete file if it exists
+  :param file_name:
+  :return:
+  """
+  if file_exists(file_name):
+    os.remove(file_name)
+
+
 def file_exists(file_name):
   """
   Check if file or folder exists
