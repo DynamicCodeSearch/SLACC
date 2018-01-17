@@ -70,7 +70,7 @@ def parse_file(file_name, destination_path):
                 "body": ast_tokens.get_text(node)
             }
             func_objects.append(func_object)
-      except (SyntaxError, IndexError, ValueError):
+      except Exception:
         # print(row['content'])
         errors += 1
       if cnt % 100 == 0:
