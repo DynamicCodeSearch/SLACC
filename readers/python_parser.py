@@ -19,7 +19,7 @@ csv.field_size_limit(sys.maxsize)
 
 
 def get_header_and_row_count(file_name):
-  with open(file_name) as csv_file:
+  with open(file_name, "rb") as csv_file:
     header = None
     header_reader = csv.reader(csv_file)
     cnt = 0
@@ -40,7 +40,7 @@ def parse_file(file_name, destination_path):
   if cache.file_exists(destination_file):
     logger.info("%s file exists" % destination_file)
   header, row_count = get_header_and_row_count(file_name)
-  with open(file_name) as csv_file:
+  with open(file_name, "rb") as csv_file:
     header_reader = csv.reader(csv_file)
     for _ in header_reader: break
     reader = csv.DictReader(csv_file, header)
