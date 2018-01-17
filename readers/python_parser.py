@@ -45,10 +45,17 @@ def parse_file(file_name, destination_path):
   name = file_name.rsplit("/", 1)[-1].split(".")[0]
   if destination_path[-1] == "/":
     destination_file = "%s%s.pkl" % (destination_path, name)
+    temp_file = "%s%s.tmp" % (destination_path, name)
   else:
     destination_file = "%s/%s.pkl" % (destination_path, name)
+    temp_file = "%s/%s.tmp" % (destination_path, name)
   if cache.file_exists(destination_file):
     logger.info("%s file exists" % destination_file)
+    return
+  if cache.file_exists(temp_file):
+    logger.info("%s file being processed" % destination_file)
+    return
+  cache.save(temp_file, {"Processing": True})
   header, row_count = get_header_and_row_count(file_name)
   with open(file_name, "rb") as csv_file:
     header_reader = handled_csv_reader(csv.reader(csv_file))
@@ -74,9 +81,10 @@ def parse_file(file_name, destination_path):
         # print(row['content'])
         errors += 1
       if cnt % 100 == 0:
-        logger.info("Processed: %d / %d. Errors = %d" % (cnt, row_count, errors))
+        logger.info("Index: %s; Processed: %d / %d. Errors = %d" % (name[-4:], cnt, row_count, errors))
   cache.save(destination_file, func_objects)
-  logger.info("Parsed Files. Errors = %d / %d" % (errors, cnt))
+  cache.delete(temp_file)
+  logger.info("Index: %s; Parsed Files. Errors = %d / %d" % (name[-4:], errors, cnt))
   logger.info("%s file saved" % destination_file)
 
 
