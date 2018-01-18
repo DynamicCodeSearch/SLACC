@@ -100,7 +100,7 @@ def validate(file_name):
 def parse_files(folder, destination_path, n_jobs):
 
   Parallel(n_jobs=n_jobs)(delayed(parse_file)(file_name, destination_path)
-                          for file_name in cache.list_files(folder, is_relative=False))
+                          for file_name in sorted(cache.list_files(folder, is_relative=False)))
 
 
 def _parse_files():
