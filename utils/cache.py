@@ -46,6 +46,21 @@ def delete(file_name):
     os.remove(file_name)
 
 
+def create_file_path(directory, file_name, ext=None):
+  """
+  Concatenate file name and directory to
+  create complete file path
+  :param directory: Name of directory
+  :param file_name: Name of file
+  :param ext: Extension fo file
+  :return: Concatenated File Name
+  """
+  fmt = "%s%s" if directory[-1] == "/" else "%s/%s"
+  if ext is not None:
+    fmt += ext
+  return fmt % (directory, file_name)
+
+
 def file_exists(file_name):
   """
   Check if file or folder exists
@@ -79,7 +94,7 @@ def list_files(directory, is_relative=False):
   if directory[-1] == "/":
     directory = directory[:-1]
   prefix = "%s/" % directory if not is_relative else ""
-  return ["%s%s"%(prefix, f) for f in os.listdir(directory)]
+  return ["%s%s" % (prefix, f) for f in os.listdir(directory)]
 
 
 def write_csv(file_name, rows, delimiter=',', quotechar='"'):
@@ -115,4 +130,3 @@ def write_markdown(file_name, rows, header=True):
     separator = "| %s |" % " | ".join(["------"] * len(rows[0]))
     lines = lines[:1] + [separator] + lines[1:]
   save(file_name, "\n".join(lines))
-
