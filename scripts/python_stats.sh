@@ -5,4 +5,4 @@
 #SBATCH -p broadwell
 # Use modules to set the software environment
 
-python readers/python_stats.py 8
+python runners/python_stats.py 8
