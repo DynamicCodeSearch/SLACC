@@ -154,6 +154,20 @@ def get_function_stats(function):
   return stats
 
 
+def aggregate(folder, destination):
+  data = {
+      "comment_length" : [],
+      "body_length": []
+  }
+  for file_name in cache.list_files(folder, is_relative=False):
+    stats = cache.load(file_name)
+    for stat in stats:
+      data["comment_length"].append(stat["comment_length"])
+      data["body_length"].append(stat["body_length"])
+    print(file_name)
+  cache.save(destination, data)
+
+
 def validate(file_name):
   data = cache.load(file_name)
   nones = 0
@@ -181,6 +195,7 @@ def _parse_files():
 if __name__ == "__main__":
   # parse_file("data/pyfiles_dump/csv/000000000002.csv", "data/pyfiles_dump/functions/")
   # validate("data/pyfiles_dump/functions/000000000000.pkl")
-  _parse_files()
+  # _parse_files()
   # collect_statistics("data/pyfiles_dump/functions/000000000000.pkl", "data/pyfiles_dump/stats")
+  aggregate("data/pyfiles_dump/stats/indeps", "data/pyfiles_dump/stats/all.pkl")
 
