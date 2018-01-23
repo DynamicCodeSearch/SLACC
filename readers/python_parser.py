@@ -303,10 +303,52 @@ def shrink_csv_files_in_folder(folder, write_folder, size, n_jobs):
   :param folder: Path of source folder
   :param write_folder: Path of destination folder
   :param size: Number of rows to be retained
-  :param n_jobs: Number of jobs to run in parallel.
+  :param n_jobs: Number of jobs to run in parallel
   :return:
   """
   Parallel(n_jobs=n_jobs)(delayed(shrink_csv_file)(file_name, write_folder, size)
+                          for file_name in sorted(cache.list_files(folder, is_relative=False)))
+
+
+def commented_functions(file_name, write_folder, size=None):
+  """
+  Save commented functions from file. Can be used for text analysis
+  :param file_name: Name of .pkl file
+  :param write_folder: Path of destination folder
+  :param size: Number of rows to be retained
+  :return: Number of jobs to run in parallel
+  """
+  name = file_name.rsplit("/", 1)[-1].split(".")[0]
+  write_file = cache.create_file_path(write_folder, name, ".pkl")
+  if cache.file_exists(write_file):
+    logger.info("%s is already processed" % name)
+    return
+  logger.info("%s file being processed" % name)
+  data = cache.load(file_name)
+  valid_functions = []
+  if size is None:
+    size = len(data)
+  count = 0
+  for func_object in data:
+    count += 1
+    if func_object['doc_string'] is not None:
+      valid_functions.append(func_object)
+    if len(valid_functions) == size:
+      break
+  cache.save(write_file, valid_functions)
+  logger.info("%d / %d valid functions in %s" % (len(valid_functions), count, name))
+
+
+def commented_functions_in_folder(folder, write_folder, size=None, n_jobs=1):
+  """
+  Save commented functions from pkl files in a folder in parallel manner
+  :param folder: Path of source folder
+  :param write_folder: Path of destination folder
+  :param size: Number of rows to be retained
+  :param n_jobs: Number of jobs to run in parallel
+  :return:
+  """
+  Parallel(n_jobs=n_jobs)(delayed(commented_functions)(file_name, write_folder, size)
                           for file_name in sorted(cache.list_files(folder, is_relative=False)))
 
 
@@ -317,5 +359,6 @@ if __name__ == "__main__":
   # collect_statistics("data/pyfiles_dump/functions/000000000000.pkl", "data/pyfiles_dump/stats")
   # aggregate("data/pyfiles_dump/stats/indeps", "data/pyfiles_dump/stats/all.pkl")
   # summarize("data/pyfiles_dump/stats/all.pkl")
-  shrink_csv_files_in_folder("data/pyfiles_dump/csv/", "data/pyfiles_dump/csv_mini", 1000, 2)
+  # shrink_csv_files_in_folder("data/pyfiles_dump/csv/", "data/pyfiles_dump/csv_mini", 1000, 2)
+  commented_functions_in_folder("data/pyfiles_dump/functions/", "data/pyfiles_dump/commented_functions", None, 2)
 
