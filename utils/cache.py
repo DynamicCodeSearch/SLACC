@@ -55,6 +55,7 @@ def create_file_path(directory, file_name, ext=None):
   :param ext: Extension fo file
   :return: Concatenated File Name
   """
+  mkdir(directory)
   fmt = "%s%s" if directory[-1] == "/" else "%s/%s"
   if ext is not None:
     fmt += ext
