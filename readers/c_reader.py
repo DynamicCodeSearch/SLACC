@@ -176,6 +176,7 @@ def save_valids(file_name):
     cache.save(stats_file, status_map)
     cache.save(valid_file, valids)
     cache.delete(temp_file)
+    logger.info("SAVING: %s; Processed: %d; Status: %s" % (prefix, cnt, status_map))
 
 
 def save_valids_in_folder(folder, n_jobs=1):
