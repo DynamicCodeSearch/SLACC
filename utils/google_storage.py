@@ -77,11 +77,11 @@ def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_para
       download_blob(name, download_path)
 
 
-def _download_blobs():
+def _download_blobs(source, destination, max_results=None):
 
   n_jobs = 1
   # source, max_results = "pyfiles/csv/", 2
-  source, max_results = "pyfiles/csv_all/", None
+  # source, max_results = "pyfiles/csv_all/", None
   do_parallel = False
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
@@ -91,5 +91,5 @@ def _download_blobs():
 
 if __name__ == "__main__":
   # implicit()
-  _download_blobs()
+  _download_blobs("cfiles/csv", "data/cfiles_dump/csv")
 
