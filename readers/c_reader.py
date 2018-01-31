@@ -131,11 +131,14 @@ def c_compile(name, source):
   :param source: "Source code as string"
   :return:
   """
-  with open("temp/%s.c" % name, "wb") as write:
-    write.write(source)
-  status = os.system("gcc -w temp/%s.c -o temp/%s > /dev/null 2>&1" % (name, name))
-  cache.delete("temp/%s.c" % name)
-  cache.delete("temp/%s" % name)
+  try:
+    with open("temp/%s.c" % name, "wb") as write:
+      write.write(source)
+    status = os.system("gcc -w temp/%s.c -o temp/%s > /dev/null 2>&1" % (name, name))
+    cache.delete("temp/%s.c" % name)
+    cache.delete("temp/%s" % name)
+  except IOError:
+    return 256
   return status
 
 
