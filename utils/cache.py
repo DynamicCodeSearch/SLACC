@@ -43,7 +43,11 @@ def delete(file_name):
   :return:
   """
   if file_exists(file_name):
-    os.remove(file_name)
+    try:
+      os.remove(file_name)
+    except OSError, e:
+      if e.errno != os.errno.ENOENT:
+        raise
 
 
 def create_file_path(directory, file_name, ext=None):
