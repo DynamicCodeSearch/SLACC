@@ -155,6 +155,7 @@ def save_valids(file_name):
   if cache.file_exists(temp_file):
     logger.info("%s file being processed" % valid_file)
     return
+  cache.save(temp_file, {"Processing": True})
   header, row_count = get_header_and_row_count(file_name)
   with open(file_name) as csv_file:
     header_reader = handled_csv_reader(csv.reader(csv_file))
