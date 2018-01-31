@@ -87,7 +87,7 @@ def _download_blobs(source, destination, max_results=None):
   if len(args) >= 2 and lib.is_int(args[1]):
     n_jobs = int(args[1])
   print("Running as %d jobs" % n_jobs)
-  download_blobs(source, "data/pyfiles_dump/csv", n_jobs, max_results, do_parallel=do_parallel)
+  download_blobs(source, destination, n_jobs, max_results, do_parallel=do_parallel)
 
 if __name__ == "__main__":
   # implicit()
