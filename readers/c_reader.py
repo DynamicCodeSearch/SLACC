@@ -166,14 +166,17 @@ def save_valids(file_name):
     cache.mkdir("temp")
     valids = []
     for row in reader:
-      cnt += 1
-      name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
-      status = c_compile(name, comment_remover(row['content']))
-      if status == 0:
-        valids.append(row)
-      status_map[status] = status_map.get(status, 0) + 1
-      if cnt % 100 == 0:
-        logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt, row_count, status_map))
+      try:
+        cnt += 1
+        name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
+        status = c_compile(name, comment_remover(row['content']))
+        if status == 0:
+          valids.append(row)
+        status_map[status] = status_map.get(status, 0) + 1
+        if cnt % 100 == 0:
+          logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt, row_count, status_map))
+      except IndexError:
+        pass
     cache.save(stats_file, status_map)
     cache.save(valid_file, valids)
     cache.delete(temp_file)
