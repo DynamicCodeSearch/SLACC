@@ -10,16 +10,51 @@ __author__ = "bigfatnoob"
 import csv
 import random
 import re
-from utils import cache
+from utils import cache, lib
 import logging
 from utils.logger import get_logger
 from sklearn.feature_extraction.text import CountVectorizer
+from joblib import Parallel, delayed
 
 LOG_LEVEL = logging.INFO
 
 logger = get_logger(__name__, LOG_LEVEL)
 
 csv.field_size_limit(sys.maxsize)
+
+
+def handled_csv_reader(csv_reader):
+  """
+  A modified version of CSV reader with handles CSV formatting error
+  :param csv_reader: CSV reader
+  :return:
+  """
+  while True:
+    try:
+      yield next(csv_reader)
+    except csv.Error:
+      pass
+    continue
+  return
+
+
+def get_header_and_row_count(file_name):
+  """
+  Access header and get number of rows
+  in the csv file
+  :param file_name: Name of csv file
+  :return: (Header, Number of rows in csv file)
+  """
+  with open(file_name, "rb") as csv_file:
+    header = None
+    header_reader = handled_csv_reader(csv.reader(csv_file))
+    cnt = 0
+    for row in header_reader:
+      if header is None:
+        header = row
+      else:
+        cnt += 1
+    return header, cnt
 
 
 def comment_remover(text):
@@ -89,6 +124,82 @@ def tokenize_folder(folder):
     logger.info("Completed %d of %d" % (i + 1, len(files)))
 
 
+def c_compile(name, source):
+  """
+  Compile c source code.
+  :param name: Name of file
+  :param source: "Source code as string"
+  :return:
+  """
+  with open("temp/%s.c" % name, "wb") as write:
+    write.write(source)
+  status = os.system("gcc -w temp/%s.c -o temp/%s > /dev/null 2>&1" % (name, name))
+  cache.delete("temp/%s.c" % name)
+  cache.delete("temp/%s" % name)
+  return status
+
+
+def save_valids(file_name):
+  """
+  Save valid C files from csv
+  :param file_name: Path of csv file
+  """
+  prefix = file_name.rsplit("/", 1)[-1].split(".")[0]
+  logger.info("Running for %s" % prefix)
+  temp_file = cache.create_file_path("data/cfiles_dump/valids/pkl/", prefix, ext=".tmp")
+  stats_file = cache.create_file_path("data/cfiles_dump/valids/stats/", prefix, ext=".pkl")
+  valid_file = cache.create_file_path("data/cfiles_dump/valids/pkl/", prefix, ext=".pkl")
+  if cache.file_exists(valid_file):
+    logger.info("%s file exists" % valid_file)
+    return
+  if cache.file_exists(temp_file):
+    logger.info("%s file being processed" % valid_file)
+    return
+  header, row_count = get_header_and_row_count(file_name)
+  with open(file_name) as csv_file:
+    header_reader = handled_csv_reader(csv.reader(csv_file))
+    for _ in header_reader: break
+    reader = handled_csv_reader(csv.DictReader(csv_file, header))
+    cnt = 0
+    status_map = {}
+    cache.mkdir("temp")
+    valids = []
+    for row in reader:
+      cnt += 1
+      name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
+      status = c_compile(name, comment_remover(row['content']))
+      if status == 0:
+        valids.append(row)
+      status_map[status] = status_map.get(status, 0) + 1
+      if cnt % 100 == 0:
+        logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt, row_count, status_map))
+    cache.save(stats_file, status_map)
+    cache.save(valid_file, valids)
+    cache.delete(temp_file)
+
+
+def save_valids_in_folder(folder, n_jobs=1):
+  """
+  Save commented functions from pkl files in a folder in parallel manner
+  :param folder: Path of source folder
+  :param n_jobs: Number of jobs to run in parallel
+  """
+  Parallel(n_jobs=n_jobs)(delayed(save_valids)(file_name)
+                          for file_name in sorted(cache.list_files(folder, is_relative=False)))
+
+
+def _save_valids_in_folder():
+  folder = "data/cfiles_dump/csv/"
+  n_jobs = 1
+  args = sys.argv
+  if len(args) >= 2 and lib.is_int(args[1]):
+    n_jobs = int(args[1])
+  logger.info("Running as %d jobs" % n_jobs)
+  save_valids_in_folder(folder, n_jobs)
+
+
 if __name__ == "__main__":
   # dump_clean_folder("data/cfiles_dump/csv", 0.2)
-  tokenize_folder("data/cfiles_dump/cleaned")
+  # tokenize_folder("data/cfiles_dump/cleaned")
+  # save_valids("data/cfiles_dump/csv/000000000000.csv")
+  _save_valids_in_folder()
