@@ -69,7 +69,7 @@ def download_blob(name, download_path):
   return destination_file
 
 
-def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_parallel=False):
+def download_blobs(prefix_path, download_path, n_jobs, start=0, max_results=None, do_parallel=True):
   """
   :param prefix_path:
   :param download_path:
@@ -80,8 +80,10 @@ def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_para
   """
   mkdir(download_path)
   blobs = []
+  i = -1
   for stat in get_bucket().list_blobs(prefix=prefix_path):
-    if stat.size == 0:
+    i += 1
+    if i < start or stat.size == 0:
       continue
     blobs.append(stat.name)
     if max_results is not None and len(blobs) >= max_results:
@@ -111,7 +113,7 @@ def list_blobs(prefix_path, max_results=None):
   return blobs
 
 
-def _download_blobs(source, destination, max_results=None):
+def _download_blobs(source, destination, start=0, max_results=None):
   """
   :param source:
   :param destination:
@@ -125,10 +127,11 @@ def _download_blobs(source, destination, max_results=None):
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
     n_jobs = int(args[1])
+    do_parallel = True
   print("Running as %d jobs" % n_jobs)
-  download_blobs(source, destination, n_jobs, max_results, do_parallel=do_parallel)
+  download_blobs(source, destination, n_jobs, start, max_results, do_parallel=do_parallel)
 
 if __name__ == "__main__":
   # implicit()
-  _download_blobs("cfiles/csv", "data/cfiles_dump/csv")
+  _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
 
