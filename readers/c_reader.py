@@ -300,6 +300,7 @@ def _save_valids_in_folder():
   :return:
   """
   folder = "data/cfiles_dump/csv/"
+  destination = "data/cfiles_dump/valids/"
   n_jobs = 1
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
