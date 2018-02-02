@@ -299,14 +299,14 @@ def _save_valids_in_folder():
   Runner for saving valids in folder
   :return:
   """
-  folder = "data/cfiles_dump/csv/"
-  destination = "data/cfiles_dump/valids/"
+  folder = "data/cfiles_dump/csv_all/"
+  destination = "data/cfiles_dump/valids_all/"
   n_jobs = 1
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
     n_jobs = int(args[1])
   logger.info("Running as %d jobs" % n_jobs)
-  save_valids_in_folder(folder, n_jobs)
+  save_valids_in_folder(folder, destination, n_jobs)
 
 
 def _aggregate():
@@ -337,6 +337,6 @@ if __name__ == "__main__":
   # dump_clean_folder("data/cfiles_dump/csv", 0.2)
   # tokenize_folder("data/cfiles_dump/cleaned")
   # save_valids("data/cfiles_dump/csv/000000000000.csv", "data/cfiles_dump/valids")
-  # _save_valids_in_folder()
+  _save_valids_in_folder()
   # _aggregate()
-  _download_clean_save_folder()
+  # _download_clean_save_folder()
