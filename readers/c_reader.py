@@ -323,11 +323,12 @@ def _download_clean_save_folder():
   base_path = "data/cfiles_dump"
   download_ext = "csv_all"
   valids_ext = "valids_all"
-  max_results = 1
+  max_results = None
   n_jobs = 1
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
     n_jobs = int(args[1])
+  logger.info("RUNNING %d JOBS" % n_jobs)
   download_clean_save_folder(prefix_path, base_path, download_ext, valids_ext, n_jobs, max_results)
 
 
