@@ -151,9 +151,11 @@ def save_valids(file_name, destination_path):
   """
   prefix = file_name.rsplit("/", 1)[-1].split(".")[0]
   logger.info("Running for %s" % prefix)
-  temp_file = cache.create_file_path("%s/pkl/" % destination_path, prefix, ext=".tmp")
-  stats_file = cache.create_file_path("%s/stats/" % destination_path, prefix, ext=".pkl")
-  valid_file = cache.create_file_path("%s/pkl/" % destination_path, prefix, ext=".pkl")
+  pkl_path = cache.create_file_path(destination_path, "pkl")
+  stats_path = cache.create_file_path(destination_path, "pkl")
+  temp_file = cache.create_file_path(pkl_path, prefix, ext=".tmp")
+  stats_file = cache.create_file_path(stats_path, prefix, ext=".pkl")
+  valid_file = cache.create_file_path(pkl_path, prefix, ext=".pkl")
   if cache.file_exists(valid_file):
     logger.info("%s file exists" % valid_file)
     return
