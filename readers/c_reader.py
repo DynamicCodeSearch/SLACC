@@ -180,9 +180,9 @@ def save_valids(file_name, destination_path):
         if status == 0:
           valids.append(row)
         status_map[status] = status_map.get(status, 0) + 1
-        if cnt % 100 == 0:
+        if cnt % 1000 == 0:
           logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt, row_count, status_map))
-      except IndexError:
+      except Exception:
         pass
     cache.save(stats_file, status_map)
     cache.save(valid_file, valids)
