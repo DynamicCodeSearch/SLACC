@@ -10,11 +10,27 @@ from utils import lib
 from google.cloud import storage
 from utils.cache import mkdir, file_exists
 from joblib import Parallel, delayed
+import logging
+from utils.logger import get_logger
+
+LOG_LEVEL = logging.INFO
+logger = get_logger(__name__, LOG_LEVEL)
+
 
 
 BUCKET_NAME = "enableviz-1380.appspot.com"
-STORAGE_CLIENT = storage.Client()
-BUCKET = STORAGE_CLIENT.get_bucket(BUCKET_NAME)
+BUCKET = None
+
+
+def get_bucket():
+  """
+  Singleton to return bucket.
+  :return:
+  """
+  global BUCKET
+  if BUCKET is None:
+    BUCKET = storage.Client().get_bucket(BUCKET_NAME)
+  return BUCKET
 
 
 def implicit():
@@ -28,7 +44,7 @@ def implicit():
 
 
 def get_blob(name):
-  return BUCKET.blob(name)
+  return get_bucket().blob(name)
 
 
 def download_blob(name, download_path):
@@ -39,6 +55,7 @@ def download_blob(name, download_path):
   """
   blob = get_blob(name)
   name = blob.name.rsplit("/", 1)[-1]
+  mkdir(download_path)
   if download_path[-1] == "/":
     destination_file = "%s%s" % (download_path, name)
   else:
@@ -49,7 +66,7 @@ def download_blob(name, download_path):
   else:
     blob.download_to_filename(destination_file)
     print('Blob {} downloaded to {}.'.format(name, destination_file))
-  return name
+  return destination_file
 
 
 def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_parallel=False):
@@ -63,7 +80,7 @@ def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_para
   """
   mkdir(download_path)
   blobs = []
-  for stat in BUCKET.list_blobs(prefix=prefix_path):
+  for stat in get_bucket().list_blobs(prefix=prefix_path):
     if stat.size == 0:
       continue
     blobs.append(stat.name)
@@ -77,8 +94,30 @@ def download_blobs(prefix_path, download_path, n_jobs, max_results=None, do_para
       download_blob(name, download_path)
 
 
-def _download_blobs(source, destination, max_results=None):
+def list_blobs(prefix_path, max_results=None):
+  """
+  List all blobs in folder in bucket
+  :param prefix_path: Path of the folder
+  :param max_results: Max Results to be listed. If None, return all
+  :return: List of strings
+  """
+  blobs = []
+  for blob in get_bucket().list_blobs(prefix=prefix_path):
+    if blob.size == 0:
+      continue
+    blobs.append(blob.name)
+    if max_results is not None and len(blobs) >= max_results:
+      break
+  return blobs
 
+
+def _download_blobs(source, destination, max_results=None):
+  """
+  :param source:
+  :param destination:
+  :param max_results:
+  :return:
+  """
   n_jobs = 1
   # source, max_results = "pyfiles/csv/", 2
   # source, max_results = "pyfiles/csv_all/", None
