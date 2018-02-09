@@ -11,15 +11,19 @@ import csv
 import cPickle as cPkl
 
 
-def load(file_name):
+def load(file_name, verbose=False):
   """
   :return: Content of file_name
   """
   if not file_exists(file_name):
-    print("File %s does not exist" % file_name)
+    if verbose:
+      print("File %s does not exist" % file_name)
     return None
   with open(file_name) as f:
-    return cPkl.load(f)
+    try:
+      return cPkl.load(f)
+    except EOFError as e:
+      return None
 
 
 def save(file_name, obj):
@@ -34,6 +38,19 @@ def save(file_name, obj):
     mkdir(splits[0])
   with open(file_name, "wb") as f:
     cPkl.dump(obj, f, cPkl.HIGHEST_PROTOCOL)
+
+
+def save_text(file_name, text):
+  """
+  Save text in file_name
+  :param file_name: Name of File
+  :param text: Text to be saved
+  """
+  splits = file_name.rsplit("/", 1)
+  if len(splits) > 1:
+    mkdir(splits[0])
+  with open(file_name, "wb") as f:
+    f.write(text)
 
 
 def delete(file_name):

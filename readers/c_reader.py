@@ -317,7 +317,7 @@ def _aggregate():
   :return:
   """
   folder = "data/cfiles_dump/valids"
-  aggregate_valid_files(folder)
+  # aggregate_valid_files(folder)
   aggregate_valid_status(folder)
 
 
@@ -339,6 +339,6 @@ if __name__ == "__main__":
   # dump_clean_folder("data/cfiles_dump/csv", 0.2)
   # tokenize_folder("data/cfiles_dump/cleaned")
   # save_valids("data/cfiles_dump/csv/000000000000.csv", "data/cfiles_dump/valids")
-  _save_valids_in_folder()
-  # _aggregate()
+  # _save_valids_in_folder()
+  _aggregate()
   # _download_clean_save_folder()
