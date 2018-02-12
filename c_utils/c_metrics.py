@@ -51,6 +51,7 @@ class Metrics(O):
     self.rets = 0
     self.valid_rets = 0
     self.n_functions = 0
+    self.is_fuzzable = 0
 
 
 def compute_metrics(file_name, save_file):
@@ -71,19 +72,25 @@ def compute_metrics(file_name, save_file):
         break
     if is_fuzzable_args:
       metrics.n_valid_args[n_func_args] = metrics.n_valid_args.get(n_func_args, 0) + 1
+    is_fuzzable_ret = False
     if func.ret:
       metrics.rets += 1
       if is_valid_ret(func.ret):
+        is_fuzzable_ret = True
         metrics.valid_rets += 1
     contains_print, contains_scan = check_func_io(func.body)
     if contains_print and contains_scan:
       metrics.stds['reads_writes'] += 1
     elif contains_print:
       metrics.stds['writes'] += 1
+      if is_fuzzable_args and is_fuzzable_ret:
+        metrics.is_fuzzable += 1
     elif contains_scan:
       metrics.stds['reads'] += 1
     else:
       metrics.stds['n_reads_writes'] += 1
+      if is_fuzzable_args and is_fuzzable_ret:
+        metrics.is_fuzzable += 1
     if (i + 1) % 100 == 0:
       logger.info("Processed %d/%d of functions." % (i + 1, n_functions))
   logger.info("Processed all. Check %s" % save_file)
