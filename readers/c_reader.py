@@ -317,7 +317,7 @@ def _aggregate():
   :return:
   """
   folder = "data/cfiles_dump/valids"
-  # aggregate_valid_files(folder)
+  aggregate_valid_files(folder)
   aggregate_valid_status(folder)
 
 
