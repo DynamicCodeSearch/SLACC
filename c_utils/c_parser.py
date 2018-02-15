@@ -144,6 +144,7 @@ class Function(O):
     self.source_id = None
     self.source_name = None
     self.source = None
+    self.is_static = False
 
   def check_func_io(self):
     return Function.PRINT_F.search(self.body) is not None, Function.SCAN_F.search(self.body)
@@ -170,7 +171,6 @@ class Function(O):
     fuzzs = []
     for arg in self.args:
       fuzzs.append(arg_vals[arg.type])
-    # return [', '.join(map(str, s)) for s in itertools.product(*fuzzs)]
     return itertools.product(*fuzzs)
 
 
@@ -185,8 +185,6 @@ class FuncDefStatCollector(c_ast.NodeVisitor):
     self.functions = []
 
   def visit_FuncDef(self, node):
-    # if node.decl.name == "main":
-    #   return None
     func = Function(node.decl.name, FuncDefStatCollector.generator.visit(node))
     func.source_id = self.id
     func.source_name = self.name
@@ -197,13 +195,9 @@ class FuncDefStatCollector(c_ast.NodeVisitor):
         arg = Arg.parse(arg_node)
         if arg is not None:
           func.args.append(arg)
-      # try:
-      #
-      # except Exception as e:
-      #   print(arg_nodes.params)
-      #   raise e
-
     func.ret = Return.parse(node.decl.type.type)
+    if node.decl and node.decl.storage and 'static' in node.decl.storage:
+      func.is_static = True
     self.functions.append(func)
     return func
 
@@ -259,6 +253,12 @@ def _test_exception():
   handle_not_found_exception(msg)
 
 
+def _test_static():
+  ast, error = parse_c_file("temp/add.c")
+  collector = FuncDefStatCollector(1, 'add', '')
+  collector.visit(ast)
+
+
 def parse_c_file(file_name):
   cmd = ['python', 'utils/c_ast_gen.py', file_name]
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
@@ -272,6 +272,7 @@ def parse_c_file(file_name):
 
 if __name__ == "__main__":
   _read()
+  # _test_static()
   # _test_exception()
   # parse_file('temp/fixdep.c', use_cpp=True, cpp_args=[r'-I%s' % FAKE_LIBS_PATH])
   # _test_child_process()
