@@ -14,6 +14,7 @@ import csv
 import logging
 import re
 import subprocess
+import itertools
 
 
 LOG_LEVEL = logging.INFO
@@ -42,6 +43,8 @@ def read(sources_file, destination_file, start=0):
 
 
 class Arg(O):
+  FUZZABLE = {"int", "float", "char"}
+
   def __init__(self):
     O.__init__(self)
     self.name = None
@@ -87,6 +90,12 @@ class Arg(O):
       arg.type = type_node.type.names[0]
     return arg
 
+  def is_valid_arg(self):
+    return (not self.is_enum) and (not self.is_func) and (not self.is_ptr) and \
+           (not self.is_struct) and (not self.is_union) and (not self.is_arr) and \
+           (self.type in Arg.FUZZABLE)
+
+
 
 class Return(O):
   def __init__(self):
@@ -117,8 +126,15 @@ class Return(O):
       ret.type = node.type.names[0]
     return ret
 
+  def is_valid_ret(self):
+    return (not self.is_enum) and (not self.is_ptr) and (not self.is_struct) and \
+           (not self.is_union) and (self.type in Arg.FUZZABLE)
+
 
 class Function(O):
+  PRINT_F = re.compile(r'printf\(')
+  SCAN_F = re.compile(r'scanf\(')
+
   def __init__(self, name, body):
     O.__init__(self)
     self.name = name
@@ -127,14 +143,45 @@ class Function(O):
     self.ret = None
     self.source_id = None
     self.source_name = None
+    self.source = None
+
+  def check_func_io(self):
+    return Function.PRINT_F.search(self.body) is not None, Function.SCAN_F.search(self.body)
+
+  def is_fuzzable(self):
+    if self.name == "main":
+      return False
+    if len(self.args) == 0:
+      return False
+    for arg in self.args:
+      if not arg.is_valid_arg():
+        return False
+    if self.ret is None or not self.ret.is_valid_ret():
+      return False
+    contains_print, contains_scan = self.check_func_io()
+    return not contains_scan
+
+  def get_fuzzable_args(self):
+    arg_vals = {
+        'int': [-100, -1, 0, 1, 100],
+        'float': [-100.0, -1.0, -0.01, 0.0, 0.01, 1.0, 100.0],
+        'char': ["'a'", "'z'", "'~'", "'#'", "'\t'", "'\n'"]
+    }
+    fuzzs = []
+    for arg in self.args:
+      fuzzs.append(arg_vals[arg.type])
+    # return [', '.join(map(str, s)) for s in itertools.product(*fuzzs)]
+    return itertools.product(*fuzzs)
+
 
 
 class FuncDefStatCollector(c_ast.NodeVisitor):
   generator = c_generator.CGenerator()
 
-  def __init__(self, i_d, name):
+  def __init__(self, i_d, name, source):
     self.id = i_d
     self.name = name
+    self.source = source
     self.functions = []
 
   def visit_FuncDef(self, node):
@@ -143,6 +190,7 @@ class FuncDefStatCollector(c_ast.NodeVisitor):
     func = Function(node.decl.name, FuncDefStatCollector.generator.visit(node))
     func.source_id = self.id
     func.source_name = self.name
+    func.source = self.source
     arg_nodes = node.decl.type.args
     if arg_nodes and len(arg_nodes.params) > 0:
       for arg_node in arg_nodes.params:
@@ -166,10 +214,11 @@ def c_extract(i_d, name, source, repeat=True):
   :param i_d: ID of row
   :param name: Name of file
   :param source: "Source code as string"
+  :param repeat: If AST parsing has to be repeated.
   :return:
   """
   file_name = cache.create_file_path("temp", name, ext=".c")
-  collector = FuncDefStatCollector(i_d, file_name.rsplit("/", 1)[-1])
+  collector = FuncDefStatCollector(i_d, file_name.rsplit("/", 1)[-1], source)
   with open(file_name, "wb") as write:
     write.write(source)
   errors = 0
@@ -222,8 +271,7 @@ def parse_c_file(file_name):
 
 
 if __name__ == "__main__":
-  # _read()
+  _read()
   # _test_exception()
   # parse_file('temp/fixdep.c', use_cpp=True, cpp_args=[r'-I%s' % FAKE_LIBS_PATH])
   # _test_child_process()
-  _metrics()
