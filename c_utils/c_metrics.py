@@ -23,9 +23,13 @@ SCAN_F = re.compile(r'scanf\(')
 
 
 def is_valid_arg(arg):
-  return (not arg.is_enum) and (not arg.is_func) and (not arg.is_ptr) and \
-         (not arg.is_struct) and (not arg.is_union) and (not arg.is_arr) and \
+  return (not arg.is_enum) and \
+         (not arg.is_func) and \
+         (not arg.is_ptr) and \
+         (not arg.is_struct) and \
+         (not arg.is_union) and \
          (arg.type in FUZZABLE)
+         # (not arg.is_arr) and \
 
 
 def is_valid_ret(ret):
@@ -52,6 +56,7 @@ class Metrics(O):
     self.valid_rets = 0
     self.n_functions = 0
     self.is_fuzzable = 0
+    self.statics = 0
 
 
 def compute_metrics(file_name, save_file):
@@ -60,6 +65,7 @@ def compute_metrics(file_name, save_file):
   n_functions = len(functions)
   metrics.n_functions = n_functions
   for i, func in enumerate(functions):
+    if func.is_static: metrics.statics += 1
     if func.name == "main":
       metrics.mains += 1
       continue
@@ -89,7 +95,7 @@ def compute_metrics(file_name, save_file):
       metrics.stds['reads'] += 1
     else:
       metrics.stds['n_reads_writes'] += 1
-      if is_fuzzable_args and is_fuzzable_ret:
+      if is_fuzzable_args and is_fuzzable_ret and not func.is_static:
         metrics.is_fuzzable += 1
     if (i + 1) % 100 == 0:
       logger.info("Processed %d/%d of functions." % (i + 1, n_functions))
