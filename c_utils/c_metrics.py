@@ -28,8 +28,9 @@ def is_valid_arg(arg):
          (not arg.is_ptr) and \
          (not arg.is_struct) and \
          (not arg.is_union) and \
+         (not arg.is_arr) and \
          (arg.type in FUZZABLE)
-         # (not arg.is_arr) and \
+
 
 
 def is_valid_ret(ret):
