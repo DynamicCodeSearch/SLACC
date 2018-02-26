@@ -161,10 +161,10 @@ class Function(O):
   def check_func_io(self):
     return Function.PRINT_F.search(self.body) is not None, Function.SCAN_F.search(self.body)
 
-  def is_fuzzable(self):
+  def is_fuzzable(self, arg_limit=None):
     if self.name == "main":
       return False
-    if len(self.args) == 0:
+    if len(self.args) == 0 or (arg_limit is not None and len(self.args) > arg_limit):
       return False
     for arg in self.args:
       if not arg.is_valid_arg():
@@ -172,7 +172,7 @@ class Function(O):
     if self.ret is None or not self.ret.is_valid_ret():
       return False
     contains_print, contains_scan = self.check_func_io()
-    return not contains_scan
+    return not contains_scan and len(self.args) < arg_limit
 
   def get_fuzzable_args(self):
     arg_vals = {
