@@ -113,7 +113,7 @@ def fuzz_functions(save_file, arg_limit=None):
 
 
 def _fuzz_functions():
-  fuzz_functions("data/cfiles_dump/fuzzed/fuzzed.pkl", arg_limit=4)
+  fuzz_functions("data/cfiles_dump/fuzzed/uniform.pkl", arg_limit=4)
 
 
 def _test_ctypes():
@@ -136,7 +136,18 @@ def _test_remote_call():
   print(proc.returncode, -signal.SIGSEGV)
 
 
+def _verify():
+  data = cache.load("data/cfiles_dump/fuzzed/uniform.pkl")
+  n_fuzzed = len(data)
+  failed = 0
+  for val in data.values():
+    if val["error"] is None:
+      failed += 1
+  print(failed, n_fuzzed)
+
+
 if __name__ == "__main__":
   # _test()
   # _test_remote_call()
   _fuzz_functions()
+  # verify()
