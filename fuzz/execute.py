@@ -10,9 +10,16 @@ import ctypes
 from optparse import OptionParser
 import re
 from utils import cache
+import signal
 
 SPLIT_PATTERN = ''',(?=(?:[^'"]|'[^']*'|"[^"]*")*$)'''
 
+
+def timeout_handler(signum, frame):  # Custom signal handler
+  raise Exception("Function timed out.")
+
+# Change the behavior of SIGALRM
+signal.signal(signal.SIGALRM, timeout_handler)
 
 
 def split(line):
@@ -81,6 +88,7 @@ def cast_vals(arg_vals, py_arg_types, c_arg_types):
 def execute_c(source_exec, function_name, arg_types, arg_vals):
   prefix = source_exec.rsplit(".", 1)[0]
   module = ctypes.CDLL(source_exec)
+  signal.alarm(2)
   try:
     c_function = module[function_name]
   except AttributeError:

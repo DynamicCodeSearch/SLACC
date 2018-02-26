@@ -131,6 +131,18 @@ class Return(O):
            (not self.is_union) and (self.type in Arg.FUZZABLE)
 
 
+def int_vals():
+  return [-100, -1, 0, 1, 100]
+
+
+def float_vals():
+  return [-100.0, -1.0, -0.01, 0.0, 0.01, 1.0, 100.0]
+
+
+def char_vals():
+  return ["'a'", "'z'", "'~'", "'#'", "'\t'", "'\n'"]
+
+
 class Function(O):
   PRINT_F = re.compile(r'printf\(')
   SCAN_F = re.compile(r'scanf\(')
@@ -164,15 +176,14 @@ class Function(O):
 
   def get_fuzzable_args(self):
     arg_vals = {
-        'int': [-100, -1, 0, 1, 100],
-        'float': [-100.0, -1.0, -0.01, 0.0, 0.01, 1.0, 100.0],
-        'char': ["'a'", "'z'", "'~'", "'#'", "'\t'", "'\n'"]
+        'int': int_vals(),
+        'float': float_vals(),
+        'char': char_vals()
     }
     fuzzs = []
     for arg in self.args:
       fuzzs.append(arg_vals[arg.type])
     return itertools.product(*fuzzs)
-
 
 
 class FuncDefStatCollector(c_ast.NodeVisitor):
