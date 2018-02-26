@@ -28,11 +28,12 @@ def load_c_functions(file_name=VALID_FILE):
   return cache.load(file_name)
 
 
-def save_source(source_name, source):
+def save_source(source_name, source, is_static):
   prefix = source_name.split(".c")[0]
+  file_source = source.replace("static ", "") if is_static else source
   source_file = cache.create_file_path("temp", source_name)
   with open(source_file, 'wb') as f:
-    f.write(source)
+    f.write(file_source)
   status = os.system("gcc -fPIC -shared -o temp/%s.so temp/%s > /dev/null 2>&1" % (prefix, source_name))
   return "temp/%s.so" % prefix, status
 
@@ -69,7 +70,7 @@ def exec_function(source_exec, function_name, arg_types, arg_vals, timeout=5):
 
 
 def fuzz(function):
-  source_exec, status = save_source(function.source_name, function.source)
+  source_exec, status = save_source(function.source_name, function.source, function.is_static)
   if status != 0:
     error = "Failed to compile: %s" % function.source_name
     cache.delete("temp/%s" % function.source_name)
@@ -87,7 +88,7 @@ def fuzz(function):
   return rets, None
 
 
-def fuzz_functions(save_file):
+def fuzz_functions(save_file, arg_limit=None):
   functions = load_c_functions()
   cnt, fuzzables = 0, 0
   results = {}
@@ -95,7 +96,7 @@ def fuzz_functions(save_file):
   for function in functions:
     cnt += 1
     name = function.name
-    if function.is_fuzzable():
+    if function.is_fuzzable(arg_limit=arg_limit):
       fuzzables += 1
       fuzzed, error = fuzz(function)
       results[cnt] = {
@@ -105,14 +106,14 @@ def fuzz_functions(save_file):
       }
     if cnt % 10 == 0:
       logger.info("Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (cnt, n_functions, fuzzables))
-    if cnt % 100 == 0:
-      logger.info("SAVING to %s" % save_file)
-      cache.save(save_file, results)
+    # if cnt % 100 == 0:
+    #   logger.info("SAVING to %s" % save_file)
+    #   cache.save(save_file, results)
   cache.save(save_file, results)
 
 
 def _fuzz_functions():
-  fuzz_functions("data/cfiles_dump/fuzzed/fuzzed.pkl")
+  fuzz_functions("data/cfiles_dump/fuzzed/fuzzed.pkl", arg_limit=4)
 
 
 def _test_ctypes():

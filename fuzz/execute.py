@@ -92,6 +92,7 @@ def execute_c(source_exec, function_name, arg_types, arg_vals):
   try:
     c_function = module[function_name]
   except AttributeError:
+    print("Static Exception")
     raise Exception("Not found. Probably static method")
   c_arg_types, py_arg_types = process_arg_types(arg_types)
   c_function.argtypes = tuple(c_arg_types)
