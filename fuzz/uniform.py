@@ -11,8 +11,11 @@ from c_utils.c_parser import Function, Arg, Return
 import ctypes
 from utils.logger import get_logger
 import logging
-import subprocess
 import signal
+if os.name == 'posix' and sys.version_info[0] < 3:
+  import subprocess32 as subprocess
+else:
+  import subprocess
 
 
 LOG_LEVEL = logging.INFO
@@ -43,11 +46,15 @@ def get_c_arg(data_type):
     return ctypes.c_char
 
 
-def exec_function(source_exec, function_name, arg_types, arg_vals):
+def exec_function(source_exec, function_name, arg_types, arg_vals, timeout=5):
   cmd = ["python", "fuzz/execute.py", "-s", source_exec, "-f", function_name, "-t", arg_types, '-v', arg_vals]
   ret_data, error = None, None
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
-  out, err, = proc.communicate()
+  try:
+    out, err, = proc.communicate(timeout=timeout)
+  except subprocess.TimeoutExpired:
+    error = "Timed out after %d seconds" % timeout
+    return ret_data, error
   if proc.returncode == -signal.SIGSEGV:
     error = "Segmentation Fault"
     return ret_data, error
@@ -64,10 +71,10 @@ def exec_function(source_exec, function_name, arg_types, arg_vals):
 def fuzz(function):
   source_exec, status = save_source(function.source_name, function.source)
   if status != 0:
-    print("Failed to compile: %s" % function.source_name)
+    error = "Failed to compile: %s" % function.source_name
     cache.delete("temp/%s" % function.source_name)
     cache.delete(source_exec)
-    return None
+    return None, error
   c_arg_types = ",".join([arg.type for arg in function.args])
   fuzzable_args = function.get_fuzzable_args()
   rets = []
@@ -77,20 +84,32 @@ def fuzz(function):
     rets.append((fuzzable_arg, ret, error))
   cache.delete("temp/%s" % function.source_name)
   cache.delete(source_exec)
-  return rets
+  return rets, None
 
 
-def _main():
+def fuzz_functions(save_file):
   functions = load_c_functions()
-  cnt = 0
+  cnt, fuzzables = 0, 0
+  results = {}
+  n_functions = len(functions)
   for function in functions:
+    cnt += 1
+    name = function.name
     if function.is_fuzzable():
-      cnt += 1
-      print(function.name)
-      fuzzed = fuzz(function)
-      print(fuzzed)
-      if cnt == 10: break
-      # exit()
+      fuzzables += 1
+      fuzzed, error = fuzz(function)
+      results[cnt] = {
+          "name": name,
+          "results": fuzzed,
+          "error": error
+      }
+    if cnt % 10 == 0:
+      logger.info("Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (cnt, n_functions, fuzzables))
+  cache.save(save_file, results)
+
+
+def _fuzz_functions():
+  fuzz_functions("data/cfiles_dump/fuzzed/fuzzed.pkl")
 
 
 def _test_ctypes():
@@ -104,17 +123,16 @@ def _test_ctypes():
 
 def _test_remote_call():
   # cmd = ["python", "fuzz/execute.py", "-s", "temp/val-prof-7.so", "-f", "foo", "-t", 'int', '-v', '-5']
-  cmd = ["python", "fuzz/execute.py", "-s", "temp/piggyback.so", "-f", "align", "-t", 'int', '-v', '15']
+  cmd = ["python", "fuzz/execute.py", "-s", "temp/fibo2.so", "-f", "fib2", "-t", 'int', '-v', '100']
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
-  out, err, = proc.communicate()
+  out, err, = proc.communicate(timeout=5)
   print(out)
   print(err)
+  print(cache.load("temp/fibo2.pkl"))
   print(proc.returncode, -signal.SIGSEGV)
 
 
-
-
 if __name__ == "__main__":
-  _main()
   # _test()
   # _test_remote_call()
+  _fuzz_functions()
