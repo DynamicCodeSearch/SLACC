@@ -141,7 +141,7 @@ def _verify():
   n_fuzzed = len(data)
   failed = 0
   for val in data.values():
-    if val["error"] is None:
+    if len(val["results"]) == 0:
       failed += 1
   print(failed, n_fuzzed)
 
@@ -150,4 +150,4 @@ if __name__ == "__main__":
   # _test()
   # _test_remote_call()
   _fuzz_functions()
-  # verify()
+  # _verify()
