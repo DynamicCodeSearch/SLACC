@@ -105,6 +105,9 @@ def fuzz_functions(save_file):
       }
     if cnt % 10 == 0:
       logger.info("Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (cnt, n_functions, fuzzables))
+    if cnt % 100 == 0:
+      logger.info("SAVING to %s" % save_file)
+      cache.save(save_file, results)
   cache.save(save_file, results)
 
 
