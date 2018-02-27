@@ -95,14 +95,13 @@ def fuzz_functions(save_file, arg_limit=None):
   n_functions = len(functions)
   for function in functions:
     cnt += 1
-    name = function.name
     if function.is_fuzzable(arg_limit=arg_limit):
       fuzzables += 1
       fuzzed, error = fuzz(function)
       results[cnt] = {
-          "name": name,
           "results": fuzzed,
-          "error": error
+          "error": error,
+          "function": function
       }
     if cnt % 10 == 0:
       logger.info("Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (cnt, n_functions, fuzzables))
