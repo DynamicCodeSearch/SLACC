@@ -131,16 +131,29 @@ class Return(O):
            (not self.is_union) and (self.type in Arg.FUZZABLE)
 
 
-def int_vals():
-  return [-2147483648, -100, -1, 0, 1, 100, 2147483647]
+def int_vals(limit=True):
+  if limit:
+    return [-2147483647, -100, -1, 0, 1, 100, 2147483646]
+  else:
+    return [-2147483647, -10000, -5000, -2000, -1000, -500, -200, -100, -50, -20, -10, -5, -2, -1, 0,
+            1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 2147483646]
 
 
-def float_vals():
-  return [-3.4E+38, -100.0, -1.0, -0.01, 0.0, 0.01, 1.0, 100.0, 3.4E+38]
+def float_vals(limit=True):
+  if limit:
+    return [-3.3E+38, -100.0, -1.0, 0.0, 1.0, 100.0, 3.3E+38]
+  else:
+    return [-3.3E+38, -10000.0, -5000.0, -2000.0, -1000.0, -500.0, -200.0, -100.0, -50.0, -20.0, -10.0, -5.0, -2.0, -1.0,
+            0.0, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0, 1000.0, 2000.0, 5000.0, 10000.0, 3.3E+38]
 
 
-def char_vals():
-  return ["'a'", "'z'", "'~'", "'#'", "'\t'", "'\n'"]
+def char_vals(limit=True):
+  if limit:
+    return ["'a'", "'z'", "'~'", "'#'", "'\t'", "'\n'"]
+  else:
+    return ["'a'", "'c'", "'g'", "'h'", "'f'", "'i'", "'k'", "'o'", "'w'", "'z'",
+            "'~'", "'#'", "'\t'", "'\n'", "'0'", "'4'", "'5'", "'9'", "'('", "'|'",
+            "'\"'", "'\''"]
 
 
 class Function(O):
@@ -176,13 +189,14 @@ class Function(O):
 
   def get_fuzzable_args(self):
     arg_vals = {
-        'int': int_vals(),
-        'float': float_vals(),
-        'char': char_vals()
+        'int': int_vals,
+        'float': float_vals,
+        'char': char_vals
     }
     fuzzs = []
+    limit = len(self.args) > 1
     for arg in self.args:
-      fuzzs.append(arg_vals[arg.type])
+      fuzzs.append(arg_vals[arg.type](limit=limit))
     return itertools.product(*fuzzs)
 
 
