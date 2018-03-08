@@ -13,6 +13,7 @@ import numpy as np
 import scipy as sp
 from scipy import stats
 from collections import defaultdict
+from utils.uf import UnionFind
 
 FUNCTION_FILE = "data/cfiles_dump/fuzzed/uniform.pkl"
 
@@ -105,6 +106,69 @@ class Clusterer(O):
       point_clusters.append(points)
     cache.save("data/cfiles_dump/clusters/dbscan.pkl", point_clusters)
 
+  def clones(self):
+    ret_groups = defaultdict(list)
+    ret_points = defaultdict(list)
+    rets = set()
+    for point, x in zip(self.points, self.X):
+      rets.add(point.return_type)
+      ret_groups[point.return_type].append(x)
+      ret_points[point.return_type].append(point)
+    for ret_type, points in ret_points.items():
+      uf = UnionFind(points)
+      for p in points:
+        if len(p.outputs) == 0: continue
+        for q in points:
+          if uf.find(p, q) or len(q.outputs) == 0: continue
+          # if set(p.outputs) == set(q.outputs):
+          if sorted(p.outputs) == sorted(q.outputs):
+            uf.union(p, q)
+      # Bookmarks for stats
+      direct_clones = []
+      grouped = 0
+      outputs_in_clusters = defaultdict(int)
+      methods_in_clusters = defaultdict(int)
+      for cluster in uf.get_clusters():
+        if len(cluster) > 1:
+          ## Test
+          # for i in range(min(3, len(cluster))):
+          #   print(cluster[i].function_body)
+          #   print(cluster[i].outputs)
+          # exit()
+          output_size = len(set(cluster[0].outputs))
+          if output_size >= 7:
+            output_size = "7+"
+          outputs_in_clusters[output_size] += 1
+          methods_in_clusters[output_size] += len(cluster)
+          grouped += len(cluster)
+          direct_clones.append(cluster)
+      result = O(
+          ret_type=ret_type,
+          n_methods=len(points),
+          n_direct_clones_cluster=len(direct_clones),
+          n_no_clones=len(points) - grouped,
+          num_clusters_wrt_size=outputs_in_clusters,
+          num_methods_in_clusters_wrt_size=methods_in_clusters
+      )
+      print(result)
+      # clones = []
+      # n_pts = len(points)
+      # for i in range(n_pts):
+      #   if len(points[i].outputs) == 0: continue
+      #   f_clones = []
+      #   for j in range(i, n_pts):
+      #     if i == j or len(points[j].outputs) == 0: continue
+      #     if set(points[i].outputs) == set(points[j].outputs):
+      #       f_clones.append(points[j])
+      #   if len(f_clones) > 0:
+      #     clones.append({
+      #         "function": points[i],
+      #         "clones": f_clones
+      #     })
+      # print(len(clones))
+    # TODO: Implement set union
+
+
 
 def pre_process(functions):
   points = []
@@ -119,7 +183,7 @@ def _main():
   functions = cache.load(FUNCTION_FILE)
   clusterer = Clusterer(functions)
   # dbscan(np.arange(len(points)).reshape(-1, 1), metric=clusterer.distance, eps=5, min_samples=2)
-  clusterer.cluster()
+  clusterer.clones()
   # TODO: Create a class for dbscan and use that to cluser with a custom metric
 
 
