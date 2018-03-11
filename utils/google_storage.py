@@ -18,7 +18,7 @@ from oauth2client import client
 from oauth2client import tools
 from apiclient import discovery
 import httplib2
-from pydrive.auth import GoogleAuth
+from pydrive.auth import GoogleAuth, RefreshError
 from pydrive.drive import GoogleDrive
 from utils import cache
 
@@ -202,7 +202,16 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
   :param folder_id: ID of folder to upload
   :return:
   """
-  drive = load_drive()
+  cnt = 0
+  drive = None
+  while drive is None:
+    try:
+      drive = load_drive()
+    except RefreshError as e:
+      cnt += 1
+      drive = None
+      if cnt == 5:
+        raise e
   splits = destination.rsplit("/", 1)
   file_name = splits[-1]
   gfile = drive.CreateFile({'title': file_name, 'mime_type': 'text/csv',
