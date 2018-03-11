@@ -11,15 +11,34 @@ from google.cloud import storage
 from utils.cache import mkdir, file_exists
 from joblib import Parallel, delayed
 import logging
+import csv
 from utils.logger import get_logger
+from oauth2client.file import Storage
+from oauth2client import client
+from oauth2client import tools
+from apiclient import discovery
+import httplib2
+from pydrive.auth import GoogleAuth
+from pydrive.drive import GoogleDrive
+from utils import cache
+
 
 LOG_LEVEL = logging.INFO
 logger = get_logger(__name__, LOG_LEVEL)
+csv.field_size_limit(sys.maxsize)
 
-
-
-BUCKET_NAME = "enableviz-1380.appspot.com"
+# BUCKET_NAME = "enableviz-1380.appspot.com"
+BUCKET_NAME = "prog-repair"
 BUCKET = None
+DRIVE_SECRET_FILE = "secrets/drive_secret.json"
+DRIVE_SCOPE = "https://www.googleapis.com/auth/drive"
+APPLICATION_NAME = "CodeSeer"
+CREDENTIAL_DIR = os.getcwd() + "/secrets"
+CREDENTIAL_PATH = os.path.join(CREDENTIAL_DIR, 'drive_codeseer.json')
+GDRIVE_FOLDER_ID = "1cogKeBQ29iNes100sEnG4-CJ2-G2WpqQ"
+
+import argparse
+FLAGS = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
 
 
 def get_bucket():
@@ -33,6 +52,27 @@ def get_bucket():
   return BUCKET
 
 
+def get_drive_credentials():
+  """
+  Gets valid user credentials from storage.
+  If nothing has been stored, or if the stored credentials are invalid,
+  the OAuth2 flow is completed to obtain the new credentials.
+
+  Returns:
+      Credentials, the obtained credential.
+  """
+  if not os.path.exists(CREDENTIAL_DIR):
+    os.makedirs(CREDENTIAL_DIR)
+  store = Storage(CREDENTIAL_PATH)
+  credentials = store.get()
+  if not credentials or credentials.invalid:
+    flow = client.flow_from_clientsecrets(DRIVE_SECRET_FILE, DRIVE_SCOPE)
+    flow.user_agent = APPLICATION_NAME
+    credentials = tools.run_flow(flow, store, FLAGS)
+    print('Storing credentials to ' + CREDENTIAL_PATH)
+  return credentials
+
+
 def implicit():
   """
   Check if client is validly configured
@@ -44,7 +84,12 @@ def implicit():
 
 
 def get_blob(name):
-  return get_bucket().blob(name)
+  """
+  Get instance of blob using name from google storage
+  :param name:
+  :return:
+  """
+  return storage.Client().get_bucket(BUCKET_NAME).blob(name)
 
 
 def download_blob(name, download_path):
@@ -61,11 +106,11 @@ def download_blob(name, download_path):
   else:
     destination_file = "%s/%s" % (download_path, name)
   if file_exists(destination_file):
-    print("%s already exists" % destination_file)
-    return name
+    logger.info("%s already exists" % destination_file)
+    return destination_file
   else:
     blob.download_to_filename(destination_file)
-    print('Blob {} downloaded to {}.'.format(name, destination_file))
+    logger.info('Blob {} downloaded to {}.'.format(name, destination_file))
   return destination_file
 
 
@@ -131,7 +176,126 @@ def _download_blobs(source, destination, start=0, max_results=None):
   print("Running as %d jobs" % n_jobs)
   download_blobs(source, destination, n_jobs, start, max_results, do_parallel=do_parallel)
 
+
+def load_drive():
+  """
+  Load an instance of google drive
+  :return:
+  """
+  gauth = GoogleAuth()
+  gauth.LoadCredentialsFile(credentials_file=CREDENTIAL_PATH)
+  if gauth.access_token_expired:
+    gauth.Refresh()
+  else:
+    gauth.Authorize()
+  gauth.SaveCredentialsFile(credentials_file=CREDENTIAL_PATH)
+  drive = GoogleDrive(gauth)
+  return drive
+
+
+def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
+  """
+  Upload a file to google drive
+  :param source: Name of source
+  :param destination: Name of target
+  :param folder_id: ID of folder to upload
+  :return:
+  """
+  drive = load_drive()
+  splits = destination.rsplit("/", 1)
+  file_name = splits[-1]
+  gfile = drive.CreateFile({'title': file_name, 'mime_type': 'text/csv',
+                            'parents': [{'kind': "drive#fileLink", 'id': folder_id}]})
+  gfile.SetContentFile(source)
+  gfile.Upload()
+  logger.info("Uploaded file '%s' to google drive" % destination)
+  return file_name
+
+
+def transfer_file_from_storage_to_drive(storage_source, local_folder, uploaded_files_store):
+  """
+  Transfer a file from storage to drive
+  :param storage_source: Source of file in google storage
+  :param local_folder: Local folder to download the file
+  :param uploaded_files_store: Path of set containing uploaded files
+  :return:
+  """
+  uploaded = cache.load(uploaded_files_store)
+  name = storage_source.rsplit("/", 1)[-1].split(".")[0]
+  if name in uploaded:
+    logger.info("%s.csv already processed" % name)
+    return
+  temp_file = cache.create_file_path(local_folder, name, ext=".tmp")
+  if cache.file_exists(temp_file):
+    logger.info("%s.csv file being processed" % name)
+    return
+  cache.save(temp_file, {"processing": True})
+  local_file = download_blob(storage_source, local_folder)
+  upload_file_to_drive(local_file, local_file)
+  cache.delete(temp_file)
+  cache.delete(local_file)
+  uploaded.add(name)
+  cache.save(uploaded_files_store, uploaded)
+
+
+def transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_store, n_jobs):
+  """
+  Transfer all files from google storage to google drive
+  :param storage_folder: Google storage folder
+  :param local_folder: Local folder where files are temporarily stored
+  :param n_jobs: Number of jobs
+  :param uploaded_files_store:  Path storing list of files
+  :return:
+  """
+  if not cache.file_exists(uploaded_files_store):
+    cache.save(uploaded_files_store, set())
+  mkdir(local_folder)
+  blobs = []
+  for stat in get_bucket().list_blobs(prefix=storage_folder):
+    if stat.size == 0: continue
+    blobs.append(stat.name)
+  print("# Files =", len(blobs))
+  Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder, uploaded_files_store)
+                          for name in blobs)
+
+
+def _transfer_from_storage_to_drive():
+  n_jobs = 2
+  storage_folder = "cfiles"
+  local_folder = "data/cfiles_dump/csv_all"
+  uploaded_files_store = "data/cfiles_dump/transferred.pkl"
+  transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_store, n_jobs)
+
+
+def _list_blobs():
+  blob_names = list_blobs("cfiles")
+  print(len(blob_names))
+
+
+def test_google_drive():
+  """Shows basic usage of the Google Drive API.
+
+  Creates a Google Drive API service object and outputs the names and IDs
+  for up to 10 files.
+  """
+  credentials = get_drive_credentials()
+  http = credentials.authorize(httplib2.Http())
+  service = discovery.build('drive', 'v3', http=http)
+
+  results = service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
+  items = results.get('files', [])
+  if not items:
+    print('No files found.')
+  else:
+    print('Files:')
+    for item in items:
+      print('{0} ({1})'.format(item['name'], item['id']))
+
+
 if __name__ == "__main__":
   # implicit()
-  _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
+  # _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
+  # _list_blobs()
+  # test_google_drive()
+  _transfer_from_storage_to_drive()
 

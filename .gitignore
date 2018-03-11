@@ -105,3 +105,4 @@ data/cfiles_dump
 data/pyfiles_dump
 temp
 include
+secrets

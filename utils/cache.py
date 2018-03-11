@@ -59,7 +59,7 @@ def delete(file_name):
   :param file_name:
   :return:
   """
-  if file_exists(file_name):
+  if file_name and file_exists(file_name):
     try:
       os.remove(file_name)
     except OSError, e:
