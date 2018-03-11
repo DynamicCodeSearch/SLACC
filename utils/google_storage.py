@@ -229,7 +229,7 @@ def list_file_names():
   # for file1 in file_list:
   #   file_names.add(file1['title'])
   # return file_names
-  file_names, cnt = 0, None
+  file_names, cnt = None, 0
   while file_names is None and cnt < 5:
     file_names = cache.load(UPLOADED_FILE_STORE)
     cnt += 1
