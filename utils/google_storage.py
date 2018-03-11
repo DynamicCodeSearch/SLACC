@@ -36,6 +36,7 @@ APPLICATION_NAME = "CodeSeer"
 CREDENTIAL_DIR = os.getcwd() + "/secrets"
 CREDENTIAL_PATH = os.path.join(CREDENTIAL_DIR, 'drive_codeseer.json')
 GDRIVE_FOLDER_ID = "1cogKeBQ29iNes100sEnG4-CJ2-G2WpqQ"
+UPLOADED_FILE_STORE = "data/cfiles_dump/transferred.pkl"
 
 # import argparse
 # FLAGS = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
@@ -213,12 +214,13 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
 
 
 def list_file_names():
-  drive = load_drive()
-  file_list = drive.ListFile({'q': "'%s' in parents and trashed=false"%GDRIVE_FOLDER_ID}).GetList()
-  file_names = set()
-  for file1 in file_list:
-    file_names.add(file1['title'])
-  return file_names
+  # drive = load_drive()
+  # file_list = drive.ListFile({'q': "'%s' in parents and trashed=false"%GDRIVE_FOLDER_ID}).GetList()
+  # file_names = set()
+  # for file1 in file_list:
+  #   file_names.add(file1['title'])
+  # return file_names
+  return cache.load(UPLOADED_FILE_STORE)
 
 
 def transfer_file_from_storage_to_drive(storage_source, local_folder):
@@ -240,6 +242,9 @@ def transfer_file_from_storage_to_drive(storage_source, local_folder):
   cache.save(temp_file, {"processing": True})
   local_file = download_blob(storage_source, local_folder)
   upload_file_to_drive(local_file, local_file)
+  uploaded = list_file_names()
+  uploaded.add("%s.csv" % name)
+  cache.save(UPLOADED_FILE_STORE, uploaded)
   cache.delete(temp_file)
   cache.delete(local_file)
 
@@ -278,6 +283,15 @@ def _list_blobs():
   print(len(blob_names))
 
 
+def _save_uploaded_files():
+  drive = load_drive()
+  file_list = drive.ListFile({'q': "'%s' in parents and trashed=false" % GDRIVE_FOLDER_ID}).GetList()
+  file_names = set()
+  for file1 in file_list:
+    file_names.add(file1['title'])
+  cache.save(UPLOADED_FILE_STORE, file_names)
+
+
 def test_google_drive():
   """Shows basic usage of the Google Drive API.
 
@@ -287,7 +301,6 @@ def test_google_drive():
   credentials = get_drive_credentials()
   http = credentials.authorize(httplib2.Http())
   service = discovery.build('drive', 'v3', http=http)
-
   results = service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
   items = results.get('files', [])
   if not items:
@@ -303,5 +316,6 @@ if __name__ == "__main__":
   # _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
   # _list_blobs()
   # test_google_drive()
-  _transfer_from_storage_to_drive()
+  # _transfer_from_storage_to_drive()
   # list_files()
+  _save_uploaded_files()
