@@ -37,8 +37,8 @@ CREDENTIAL_DIR = os.getcwd() + "/secrets"
 CREDENTIAL_PATH = os.path.join(CREDENTIAL_DIR, 'drive_codeseer.json')
 GDRIVE_FOLDER_ID = "1cogKeBQ29iNes100sEnG4-CJ2-G2WpqQ"
 
-import argparse
-FLAGS = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+# import argparse
+# FLAGS = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
 
 
 def get_bucket():
@@ -68,7 +68,7 @@ def get_drive_credentials():
   if not credentials or credentials.invalid:
     flow = client.flow_from_clientsecrets(DRIVE_SECRET_FILE, DRIVE_SCOPE)
     flow.user_agent = APPLICATION_NAME
-    credentials = tools.run_flow(flow, store, FLAGS)
+    credentials = tools.run_flow(flow, store, None)
     print('Storing credentials to ' + CREDENTIAL_PATH)
   return credentials
 
@@ -247,6 +247,7 @@ def transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_
   :param uploaded_files_store:  Path storing list of files
   :return:
   """
+  logger.info("# Jobs = %d" % n_jobs)
   if not cache.file_exists(uploaded_files_store):
     cache.save(uploaded_files_store, set())
   mkdir(local_folder)
@@ -254,13 +255,16 @@ def transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_
   for stat in get_bucket().list_blobs(prefix=storage_folder):
     if stat.size == 0: continue
     blobs.append(stat.name)
-  print("# Files =", len(blobs))
+  logger.info("# Files = %d" % len(blobs))
   Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder, uploaded_files_store)
                           for name in blobs)
 
 
 def _transfer_from_storage_to_drive():
-  n_jobs = 2
+  n_jobs = 1
+  args = sys.argv
+  if len(args) >= 2 and lib.is_int(args[1]):
+    n_jobs = int(args[1])
   storage_folder = "cfiles"
   local_folder = "data/cfiles_dump/csv_all"
   uploaded_files_store = "data/cfiles_dump/transferred.pkl"
