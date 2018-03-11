@@ -212,17 +212,25 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
   return file_name
 
 
-def transfer_file_from_storage_to_drive(storage_source, local_folder, uploaded_files_store):
+def list_file_names():
+  drive = load_drive()
+  file_list = drive.ListFile({'q': "'%s' in parents and trashed=false"%GDRIVE_FOLDER_ID}).GetList()
+  file_names = set()
+  for file1 in file_list:
+    file_names.add(file1['title'])
+  return file_names
+
+
+def transfer_file_from_storage_to_drive(storage_source, local_folder):
   """
   Transfer a file from storage to drive
   :param storage_source: Source of file in google storage
   :param local_folder: Local folder to download the file
-  :param uploaded_files_store: Path of set containing uploaded files
   :return:
   """
-  uploaded = cache.load(uploaded_files_store)
+  uploaded = list_file_names()
   name = storage_source.rsplit("/", 1)[-1].split(".")[0]
-  if name in uploaded:
+  if "%s.csv" % name in uploaded:
     logger.info("%s.csv already processed" % name)
     return
   temp_file = cache.create_file_path(local_folder, name, ext=".tmp")
@@ -234,29 +242,24 @@ def transfer_file_from_storage_to_drive(storage_source, local_folder, uploaded_f
   upload_file_to_drive(local_file, local_file)
   cache.delete(temp_file)
   cache.delete(local_file)
-  uploaded.add(name)
-  cache.save(uploaded_files_store, uploaded)
 
 
-def transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_store, n_jobs):
+def transfer_from_storage_to_drive(storage_folder, local_folder, n_jobs):
   """
   Transfer all files from google storage to google drive
   :param storage_folder: Google storage folder
   :param local_folder: Local folder where files are temporarily stored
   :param n_jobs: Number of jobs
-  :param uploaded_files_store:  Path storing list of files
   :return:
   """
   logger.info("# Jobs = %d" % n_jobs)
-  if not cache.file_exists(uploaded_files_store):
-    cache.save(uploaded_files_store, set())
   mkdir(local_folder)
   blobs = []
   for stat in get_bucket().list_blobs(prefix=storage_folder):
     if stat.size == 0: continue
     blobs.append(stat.name)
   logger.info("# Files = %d" % len(blobs))
-  Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder, uploaded_files_store)
+  Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder)
                           for name in blobs)
 
 
@@ -267,8 +270,7 @@ def _transfer_from_storage_to_drive():
     n_jobs = int(args[1])
   storage_folder = "cfiles"
   local_folder = "data/cfiles_dump/csv_all"
-  uploaded_files_store = "data/cfiles_dump/transferred.pkl"
-  transfer_from_storage_to_drive(storage_folder, local_folder, uploaded_files_store, n_jobs)
+  transfer_from_storage_to_drive(storage_folder, local_folder, n_jobs)
 
 
 def _list_blobs():
@@ -302,4 +304,4 @@ if __name__ == "__main__":
   # _list_blobs()
   # test_google_drive()
   _transfer_from_storage_to_drive()
-
+  # list_files()
