@@ -316,6 +316,7 @@ if __name__ == "__main__":
   # _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
   # _list_blobs()
   # test_google_drive()
+  _save_uploaded_files()
   _transfer_from_storage_to_drive()
   # list_files()
   # _save_uploaded_files()
