@@ -1,2 +1,4 @@
 asttokens
 google-cloud-storage
+google-api-python-client
+PyDrive
