@@ -229,7 +229,13 @@ def list_file_names():
   # for file1 in file_list:
   #   file_names.add(file1['title'])
   # return file_names
-  return cache.load(UPLOADED_FILE_STORE)
+  file_names, cnt = 0, None
+  while file_names is None and cnt < 5:
+    file_names = cache.load(UPLOADED_FILE_STORE)
+    cnt += 1
+  if file_names is None:
+    raise RuntimeError("File Names is none. Stop and restart")
+  return file_names
 
 
 def transfer_file_from_storage_to_drive(storage_source, local_folder):
