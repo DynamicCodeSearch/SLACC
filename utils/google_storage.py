@@ -218,7 +218,15 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
   gfile = drive.CreateFile({'title': file_name, 'mime_type': 'text/csv',
                             'parents': [{'kind': "drive#fileLink", 'id': folder_id}]})
   gfile.SetContentFile(source)
-  gfile.Upload()
+  cnt = 0
+  while True:
+    try:
+      gfile.Upload()
+      break
+    except RefreshError as e:
+      cnt += 1
+      if cnt == 5:
+        raise e
   logger.info("Uploaded file '%s' to google drive" % destination)
   return file_name
 
