@@ -223,6 +223,8 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID, owner=
     except RefreshError as e:
       cnt += 1
       drive = None
+      logger.info("Failed to fetch access token. Sleeping 1 min")
+      time.sleep(60)
       if cnt == 5:
         raise e
   splits = destination.rsplit("/", 1)
