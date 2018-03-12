@@ -12,6 +12,7 @@ from utils.cache import mkdir, file_exists
 from joblib import Parallel, delayed
 import logging
 import csv
+import time
 from utils.logger import get_logger
 from oauth2client.file import Storage
 from oauth2client import client
@@ -232,6 +233,8 @@ def list_file_names():
   file_names, cnt = None, 0
   while file_names is None and cnt < 5:
     file_names = cache.load(UPLOADED_FILE_STORE)
+    if file_names: return file_names
+    time.sleep(1)
     cnt += 1
   if file_names is None:
     raise RuntimeError("File Names is none. Stop and restart")
