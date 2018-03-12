@@ -225,8 +225,8 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
       break
     except Exception as e:
       cnt += 1
-      time.sleep(5)
-      logger.info("Failed to upload file: %s. Sleeping 5 seconds" % file_name)
+      time.sleep(60)
+      logger.info("Failed to upload file: %s. Sleeping 1 minute" % file_name)
       if cnt == 5:
         raise e
   logger.info("Uploaded file '%s' to google drive" % destination)
