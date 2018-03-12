@@ -22,6 +22,7 @@ import httplib2
 from pydrive.auth import GoogleAuth, RefreshError
 from pydrive.drive import GoogleDrive
 from utils import cache
+import argparse
 
 
 LOG_LEVEL = logging.INFO
@@ -35,12 +36,20 @@ DRIVE_SECRET_FILE = "secrets/drive_secret.json"
 DRIVE_SCOPE = "https://www.googleapis.com/auth/drive"
 APPLICATION_NAME = "CodeSeer"
 CREDENTIAL_DIR = os.getcwd() + "/secrets"
-CREDENTIAL_PATH = os.path.join(CREDENTIAL_DIR, 'drive_codeseer.json')
+CREDENTIAL_PATHS = {
+    "main": os.path.join(CREDENTIAL_DIR, 'drive_codeseer.json'),
+    "george": os.path.join(CREDENTIAL_DIR, 'drive_codeseer_george.json'),
+    "rahul": os.path.join(CREDENTIAL_DIR, 'drive_codeseer_rahul.json')
+}
 GDRIVE_FOLDER_ID = "1cogKeBQ29iNes100sEnG4-CJ2-G2WpqQ"
 UPLOADED_FILE_STORE = "data/cfiles_dump/transferred.pkl"
 
-# import argparse
-# FLAGS = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+
+def get_file_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-n", "--n_jobs", type=int, default=2, help="Number of jobs")
+  parser.add_argument("-o", "--owner", type=str, default="main", help="Owner uploading files")
+  return parser.parse_args()
 
 
 def get_bucket():
@@ -54,7 +63,7 @@ def get_bucket():
   return BUCKET
 
 
-def get_drive_credentials():
+def get_drive_credentials(owner, flags=None):
   """
   Gets valid user credentials from storage.
   If nothing has been stored, or if the stored credentials are invalid,
@@ -65,13 +74,14 @@ def get_drive_credentials():
   """
   if not os.path.exists(CREDENTIAL_DIR):
     os.makedirs(CREDENTIAL_DIR)
-  store = Storage(CREDENTIAL_PATH)
+  credential_path = CREDENTIAL_PATHS[owner]
+  store = Storage(credential_path)
   credentials = store.get()
   if not credentials or credentials.invalid:
     flow = client.flow_from_clientsecrets(DRIVE_SECRET_FILE, DRIVE_SCOPE)
     flow.user_agent = APPLICATION_NAME
-    credentials = tools.run_flow(flow, store, None)
-    print('Storing credentials to ' + CREDENTIAL_PATH)
+    credentials = tools.run_flow(flow, store, flags)
+    print('Storing credentials to ' + credential_path)
   return credentials
 
 
@@ -179,35 +189,37 @@ def _download_blobs(source, destination, start=0, max_results=None):
   download_blobs(source, destination, n_jobs, start, max_results, do_parallel=do_parallel)
 
 
-def load_drive():
+def load_drive(owner):
   """
   Load an instance of google drive
   :return:
   """
   gauth = GoogleAuth()
-  gauth.LoadCredentialsFile(credentials_file=CREDENTIAL_PATH)
+  credential_path = CREDENTIAL_PATHS[owner]
+  gauth.LoadCredentialsFile(credentials_file=credential_path)
   if gauth.access_token_expired:
     gauth.Refresh()
   else:
     gauth.Authorize()
-  gauth.SaveCredentialsFile(credentials_file=CREDENTIAL_PATH)
+  gauth.SaveCredentialsFile(credentials_file=credential_path)
   drive = GoogleDrive(gauth)
   return drive
 
 
-def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID):
+def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID, owner="main"):
   """
   Upload a file to google drive
   :param source: Name of source
   :param destination: Name of target
   :param folder_id: ID of folder to upload
+  :param owner: Owner uploading files to google drive
   :return:
   """
   cnt = 0
   drive = None
   while drive is None:
     try:
-      drive = load_drive()
+      drive = load_drive(owner)
     except RefreshError as e:
       cnt += 1
       drive = None
@@ -251,11 +263,12 @@ def list_file_names():
   return file_names
 
 
-def transfer_file_from_storage_to_drive(storage_source, local_folder):
+def transfer_file_from_storage_to_drive(storage_source, local_folder, owner):
   """
   Transfer a file from storage to drive
   :param storage_source: Source of file in google storage
   :param local_folder: Local folder to download the file
+  :param owner: Owner uploading files to google drive
   :return:
   """
   uploaded = list_file_names()
@@ -269,7 +282,7 @@ def transfer_file_from_storage_to_drive(storage_source, local_folder):
     return
   cache.save(temp_file, {"processing": True})
   local_file = download_blob(storage_source, local_folder)
-  upload_file_to_drive(local_file, local_file)
+  upload_file_to_drive(local_file, local_file, owner=owner)
   uploaded = list_file_names()
   uploaded.add("%s.csv" % name)
   cache.save(UPLOADED_FILE_STORE, uploaded)
@@ -277,11 +290,12 @@ def transfer_file_from_storage_to_drive(storage_source, local_folder):
   cache.delete(local_file)
 
 
-def transfer_from_storage_to_drive(storage_folder, local_folder, n_jobs):
+def transfer_from_storage_to_drive(storage_folder, local_folder, owner, n_jobs):
   """
   Transfer all files from google storage to google drive
   :param storage_folder: Google storage folder
   :param local_folder: Local folder where files are temporarily stored
+  :param owner: Owner uploading files to google drive
   :param n_jobs: Number of jobs
   :return:
   """
@@ -292,18 +306,17 @@ def transfer_from_storage_to_drive(storage_folder, local_folder, n_jobs):
     if stat.size == 0: continue
     blobs.append(stat.name)
   logger.info("# Files = %d" % len(blobs))
-  Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder)
+  Parallel(n_jobs=n_jobs)(delayed(transfer_file_from_storage_to_drive)(name, local_folder, owner)
                           for name in blobs)
 
 
 def _transfer_from_storage_to_drive():
-  n_jobs = 1
-  args = sys.argv
-  if len(args) >= 2 and lib.is_int(args[1]):
-    n_jobs = int(args[1])
+  args = get_file_args()
+  n_jobs = args.n_jobs
+  owner = args.owner
   storage_folder = "cfiles"
   local_folder = "data/cfiles_dump/csv_all"
-  transfer_from_storage_to_drive(storage_folder, local_folder, n_jobs)
+  transfer_from_storage_to_drive(storage_folder, local_folder, owner, n_jobs)
 
 
 def _list_blobs():
@@ -312,21 +325,23 @@ def _list_blobs():
 
 
 def _save_uploaded_files():
-  drive = load_drive()
+  drive = load_drive("main")
   file_list = drive.ListFile({'q': "'%s' in parents and trashed=false" % GDRIVE_FOLDER_ID}).GetList()
   file_names = set()
   for file1 in file_list:
     file_names.add(file1['title'])
+  logger.info("# Uploaded Files = %d" % len(file_names))
   cache.save(UPLOADED_FILE_STORE, file_names)
 
 
-def test_google_drive():
+def test_google_drive(owner):
   """Shows basic usage of the Google Drive API.
 
   Creates a Google Drive API service object and outputs the names and IDs
   for up to 10 files.
   """
-  credentials = get_drive_credentials()
+  flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+  credentials = get_drive_credentials(owner, flags)
   http = credentials.authorize(httplib2.Http())
   service = discovery.build('drive', 'v3', http=http)
   results = service.files().list(pageSize=10, fields="nextPageToken, files(id, name)").execute()
@@ -343,8 +358,7 @@ if __name__ == "__main__":
   # implicit()
   # _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
   # _list_blobs()
-  # test_google_drive()
+  # test_google_drive("rahul")
   _save_uploaded_files()
   _transfer_from_storage_to_drive()
-  # list_files()
-  # _save_uploaded_files()
+
