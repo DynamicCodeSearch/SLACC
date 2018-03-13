@@ -101,6 +101,20 @@ def get_blob(name):
   :param name:
   :return:
   """
+  blob, cnt = None, 0
+  while True:
+    try:
+      blob = storage.Client().get_bucket(BUCKET_NAME).blob(name)
+      return blob
+    except Exception as e:
+      cnt += 1
+      if cnt == 10:
+        raise e
+      time.sleep(60)
+      logger.info("Failed to fetch blob from google storage. Sleeping for 1 min")
+
+
+
   return storage.Client().get_bucket(BUCKET_NAME).blob(name)
 
 
