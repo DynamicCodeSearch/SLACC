@@ -223,9 +223,9 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID, owner=
     except RefreshError as e:
       cnt += 1
       drive = None
-      logger.info("Failed to fetch access token. Sleeping 1 min")
-      time.sleep(60)
-      if cnt == 5:
+      logger.info("Failed to fetch access token. Sleeping 3 mins")
+      time.sleep(60 * 3)
+      if cnt == 10:
         raise e
   splits = destination.rsplit("/", 1)
   file_name = splits[-1]
@@ -239,9 +239,9 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID, owner=
       break
     except Exception as e:
       cnt += 1
-      time.sleep(60)
-      logger.info("Failed to upload file: %s. Sleeping 1 minute" % file_name)
-      if cnt == 5:
+      logger.info("Failed to upload file: %s. Sleeping 3 mins" % file_name)
+      time.sleep(60 * 3)
+      if cnt == 10:
         raise e
   logger.info("Uploaded file '%s' to google drive" % destination)
   return file_name
@@ -258,7 +258,7 @@ def list_file_names():
   while file_names is None and cnt < 5:
     file_names = cache.load(UPLOADED_FILE_STORE)
     if file_names: return file_names
-    time.sleep(1)
+    time.sleep(60)
     cnt += 1
   if file_names is None:
     raise RuntimeError("File Names is none. Stop and restart")
@@ -362,5 +362,5 @@ if __name__ == "__main__":
   # _list_blobs()
   # test_google_drive("rahul")
   _save_uploaded_files()
-  _transfer_from_storage_to_drive()
+  # _transfer_from_storage_to_drive()
 
