@@ -1,0 +1,65 @@
+
+
+/************ 000 : fne *************/
+
+int fne(int x, int y)
+{
+  if (x != y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 001 : fne *************/
+
+int fne(int x, int y)
+{
+  if (x != y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 002 : fne *************/
+
+int fne(float x, float y)
+{
+  if (x != y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 003 : fne *************/
+
+int fne(float x, float y)
+{
+  if (x != y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 004 : fne *************/
+
+int fne(float x, float y)
+{
+  if (x != y)
+    return 13;
+  else
+    return 140;
+
+}
+

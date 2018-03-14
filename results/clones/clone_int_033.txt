@@ -1,0 +1,27 @@
+
+
+/************ 000 : twice *************/
+
+int twice(int i)
+{
+  return 2 * i;
+}
+
+
+
+/************ 001 : twice *************/
+
+int twice(int i)
+{
+  return 2 * i;
+}
+
+
+
+/************ 002 : left *************/
+
+inline int left(int index)
+{
+  return index * 2;
+}
+

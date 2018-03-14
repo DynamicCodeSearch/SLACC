@@ -1,0 +1,57 @@
+
+
+/************ 000 : test1 *************/
+
+int test1(int x)
+{
+  return x ^ INT_MIN;
+}
+
+
+
+/************ 001 : test5 *************/
+
+int test5(int x)
+{
+  int y = INT_MIN;
+  return x + y;
+}
+
+
+
+/************ 002 : test6 *************/
+
+int test6(int x)
+{
+  int y = INT_MIN;
+  return x - y;
+}
+
+
+
+/************ 003 : test2 *************/
+
+int test2(int x)
+{
+  return x + INT_MIN;
+}
+
+
+
+/************ 004 : test3 *************/
+
+int test3(int x)
+{
+  return x - INT_MIN;
+}
+
+
+
+/************ 005 : test4 *************/
+
+int test4(int x)
+{
+  int y = INT_MIN;
+  return x ^ y;
+}
+

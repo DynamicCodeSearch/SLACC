@@ -1,0 +1,533 @@
+
+
+/************ 000 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 001 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 002 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 003 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 004 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 005 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 006 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 007 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 008 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 009 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 010 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 011 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 012 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 013 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 014 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 015 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 016 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 017 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 018 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 019 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 020 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 021 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 022 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 023 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 024 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 025 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 026 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 027 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 028 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 029 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 030 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 031 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 032 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 033 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 034 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 035 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 036 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 037 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 038 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 039 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+
+
+
+/************ 040 : align *************/
+
+static int align(int n)
+{
+  if (is64bit)
+    return (n + 0x1fff) & (~0x1fff);
+  else
+    return (n + 0xfff) & (~0xfff);
+
+}
+

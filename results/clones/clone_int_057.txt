@@ -1,0 +1,106 @@
+
+
+/************ 000 : gtsf2 *************/
+
+int gtsf2(float a, float b)
+{
+  return a > b;
+}
+
+
+
+/************ 001 : ltsf2 *************/
+
+int ltsf2(float a, float b)
+{
+  return a < b;
+}
+
+
+
+/************ 002 : iunlt *************/
+
+int iunlt(float x, float y, int ok)
+{
+  if ((__builtin_isunordered(x, y) || (x < y)) != ok)
+    abort();
+
+  ;
+  if ((__builtin_isunordered(x, y) || (x < y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 003 : ilt *************/
+
+int ilt(float x, float y, int ok)
+{
+  if (((!__builtin_isunordered(x, y)) && (__builtin_isunordered(x, y) || (x < y))) != ok)
+    abort();
+
+  ;
+  if (((x <= y) && (x != y)) != ok)
+    abort();
+
+  ;
+  if (((x <= y) && (y != x)) != ok)
+    abort();
+
+  ;
+  if (((x != y) && (x <= y)) != ok)
+    abort();
+
+  ;
+  if (((y != x) && (x <= y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 004 : iungt *************/
+
+int iungt(float x, float y, int ok)
+{
+  if ((__builtin_isunordered(x, y) || (x > y)) != ok)
+    abort();
+
+  ;
+  if ((__builtin_isunordered(x, y) || (x > y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 005 : igt *************/
+
+int igt(float x, float y, int ok)
+{
+  if (((!__builtin_isunordered(x, y)) && (__builtin_isunordered(x, y) || (x > y))) != ok)
+    abort();
+
+  ;
+  if (((x >= y) && (x != y)) != ok)
+    abort();
+
+  ;
+  if (((x >= y) && (y != x)) != ok)
+    abort();
+
+  ;
+  if (((x != y) && (x >= y)) != ok)
+    abort();
+
+  ;
+  if (((y != x) && (x >= y)) != ok)
+    abort();
+
+  ;
+}
+

@@ -1,0 +1,18 @@
+
+
+/************ 000 : bar *************/
+
+int bar(int x, int y, int z)
+{
+  return foo(x * x, y * y, z * z);
+}
+
+
+
+/************ 001 : bar *************/
+
+int bar(int x, int y, int z)
+{
+  return foo(x * x, y * y, z * z);
+}
+

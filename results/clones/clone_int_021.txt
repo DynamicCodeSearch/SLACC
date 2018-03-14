@@ -1,0 +1,130 @@
+
+
+/************ 000 : fge *************/
+
+int fge(int x, int y)
+{
+  if (x >= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 001 : fle *************/
+
+int fle(int x, int y)
+{
+  if (x <= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 002 : fge *************/
+
+int fge(float x, float y)
+{
+  if (x >= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 003 : fle *************/
+
+int fle(float x, float y)
+{
+  if (x <= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 004 : fge *************/
+
+int fge(int x, int y)
+{
+  if (x >= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 005 : fge *************/
+
+int fge(float x, float y)
+{
+  if (x >= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 006 : fle *************/
+
+int fle(float x, float y)
+{
+  if (x <= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 007 : fle *************/
+
+int fle(int x, int y)
+{
+  if (x <= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 008 : fge *************/
+
+int fge(float x, float y)
+{
+  if (x >= y)
+    return 13;
+  else
+    return 140;
+
+}
+
+
+
+/************ 009 : fle *************/
+
+int fle(float x, float y)
+{
+  if (x <= y)
+    return 13;
+  else
+    return 140;
+
+}
+

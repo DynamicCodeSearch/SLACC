@@ -1,0 +1,18 @@
+
+
+/************ 000 : work1 *************/
+
+float work1(int i)
+{
+  return 1.0 * i;
+}
+
+
+
+/************ 001 : floatsisf *************/
+
+float floatsisf(int i)
+{
+  return i;
+}
+

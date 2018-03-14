@@ -1,0 +1,22 @@
+
+
+/************ 000 : f *************/
+
+int f(int a, int b)
+{
+  return a + b;
+}
+
+
+
+/************ 001 : func2 *************/
+
+int func2(int a, int b)
+{
+  int r = 0;
+  putchar(a);
+  putchar(b);
+  r = a + b;
+  return r;
+}
+

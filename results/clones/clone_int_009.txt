@@ -1,0 +1,4248 @@
+
+
+/************ 000 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 001 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 002 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 003 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 004 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 005 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 006 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 007 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 008 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 009 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 010 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 011 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 012 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 013 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 014 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 015 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 016 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 017 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 018 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 019 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 020 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 021 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 022 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 023 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 024 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 025 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 026 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 027 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 028 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 029 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 030 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 031 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 032 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 033 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 034 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 035 : keyboard *************/
+
+static int keyboard(int fd)
+{
+  char buf[128];
+  ssize_t ret;
+  ssize_t i;
+  ret = read(STDIN_FILENO, buf, sizeof(buf));
+  if (ret == 0)
+  {
+    fprintf(stderr, "Read HUP on stdin\n");
+    return -EFAULT;
+  }
+  else
+    if (ret < 0)
+  {
+    fprintf(stderr, "Cannot read stdin: %m\n");
+    return -errno;
+  }
+
+
+  for (i = 0; i < ret; ++i)
+  {
+    switch (buf[i])
+    {
+      case '1':
+        btn1_down = !btn1_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '2':
+        btn2_down = !btn2_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case '3':
+        btn3_down = !btn3_down;
+        ret = send_event(fd);
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'a':
+        abs_hor = -20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'd':
+        abs_hor = 20;
+        ret = send_event(fd);
+        abs_hor = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'w':
+        abs_ver = -20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 's':
+        abs_ver = 20;
+        ret = send_event(fd);
+        abs_ver = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'r':
+        wheel = 1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'f':
+        wheel = -1;
+        ret = send_event(fd);
+        wheel = 0;
+        if (ret)
+        return ret;
+
+        break;
+
+      case 'q':
+        return -ECANCELED;
+
+      default:
+        fprintf(stderr, "Invalid input: %c\n", buf[i]);
+
+    }
+
+  }
+
+  return 0;
+}
+

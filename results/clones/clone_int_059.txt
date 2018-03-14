@@ -1,0 +1,60 @@
+
+
+/************ 000 : test_for2 *************/
+
+int test_for2(int m, int n, int o)
+{
+  int i;
+  int j;
+  int k;
+  for_temp = 1;
+  for (i = 0; i < n; i++)
+    for (j = 0; j < m; j++)
+    for (k = 0; k < o; k++)
+    for_temp++;
+
+
+
+  return for_temp;
+}
+
+
+
+/************ 001 : test_for2 *************/
+
+int test_for2(int m, int n, int o)
+{
+  int i;
+  int j;
+  int k;
+  for_temp = 1;
+  for (i = 0; i < n; i++)
+    for (j = 0; j < m; j++)
+    for (k = 0; k < o; k++)
+    for_temp++;
+
+
+
+  return for_temp;
+}
+
+
+
+/************ 002 : test_for2 *************/
+
+int test_for2(int m, int n, int o)
+{
+  int i;
+  int j;
+  int k;
+  for_temp = 1;
+  for (i = 0; i < n; i++)
+    for (j = 0; j < m; j++)
+    for (k = 0; k < o; k++)
+    for_temp++;
+
+
+
+  return for_temp;
+}
+

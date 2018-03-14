@@ -1,0 +1,18 @@
+
+
+/************ 000 : byte_row_normal *************/
+
+static int byte_row_normal(int byte)
+{
+  return byte - 0x21;
+}
+
+
+
+/************ 001 : byte_col_normal *************/
+
+static int byte_col_normal(int byte)
+{
+  return byte - 0x21;
+}
+

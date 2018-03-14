@@ -1,0 +1,18 @@
+
+
+/************ 000 : sorted_order *************/
+
+int sorted_order(int a, int b)
+{
+  return a - b;
+}
+
+
+
+/************ 001 : reverse_order *************/
+
+int reverse_order(int a, int b)
+{
+  return b - a;
+}
+

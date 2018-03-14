@@ -1,0 +1,41 @@
+
+
+/************ 000 : eqsf2 *************/
+
+int eqsf2(float a, float b)
+{
+  return a == b;
+}
+
+
+
+/************ 001 : iuneq *************/
+
+int iuneq(float x, float y, int ok)
+{
+  if ((__builtin_isunordered(x, y) || (x == y)) != ok)
+    abort();
+
+  ;
+  if ((!__builtin_islessgreater(x, y)) != ok)
+    abort();
+
+  ;
+  if (((__builtin_isunordered(x, y) || (x <= y)) && (__builtin_isunordered(x, y) || (x >= y))) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 002 : ieq *************/
+
+int ieq(float x, float y, int ok)
+{
+  if (((!__builtin_isunordered(x, y)) && (__builtin_isunordered(x, y) || (x == y))) != ok)
+    abort();
+
+  ;
+}
+
