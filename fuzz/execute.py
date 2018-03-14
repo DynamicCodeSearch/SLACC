@@ -89,19 +89,30 @@ def cast_vals(arg_vals, py_arg_types, c_arg_types):
   return [c_arg_type(py_arg_type(arg_val)) for c_arg_type, py_arg_type, arg_val in zip(c_arg_types, py_arg_types, split(arg_vals))]
 
 
+def redirect_std_out():
+  # print("Redirecting STD OUT")
+  sys.stdout.flush()  # <--- important when redirecting to files
+  new_std_out = os.dup(1)
+  devnull = os.open(os.devnull, os.O_WRONLY)
+  os.dup2(devnull, 1)
+  os.close(devnull)
+  sys.stdout = os.fdopen(new_std_out, 'w')
+
+
 def execute_c(source_exec, function_name, arg_types, arg_vals, ret_type):
   prefix = source_exec.rsplit(".", 1)[0]
   module = ctypes.cdll.LoadLibrary(source_exec)
   signal.alarm(2)
   try:
     c_function = module[function_name]
-  except AttributeError:
-    print("Static Exception")
+  except Exception:
+    print("Oops probably timed out.")
     raise Exception("Not found. Probably static method")
   c_arg_types, py_arg_types = process_arg_types(arg_types)
   c_function.argtypes = c_arg_types
   c_function.restype = get_c_arg(ret_type)
   c_arg_vals = cast_vals(arg_vals, py_arg_types, c_arg_types)
+  redirect_std_out()
   ret_val = c_function(*c_arg_vals)
   res_file = "%s.pkl" % prefix
   cache.save(res_file, ret_val)
