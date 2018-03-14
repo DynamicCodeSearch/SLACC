@@ -348,12 +348,22 @@ def transfer_from_storage_to_drive(storage_folder, local_folder, owner, n_jobs):
 
 
 def download_from_google_drive(file_id, save_path):
-  drive = load_drive("main")
-  gfile = drive.CreateFile({'id': file_id})
-  splits = save_path.rsplit("/", 1)
-  if len(splits) > 1: cache.mkdir(splits[0])
-  gfile.GetContentFile(save_path)
-  logger.info("Downloaded %s to %s" % (gfile['title'], save_path))
+  retries = 0
+  while True:
+    try:
+      drive = load_drive("main")
+      gfile = drive.CreateFile({'id': file_id})
+      splits = save_path.rsplit("/", 1)
+      if len(splits) > 1: cache.mkdir(splits[0])
+      gfile.GetContentFile(save_path)
+      logger.info("Downloaded %s to %s" % (gfile['title'], save_path))
+      return
+    except Exception as e:
+      retries += 1
+      if retries == 10:
+        raise e
+      logger.info("Failed to download. Probably too many requests. Will retry in 1 minute.")
+      time.sleep(60)
 
 
 def _transfer_from_storage_to_drive():
