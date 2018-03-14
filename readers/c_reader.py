@@ -253,40 +253,45 @@ def download_clean_save(file_id, file_name, download_path, valids_path):
   stats_file = cache.create_file_path("%s/stats/" % valids_path, prefix, ext=".pkl")
   valid_file = cache.create_file_path("%s/pkl/" % valids_path, prefix, ext=".pkl")
   download_file = cache.create_file_path(download_path, file_name)
-  if cache.file_exists(valid_file):
-    logger.info("%s file exists" % valid_file)
-    return
-  if cache.file_exists(temp_file):
-    logger.info("%s file being processed" % valid_file)
-    return
-  cache.save(temp_file, {"Processing": True})
-  google_storage.download_from_google_drive(file_id, download_file)
-  header, row_count = get_header_and_row_count(download_file)
-  with open(download_file) as csv_file:
-    header_reader = handled_csv_reader(csv.reader(csv_file))
-    for _ in header_reader: break
-    reader = handled_csv_reader(csv.DictReader(csv_file, header))
-    cnt = 0
-    status_map = {}
-    cache.mkdir("temp")
-    valids = []
-    for row in reader:
-      try:
-        cnt += 1
-        name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
-        status = c_compile(name, comment_remover(row['content']))
-        if status == 0:
-          valids.append(row)
-        status_map[status] = status_map.get(status, 0) + 1
-        if cnt % 100 == 0:
-          logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt, row_count, status_map))
-      except IndexError:
-        pass
-    cache.save(stats_file, status_map)
-    cache.save(valid_file, valids)
+  try:
+    if cache.file_exists(valid_file):
+      logger.info("%s file exists" % valid_file)
+      return
+    if cache.file_exists(temp_file):
+      logger.info("%s file being processed" % valid_file)
+      return
+    cache.save(temp_file, {"Processing": True})
+    google_storage.download_from_google_drive(file_id, download_file)
+    header, row_count = get_header_and_row_count(download_file)
+    with open(download_file) as csv_file:
+      header_reader = handled_csv_reader(csv.reader(csv_file))
+      for _ in header_reader: break
+      reader = handled_csv_reader(csv.DictReader(csv_file, header))
+      cnt = 0
+      status_map = {}
+      cache.mkdir("temp")
+      valids = []
+      for row in reader:
+        try:
+          name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
+          status = c_compile(name, comment_remover(row['content']))
+          if status == 0:
+            valids.append(row)
+          status_map[status] = status_map.get(status, 0) + 1
+          if cnt % 1000 == 0:
+            logger.info("Index: %s; Processed: %d / %d; Status so far: %s" % (prefix, cnt + 1, row_count, status_map))
+          cnt += 1
+        except IndexError:
+          pass
+      cache.save(stats_file, status_map)
+      cache.save(valid_file, valids)
+      cache.delete(temp_file)
+      cache.delete(download_file)
+      logger.info("SAVING: %s; Processed: %d; Status: %s" % (prefix, cnt, status_map))
+  except Exception as e:
+    logger.info("ERROR while processing %s. Lets keep this for later" % prefix)
     cache.delete(temp_file)
     cache.delete(download_file)
-    logger.info("SAVING: %s; Processed: %d; Status: %s" % (prefix, cnt, status_map))
 
 
 def download_clean_save_folder(download_path, valids_path, n_jobs=1):
