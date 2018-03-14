@@ -135,9 +135,9 @@ def c_compile(name, source):
   try:
     with open("temp/%s.c" % name, "wb") as write:
       write.write(source)
-    status = os.system("gcc -w temp/%s.c -o temp/%s > /dev/null 2>&1" % (name, name))
+    status = os.system("gcc -fPIC -shared -o temp/%s.so temp/%s.c > /dev/null 2>&1" % (name, name))
     cache.delete("temp/%s.c" % name)
-    cache.delete("temp/%s" % name)
+    cache.delete("temp/%s.so" % name)
   except IOError:
     return 256
   return status
