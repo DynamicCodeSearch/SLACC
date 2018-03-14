@@ -24,6 +24,7 @@ class Point(O):
     self.outputs = []
     self.errors = []
     self.function_body = None
+    self.function_name = None
     self.return_type = None
     self.cluster_id = None
 
@@ -36,6 +37,7 @@ class Point(O):
         point.outputs.append(result[1])
       else:
         point.errors.append(result[2])
+    point.function_name = function['function'].name
     point.function_body = function['function'].body
     point.return_type = function['function'].ret.type
     return point
@@ -151,23 +153,22 @@ class Clusterer(O):
           num_methods_in_clusters_wrt_size=methods_in_clusters
       )
       print(result)
-      # clones = []
-      # n_pts = len(points)
-      # for i in range(n_pts):
-      #   if len(points[i].outputs) == 0: continue
-      #   f_clones = []
-      #   for j in range(i, n_pts):
-      #     if i == j or len(points[j].outputs) == 0: continue
-      #     if set(points[i].outputs) == set(points[j].outputs):
-      #       f_clones.append(points[j])
-      #   if len(f_clones) > 0:
-      #     clones.append({
-      #         "function": points[i],
-      #         "clones": f_clones
-      #     })
-      # print(len(clones))
-    # TODO: Implement set union
+      cache.save("data/cfiles_dump/clones/%s.pkl" % ret_type, O(stats=result, clusters=direct_clones))
 
+
+def save_clone_clusters(root_folder, write_folder):
+  for clone_file in cache.list_files(root_folder, is_relative=False):
+    data = cache.load(clone_file)
+    ret_type = data.stats.ret_type
+    counter = 0
+    for cluster in data.clusters:
+      cache.mkdir(write_folder)
+      write_file_name = cache.create_file_path(write_folder, "clone_%s_%03d" % (ret_type, counter), ".txt")
+      counter += 1
+      with open(write_file_name, "wb") as f:
+        for i, point in enumerate(cluster):
+          f.write("\n\n/************ %03d : %s *************/\n\n" % (i, point.function_name))
+          f.write(point.function_body)
 
 
 def pre_process(functions):
@@ -182,11 +183,13 @@ def pre_process(functions):
 def _main():
   functions = cache.load(FUNCTION_FILE)
   clusterer = Clusterer(functions)
-  # dbscan(np.arange(len(points)).reshape(-1, 1), metric=clusterer.distance, eps=5, min_samples=2)
   clusterer.clones()
-  # TODO: Create a class for dbscan and use that to cluser with a custom metric
 
+
+def _save_clone_clusters():
+  save_clone_clusters("data/cfiles_dump/clones", "results/clones")
 
 
 if __name__ == "__main__":
   _main()
+  # _save_clone_clusters()
