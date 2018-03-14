@@ -1,0 +1,27 @@
+
+
+/************ 000 : col_byte_gbk1 *************/
+
+static int col_byte_gbk1(int col)
+{
+  return ((col >= 0x3f) ? (0x41) : (0x40)) + col;
+}
+
+
+
+/************ 001 : col_byte_gbk2 *************/
+
+static int col_byte_gbk2(int col)
+{
+  return ((col >= 0x3f) ? (0x41) : (0x40)) + col;
+}
+
+
+
+/************ 002 : col_byte_sjis *************/
+
+static int col_byte_sjis(int col)
+{
+  return ((col >= 0x3f) ? (0x41) : (0x40)) + col;
+}
+

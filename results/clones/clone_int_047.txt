@@ -1,0 +1,18 @@
+
+
+/************ 000 : test_si *************/
+
+int test_si(int a, int b)
+{
+  return (a << 5) | (((unsigned int) b) >> 27);
+}
+
+
+
+/************ 001 : test_si *************/
+
+int test_si(int a, int b)
+{
+  return (a << 5) | (((unsigned int) b) >> 27);
+}
+

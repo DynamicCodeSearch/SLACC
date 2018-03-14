@@ -1,0 +1,45 @@
+
+
+/************ 000 : IsPrime *************/
+
+int IsPrime(int num)
+{
+  clock_t start;
+  clock_t end;
+  double cpu_time_used;
+  start = clock();
+  if (num < 1)
+    return 0;
+
+  if (num % 2)
+    return 1;
+
+  int i;
+  for (i = 3; (i * i) <= num; i += 2)
+  {
+    if ((num % i) == 0)
+      return 0;
+
+  }
+
+  return 1;
+}
+
+
+
+/************ 001 : foo *************/
+
+int foo(int ix)
+{
+  return (ix & 1) ? (one) : (zero);
+}
+
+
+
+/************ 002 : foo *************/
+
+int foo(int ix)
+{
+  return (ix & 1) ? (one) : (zero);
+}
+

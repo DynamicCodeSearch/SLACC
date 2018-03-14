@@ -1,0 +1,62 @@
+
+
+/************ 000 : jump *************/
+
+extern int jump(int a, int b)
+{
+  while (1)
+  {
+    if (a < b)
+    {
+      a *= 2;
+      a += 3 * b;
+      break;
+    }
+    else
+    {
+      a += b;
+      a /= 2;
+      b += b % 5;
+      a -= b / 3;
+      b = ((2 * b) + a) - 1;
+      a *= (b + a) + 1;
+      b += a - 1;
+      a += (b * 2) - (a / 5);
+    }
+
+  }
+
+  return a;
+}
+
+
+
+/************ 001 : jump *************/
+
+extern int jump(int a, int b)
+{
+  while (1)
+  {
+    if (a < b)
+    {
+      a *= 2;
+      a += 3 * b;
+      break;
+    }
+    else
+    {
+      a += b;
+      a /= 2;
+      b += b % 5;
+      a -= b / 3;
+      b = ((2 * b) + a) - 1;
+      a *= (b + a) + 1;
+      b += a - 1;
+      a += (b * 2) - (a / 5);
+    }
+
+  }
+
+  return a;
+}
+

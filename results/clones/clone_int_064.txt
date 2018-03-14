@@ -1,0 +1,75 @@
+
+
+/************ 000 : test_ifelse2 *************/
+
+int test_ifelse2(int i)
+{
+  int result = 0;
+  if (!i)
+    result = do_something(1);
+
+  if (i == 1)
+    result = do_something(1024);
+
+  if (i == 2)
+    result = do_something(2);
+
+  if (i == 3)
+    return do_something(8);
+
+  if (i == 4)
+    return do_something(2048);
+
+  return result;
+}
+
+
+
+/************ 001 : test_ifelse2 *************/
+
+int test_ifelse2(int i)
+{
+  int result = 0;
+  if (!i)
+    result = do_something(1);
+
+  if (i == 1)
+    result = do_something(1024);
+
+  if (i == 2)
+    result = do_something(2);
+
+  if (i == 3)
+    return do_something(8);
+
+  if (i == 4)
+    return do_something(2048);
+
+  return result;
+}
+
+
+
+/************ 002 : test_ifelse2 *************/
+
+int test_ifelse2(int i)
+{
+  int result = 0;
+  if (!i)
+    result = do_something(1);
+
+  if (i == 1)
+    result = do_something(1024);
+
+  if (i == 2)
+    result = do_something(2);
+
+  if (i == 3)
+    return do_something(8);
+
+  if (i == 4)
+    return do_something(2048);
+
+  return result;
+}
+

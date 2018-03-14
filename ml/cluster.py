@@ -191,5 +191,5 @@ def _save_clone_clusters():
 
 
 if __name__ == "__main__":
-  _main()
-  # _save_clone_clusters()
+  # _main()
+  _save_clone_clusters()

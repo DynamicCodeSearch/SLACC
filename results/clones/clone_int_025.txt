@@ -1,0 +1,193 @@
+
+
+/************ 000 : priority *************/
+
+int priority(char op)
+{
+  switch (op)
+  {
+    case '*':
+
+    case '/':
+      return 2;
+
+    case '+':
+
+    case '-':
+      return 1;
+
+    default:
+      return 0;
+
+  }
+
+}
+
+
+
+/************ 001 : foo *************/
+
+static int foo(char p)
+{
+  int k;
+  for (c = 0; c < 2; c++)
+  {
+    i = (j = 0) || p;
+    k = i * p;
+    if (e < k)
+    {
+      short *l = &f;
+      a = d && h;
+      *l = 0;
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 002 : send_bits *************/
+
+int send_bits(char data)
+{
+  int bits = 8;
+  while (bits)
+  {
+    if (data & 1)
+    {
+      gpio_value("9", "1");
+    }
+    else
+      gpio_value("9", "0");
+
+    gpio_pulse("11");
+    data = data >> 1;
+    bits--;
+  }
+
+  return 0;
+}
+
+
+
+/************ 003 : foo *************/
+
+static int foo(char p)
+{
+  int k;
+  for (c = 0; c < 2; c++)
+  {
+    i = (j = 0) || p;
+    k = i * p;
+    if (e < k)
+    {
+      short *l = &f;
+      a = d && h;
+      *l = 0;
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 004 : foo *************/
+
+static int foo(char p)
+{
+  int k;
+  for (c = 0; c < 2; c++)
+  {
+    i = (j = 0) || p;
+    k = i * p;
+    if (e < k)
+    {
+      short *l = &f;
+      a = d && h;
+      *l = 0;
+    }
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 005 : test1 *************/
+
+int test1(char x)
+{
+  return (x / 100) == 3;
+}
+
+
+
+/************ 006 : test5 *************/
+
+int test5(char x)
+{
+  return (x / 100) > 3;
+}
+
+
+
+/************ 007 : test6 *************/
+
+int test6(char x)
+{
+  return (x / 100) >= 3;
+}
+
+
+
+/************ 008 : unit_fraction_cycle_len *************/
+
+static int unit_fraction_cycle_len(int N)
+{
+  int num = 1;
+  int position = 0;
+  int remainders[N];
+  do
+  {
+    int rem = num % N;
+    for (int i = 0; i < position; i++)
+      if (remainders[i] == rem)
+      return position - i;
+
+
+    remainders[position++] = rem;
+    num = rem * 10;
+  }
+  while (num > 0);
+  return 0;
+}
+
+
+
+/************ 009 : isoperator *************/
+
+int isoperator(char op)
+{
+  switch (op)
+  {
+    case '+':
+
+    case '-':
+
+    case '*':
+
+    case '/':
+      return 1;
+
+    default:
+      return 0;
+
+  }
+
+}
+

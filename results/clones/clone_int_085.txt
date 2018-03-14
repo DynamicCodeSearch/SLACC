@@ -1,0 +1,26 @@
+
+
+/************ 000 : byte_row_uhc_2 *************/
+
+static int byte_row_uhc_2(int byte)
+{
+  if ((byte >= 0xa1) && (byte < 0xff))
+    return byte - 0xa1;
+  else
+    return -1;
+
+}
+
+
+
+/************ 001 : byte_row_big5 *************/
+
+static int byte_row_big5(int byte)
+{
+  if ((byte >= 0xa1) && (byte < 0xff))
+    return byte - 0xa1;
+  else
+    return -1;
+
+}
+

@@ -1,0 +1,46 @@
+
+
+/************ 000 : main_1 *************/
+
+int main_1(int off)
+{
+  int i;
+  char ia[128 + 3];
+  for (i = 0; i < 128; i++)
+  {
+    ia[i + off] = 5;
+  }
+
+  for (i = 0; i < 128; i++)
+  {
+    if (ia[i + off] != 5)
+      abort();
+
+  }
+
+  return 0;
+}
+
+
+
+/************ 001 : main_1 *************/
+
+int main_1(int off)
+{
+  int i;
+  char ia[128 + 3];
+  for (i = 0; i < 128; i++)
+  {
+    ia[i + off] = 5;
+  }
+
+  for (i = 0; i < 128; i++)
+  {
+    if (ia[i + off] != 5)
+      abort();
+
+  }
+
+  return 0;
+}
+

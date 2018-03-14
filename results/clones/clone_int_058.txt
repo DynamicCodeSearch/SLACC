@@ -1,0 +1,106 @@
+
+
+/************ 000 : lesf2 *************/
+
+int lesf2(float a, float b)
+{
+  return a <= b;
+}
+
+
+
+/************ 001 : gesf2 *************/
+
+int gesf2(float a, float b)
+{
+  return a >= b;
+}
+
+
+
+/************ 002 : iunle *************/
+
+int iunle(float x, float y, int ok)
+{
+  if ((__builtin_isunordered(x, y) || (x <= y)) != ok)
+    abort();
+
+  ;
+  if ((__builtin_isunordered(x, y) || (x <= y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 003 : ile *************/
+
+int ile(float x, float y, int ok)
+{
+  if (((!__builtin_isunordered(x, y)) && (__builtin_isunordered(x, y) || (x <= y))) != ok)
+    abort();
+
+  ;
+  if (((x < y) || (x == y)) != ok)
+    abort();
+
+  ;
+  if (((y > x) || (x == y)) != ok)
+    abort();
+
+  ;
+  if (((x == y) || (x < y)) != ok)
+    abort();
+
+  ;
+  if (((y == x) || (x < y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 004 : iunge *************/
+
+int iunge(float x, float y, int ok)
+{
+  if ((__builtin_isunordered(x, y) || (x >= y)) != ok)
+    abort();
+
+  ;
+  if ((__builtin_isunordered(x, y) || (x >= y)) != ok)
+    abort();
+
+  ;
+}
+
+
+
+/************ 005 : ige *************/
+
+int ige(float x, float y, int ok)
+{
+  if (((!__builtin_isunordered(x, y)) && (__builtin_isunordered(x, y) || (x >= y))) != ok)
+    abort();
+
+  ;
+  if (((x > y) || (x == y)) != ok)
+    abort();
+
+  ;
+  if (((y < x) || (x == y)) != ok)
+    abort();
+
+  ;
+  if (((x == y) || (x > y)) != ok)
+    abort();
+
+  ;
+  if (((y == x) || (x > y)) != ok)
+    abort();
+
+  ;
+}
+

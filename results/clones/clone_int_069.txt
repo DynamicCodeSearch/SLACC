@@ -1,0 +1,18 @@
+
+
+/************ 000 : get_data_for *************/
+
+int get_data_for(int id)
+{
+  return rand();
+}
+
+
+
+/************ 001 : get_data_for *************/
+
+int get_data_for(int id)
+{
+  return rand();
+}
+

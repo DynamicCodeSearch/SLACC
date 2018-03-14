@@ -1,0 +1,18 @@
+
+
+/************ 000 : row_byte_uhc_2 *************/
+
+static int row_byte_uhc_2(int row)
+{
+  return 0xa1 + row;
+}
+
+
+
+/************ 001 : row_byte_big5 *************/
+
+static int row_byte_big5(int row)
+{
+  return 0xa1 + row;
+}
+

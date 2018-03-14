@@ -1,0 +1,93 @@
+
+
+/************ 000 : test_ifelse1 *************/
+
+int test_ifelse1(int i, int j)
+{
+  int result = 0;
+  if (i)
+    if (j)
+    result = do_something(4);
+  else
+    result = do_something(1024);
+
+  else
+    if (j)
+    result = do_something(1);
+  else
+    result = do_something(2);
+
+
+  if (i > j)
+    result = do_something(result * 2);
+
+  if (i > 10)
+    if (j > 10)
+    result = do_something(result * 4);
+
+
+  return result;
+}
+
+
+
+/************ 001 : test_ifelse1 *************/
+
+int test_ifelse1(int i, int j)
+{
+  int result = 0;
+  if (i)
+    if (j)
+    result = do_something(4);
+  else
+    result = do_something(1024);
+
+  else
+    if (j)
+    result = do_something(1);
+  else
+    result = do_something(2);
+
+
+  if (i > j)
+    result = do_something(result * 2);
+
+  if (i > 10)
+    if (j > 10)
+    result = do_something(result * 4);
+
+
+  return result;
+}
+
+
+
+/************ 002 : test_ifelse1 *************/
+
+int test_ifelse1(int i, int j)
+{
+  int result = 0;
+  if (i)
+    if (j)
+    result = do_something(4);
+  else
+    result = do_something(1024);
+
+  else
+    if (j)
+    result = do_something(1);
+  else
+    result = do_something(2);
+
+
+  if (i > j)
+    result = do_something(result * 2);
+
+  if (i > 10)
+    if (j > 10)
+    result = do_something(result * 4);
+
+
+  return result;
+}
+

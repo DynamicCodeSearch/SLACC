@@ -1,0 +1,158 @@
+
+
+/************ 000 : foo *************/
+
+int foo(int i, int j)
+{
+  asm("foo_label: .globl foo_label");
+  return 0;
+}
+
+
+
+/************ 001 : f *************/
+
+int f(int a, int b)
+{
+  if (a > (32767 - 15))
+    return 0;
+
+  if (b > (32767 - 15))
+    return 0;
+
+  int c = (a - 20) + (b - 20);
+  return c > (32767 - 15);
+}
+
+
+
+/************ 002 : lockAllUnlockByPieces *************/
+
+int lockAllUnlockByPieces(int ope, int posRef)
+{
+  int ret;
+  int fd;
+  int code = (blocking) ? (F_SETLKW) : (F_SETLK);
+  fd = open(MYFILENAME, O_RDWR);
+  if (fd < 0)
+  {
+    printf("proc %3d - open(%s) errno %d %s\n", myProcId, MYFILENAME, errno, strerror(errno));
+    ret - 1;
+    goto out;
+  }
+
+  ret = set_lock(fd, code, ope, 0, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1003, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1003, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1002, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1001, 1543, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 497, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 497, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 498, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 143, 499, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 501, 999, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 100, 1999, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, ope, 0, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 497, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 497, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 498, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 143, 499, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1003, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1003, 0, posRef);
+  if (ret != 0)
+    return ret;
+
+  ret = set_lock(fd, code, F_UNLCK, 1002, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 1001, 1543, posRef);
+  if (ret != 0)
+    goto out;
+
+  ret = set_lock(fd, code, F_UNLCK, 0, 0, posRef);
+  if (ret != 0)
+    goto out;
+
+  out:
+  close(fd);
+
+  return ret;
+}
+
+
+
+/************ 003 : f *************/
+
+int f(int a, int b)
+{
+  if (a > (32767 - 15))
+    return 0;
+
+  if (b > (32767 - 15))
+    return 0;
+
+  int c = (a - 20) + (b - 20);
+  return c > (32767 - 15);
+}
+
+
+
+/************ 004 : t_float_values2 *************/
+
+int t_float_values2(float float_arg1, float float_arg2)
+{
+  return ((((float_arg1 - float_val1) < 0.001) && ((float_arg1 - float_val1) > (-0.001))) && ((float_arg2 - float_val2) < 0.001)) && ((float_arg2 - float_val2) > (-0.001));
+}
+

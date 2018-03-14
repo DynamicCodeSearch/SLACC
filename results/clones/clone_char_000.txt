@@ -1,0 +1,51 @@
+
+
+/************ 000 : hex *************/
+
+char hex(char v)
+{
+  if (isdigit(v))
+    return v - '0';
+  else
+    if (isxdigit(v))
+    return (tolower(v) - 'a') + 10;
+  else
+    return 0;
+
+
+}
+
+
+
+/************ 001 : hex *************/
+
+char hex(char v)
+{
+  if (isdigit(v))
+    return v - '0';
+  else
+    if (isxdigit(v))
+    return (tolower(v) - 'a') + 10;
+  else
+    return 0;
+
+
+}
+
+
+
+/************ 002 : hex *************/
+
+static char hex(char v)
+{
+  if (isdigit(v))
+    return v - '0';
+  else
+    if (isxdigit(v))
+    return (tolower(v) - 'a') + 10;
+  else
+    return 0;
+
+
+}
+

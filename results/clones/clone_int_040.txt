@@ -1,0 +1,28 @@
+
+
+/************ 000 : tst_si_test2 *************/
+
+int tst_si_test2(int a, int b, int c)
+{
+  int d = a & 0x99999999;
+  if (d == 0)
+    return 12;
+  else
+    return 18;
+
+}
+
+
+
+/************ 001 : tst_si_test2 *************/
+
+int tst_si_test2(int a, int b, int c)
+{
+  int d = a & 0x99999999;
+  if (d == 0)
+    return 12;
+  else
+    return 18;
+
+}
+

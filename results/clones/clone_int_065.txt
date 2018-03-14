@@ -1,0 +1,108 @@
+
+
+/************ 000 : test_switch *************/
+
+int test_switch(int i, int j)
+{
+  int result = 0;
+  switch (i)
+  {
+    case 1:
+      result = do_something(2);
+      break;
+
+    case 2:
+      result = do_something(1024);
+      break;
+
+    case 3:
+
+    case 4:
+      if (j == 2)
+      return do_something(4);
+
+      result = do_something(8);
+      break;
+
+    default:
+      result = do_something(32);
+      switch_m++;
+      break;
+
+  }
+
+  return result;
+}
+
+
+
+/************ 001 : test_switch *************/
+
+int test_switch(int i, int j)
+{
+  int result = 0;
+  switch (i)
+  {
+    case 1:
+      result = do_something(2);
+      break;
+
+    case 2:
+      result = do_something(1024);
+      break;
+
+    case 3:
+
+    case 4:
+      if (j == 2)
+      return do_something(4);
+
+      result = do_something(8);
+      break;
+
+    default:
+      result = do_something(32);
+      switch_m++;
+      break;
+
+  }
+
+  return result;
+}
+
+
+
+/************ 002 : test_switch *************/
+
+int test_switch(int i, int j)
+{
+  int result = 0;
+  switch (i)
+  {
+    case 1:
+      result = do_something(2);
+      break;
+
+    case 2:
+      result = do_something(1024);
+      break;
+
+    case 3:
+
+    case 4:
+      if (j == 2)
+      return do_something(4);
+
+      result = do_something(8);
+      break;
+
+    default:
+      result = do_something(32);
+      switch_m++;
+      break;
+
+  }
+
+  return result;
+}
+

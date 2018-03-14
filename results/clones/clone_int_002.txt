@@ -1,0 +1,2106 @@
+
+
+/************ 000 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 001 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 002 : end *************/
+
+int end(int i)
+{
+}
+
+
+
+/************ 003 : bar *************/
+
+int bar(int i)
+{
+  int j = 2;
+  asm("bar_label: .globl bar_label");
+  return foo(i, j);
+}
+
+
+
+/************ 004 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 005 : check *************/
+
+int check(int param)
+{
+  int a = 0;
+  int b = 1;
+  switch (param)
+  {
+    case -2:
+      a = 0;
+      b = -1;
+      break;
+
+    case 1:
+
+    case 2:
+      a = 8;
+      b = 6;
+      break;
+
+    case 3:
+      a = 9;
+      b = 5;
+      break;
+
+    case 6:
+      a = 10;
+      b = 4;
+      break;
+
+    default:
+      a = 16;
+      b = 1;
+
+  }
+
+  X = a;
+  Y = b;
+  return 0;
+}
+
+
+
+/************ 006 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 007 : fn1 *************/
+
+int fn1(int p)
+{
+  int t = (p && a) || ((p && a) && p);
+  return (t) ? (t) : (a);
+}
+
+
+
+/************ 008 : output_records *************/
+
+static int output_records(int outfd)
+{
+  unsigned char zeroes[6] = {0, 0, 0, 0, 0, 0};
+  struct ihex_binrec *p = records;
+  while (p)
+  {
+    uint16_t writelen = (p->len + 9) & (~3);
+    p->addr = htonl(p->addr);
+    p->len = htons(p->len);
+    write(outfd, &p->addr, writelen);
+    p = p->next;
+  }
+
+  write(outfd, zeroes, 6);
+  return 0;
+}
+
+
+
+/************ 009 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 010 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 011 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 012 : foo *************/
+
+int foo(int a)
+{
+  int b;
+  b = 0;
+  if ("/"[1] != '\0')
+    if (strchr("/", a))
+    b = 1;
+
+
+  return b;
+}
+
+
+
+/************ 013 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 014 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 015 : output_records *************/
+
+static int output_records(int outfd)
+{
+  unsigned char zeroes[6] = {0, 0, 0, 0, 0, 0};
+  struct ihex_binrec *p = records;
+  while (p)
+  {
+    uint16_t writelen = (p->len + 9) & (~3);
+    p->addr = htonl(p->addr);
+    p->len = htons(p->len);
+    write(outfd, &p->addr, writelen);
+    p = p->next;
+  }
+
+  write(outfd, zeroes, 6);
+  return 0;
+}
+
+
+
+/************ 016 : output_records *************/
+
+static int output_records(int outfd)
+{
+  unsigned char zeroes[6] = {0, 0, 0, 0, 0, 0};
+  struct ihex_binrec *p = records;
+  while (p)
+  {
+    uint16_t writelen = (p->len + 9) & (~3);
+    p->addr = htonl(p->addr);
+    p->len = htons(p->len);
+    write(outfd, &p->addr, writelen);
+    p = p->next;
+  }
+
+  write(outfd, zeroes, 6);
+  return 0;
+}
+
+
+
+/************ 017 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 018 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 019 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 020 : callee0 *************/
+
+int callee0(int n)
+{
+  return 0;
+}
+
+
+
+/************ 021 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 022 : callee0 *************/
+
+int callee0(int n)
+{
+  return 0;
+}
+
+
+
+/************ 023 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 024 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 025 : fn1 *************/
+
+int fn1(int p)
+{
+  int t = (p && a) || ((p && a) && p);
+  return (t) ? (t) : (a);
+}
+
+
+
+/************ 026 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 027 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 028 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 029 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 030 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 031 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 032 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 033 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 034 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 035 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 036 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 037 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 038 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 039 : output_records *************/
+
+static int output_records(int outfd)
+{
+  unsigned char zeroes[6] = {0, 0, 0, 0, 0, 0};
+  struct ihex_binrec *p = records;
+  while (p)
+  {
+    uint16_t writelen = (p->len + 9) & (~3);
+    p->addr = htonl(p->addr);
+    p->len = htons(p->len);
+    write(outfd, &p->addr, writelen);
+    p = p->next;
+  }
+
+  write(outfd, zeroes, 6);
+  return 0;
+}
+
+
+
+/************ 040 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 041 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 042 : a *************/
+
+int a(int n)
+{
+  char bv[10];
+  return bv;
+}
+
+
+
+/************ 043 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 044 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 045 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 046 : foo *************/
+
+int foo(int x)
+{
+  unsigned long long tmp = 0;
+  switch (x)
+  {
+    case 21:
+      tmp |= 1;
+      tmp |= 2;
+      tmp |= 8;
+      break;
+
+    default:
+      break;
+
+  }
+
+  return (int) tmp;
+}
+
+
+
+/************ 047 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 048 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 049 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 050 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 051 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 052 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 053 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 054 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 055 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 056 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 057 : foo *************/
+
+int foo(int x)
+{
+  return (x / 2) / (((-0x7fffffff) - 1) / (-2));
+}
+
+
+
+/************ 058 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 059 : set_coredump_filter *************/
+
+int set_coredump_filter(int v)
+{
+  FILE *f = fopen("/proc/self/coredump_filter", "r+");
+  if (f == 0)
+    return 1;
+
+  fprintf(f, "%#x", v);
+  fclose(f);
+  return 0;
+}
+
+
+
+/************ 060 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 061 : foo *************/
+
+int foo(int x)
+{
+  return (x / 2) / (((-0x7fffffff) - 1) / (-2));
+}
+
+
+
+/************ 062 : output_records *************/
+
+static int output_records(int outfd)
+{
+  unsigned char zeroes[6] = {0, 0, 0, 0, 0, 0};
+  struct ihex_binrec *p = records;
+  while (p)
+  {
+    uint16_t writelen = (p->len + 9) & (~3);
+    p->addr = htonl(p->addr);
+    p->len = htons(p->len);
+    write(outfd, &p->addr, writelen);
+    p = p->next;
+  }
+
+  write(outfd, zeroes, 6);
+  return 0;
+}
+
+
+
+/************ 063 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 064 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 065 : get_family_id *************/
+
+int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 066 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 067 : callee0 *************/
+
+int callee0(int n)
+{
+  return 0;
+}
+
+
+
+/************ 068 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 069 : f *************/
+
+int f(const int x)
+{
+  int y = 0;
+  y = (x) ? (y) : (-y);
+  {
+    const int *p = &x;
+  }
+  return y;
+}
+
+
+
+/************ 070 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+
+
+
+/************ 071 : get_family_id *************/
+
+static int get_family_id(int sd)
+{
+  struct 
+  {
+    struct nlmsghdr n;
+    struct genlmsghdr g;
+    char buf[256];
+  } ans;
+  int id = 0;
+  int rc;
+  struct nlattr *na;
+  int rep_len;
+  strcpy(name, TASKSTATS_GENL_NAME);
+  rc = send_cmd(sd, GENL_ID_CTRL, getpid(), CTRL_CMD_GETFAMILY, CTRL_ATTR_FAMILY_NAME, (void *) name, strlen(TASKSTATS_GENL_NAME) + 1);
+  if (rc < 0)
+    return 0;
+
+  rep_len = recv(sd, &ans, sizeof(ans), 0);
+  if (((ans.n.nlmsg_type == NLMSG_ERROR) || (rep_len < 0)) || (!NLMSG_OK(&ans.n, rep_len)))
+    return 0;
+
+  na = (struct nlattr *) ((void *) (NLMSG_DATA(&ans) + GENL_HDRLEN));
+  na = (struct nlattr *) (((char *) na) + NLA_ALIGN(na->nla_len));
+  if (na->nla_type == CTRL_ATTR_FAMILY_ID)
+  {
+    id = *((__u16 *) ((void *) (((char *) na) + NLA_HDRLEN)));
+  }
+
+  return id;
+}
+

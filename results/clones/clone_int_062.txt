@@ -1,0 +1,54 @@
+
+
+/************ 000 : test_goto2 *************/
+
+int test_goto2(int f)
+{
+  int i;
+  for (i = 0; i < 10; i++)
+    if (i == f)
+    goto lab2;
+
+
+  return 4;
+  lab2:
+  return 8;
+
+}
+
+
+
+/************ 001 : test_goto2 *************/
+
+int test_goto2(int f)
+{
+  int i;
+  for (i = 0; i < 10; i++)
+    if (i == f)
+    goto lab2;
+
+
+  return 4;
+  lab2:
+  return 8;
+
+}
+
+
+
+/************ 002 : test_goto2 *************/
+
+int test_goto2(int f)
+{
+  int i;
+  for (i = 0; i < 10; i++)
+    if (i == f)
+    goto lab2;
+
+
+  return 4;
+  lab2:
+  return 8;
+
+}
+

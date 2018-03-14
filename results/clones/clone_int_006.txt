@@ -1,0 +1,26 @@
+
+
+/************ 000 : subr2 *************/
+
+int subr2(int parm)
+{
+  int keeping;
+  int busy;
+  keeping = parm + parm;
+  busy = keeping * keeping;
+  return busy;
+}
+
+
+
+/************ 001 : subr *************/
+
+int subr(int parm)
+{
+  int keeping;
+  int busy;
+  keeping = parm + parm;
+  busy = keeping * keeping;
+  return busy;
+}
+

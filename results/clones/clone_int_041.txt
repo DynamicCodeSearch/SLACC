@@ -1,0 +1,33 @@
+
+
+/************ 000 : callee2 *************/
+
+int callee2(int n)
+{
+  register int l1 = increment(n);
+  register int l2 = increment(l1);
+  return l1 + l2;
+}
+
+
+
+/************ 001 : callee2 *************/
+
+int callee2(int n)
+{
+  register int l1 = increment(n);
+  register int l2 = increment(l1);
+  return l1 + l2;
+}
+
+
+
+/************ 002 : callee2 *************/
+
+int callee2(int n)
+{
+  register int l1 = increment(n);
+  register int l2 = increment(l1);
+  return l1 + l2;
+}
+
