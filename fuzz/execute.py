@@ -36,6 +36,8 @@ def get_opt_args():
                     dest='arg_types', help="Types of arguments separated by comma(',')")
   parser.add_option('-v', '--argVals',
                     dest='arg_vals', help="Values of arguments separated by comma(',')")
+  parser.add_option('-r', '--retType',
+                    dest='ret_type', help="Type of return(',')")
   (options, args) = parser.parse_args()
   if not options.source:
     parser.error("Location of source file name not given")
@@ -45,6 +47,8 @@ def get_opt_args():
     parser.error("Types of arguments not provided")
   if not options.arg_vals:
     parser.error("Values of arguments not provided")
+  if not options.ret_type:
+    parser.error("Return type of function not provided")
   return options, args
 
 
@@ -85,9 +89,9 @@ def cast_vals(arg_vals, py_arg_types, c_arg_types):
   return [c_arg_type(py_arg_type(arg_val)) for c_arg_type, py_arg_type, arg_val in zip(c_arg_types, py_arg_types, split(arg_vals))]
 
 
-def execute_c(source_exec, function_name, arg_types, arg_vals):
+def execute_c(source_exec, function_name, arg_types, arg_vals, ret_type):
   prefix = source_exec.rsplit(".", 1)[0]
-  module = ctypes.CDLL(source_exec)
+  module = ctypes.cdll.LoadLibrary(source_exec)
   signal.alarm(2)
   try:
     c_function = module[function_name]
@@ -95,7 +99,8 @@ def execute_c(source_exec, function_name, arg_types, arg_vals):
     print("Static Exception")
     raise Exception("Not found. Probably static method")
   c_arg_types, py_arg_types = process_arg_types(arg_types)
-  c_function.argtypes = tuple(c_arg_types)
+  c_function.argtypes = c_arg_types
+  c_function.restype = get_c_arg(ret_type)
   c_arg_vals = cast_vals(arg_vals, py_arg_types, c_arg_types)
   ret_val = c_function(*c_arg_vals)
   res_file = "%s.pkl" % prefix
@@ -104,7 +109,7 @@ def execute_c(source_exec, function_name, arg_types, arg_vals):
 
 def main():
   (options, args) = get_opt_args()
-  execute_c(options.source, options.function, options.arg_types, options.arg_vals)
+  execute_c(options.source, options.function, options.arg_types, options.arg_vals, options.ret_type)
 
 
 if __name__ == "__main__":

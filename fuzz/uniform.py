@@ -47,8 +47,8 @@ def get_c_arg(data_type):
     return ctypes.c_char
 
 
-def exec_function(source_exec, function_name, arg_types, arg_vals, timeout=5):
-  cmd = ["python", "fuzz/execute.py", "-s", source_exec, "-f", function_name, "-t", arg_types, '-v', arg_vals]
+def exec_function(source_exec, function_name, arg_types, arg_vals, ret_type, timeout=5):
+  cmd = ["python", "fuzz/execute.py", "-s", source_exec, "-f", function_name, "-t", arg_types, '-v', arg_vals, '-r', ret_type]
   ret_data, error = None, None
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
   try:
@@ -79,9 +79,10 @@ def fuzz(function):
   c_arg_types = ",".join([arg.type for arg in function.args])
   fuzzable_args = function.get_fuzzable_args()
   rets = []
+  c_ret_type = function.ret.type
   for fuzzable_arg in fuzzable_args:
     c_arg_vals = ",".join(map(str, fuzzable_arg))
-    ret, error = exec_function(source_exec, function.name, c_arg_types, c_arg_vals)
+    ret, error = exec_function(source_exec, function.name, c_arg_types, c_arg_vals, c_ret_type)
     rets.append((fuzzable_arg, ret, error))
   cache.delete("temp/%s" % function.source_name)
   cache.delete(source_exec)
@@ -126,12 +127,14 @@ def _test_ctypes():
 
 def _test_remote_call():
   # cmd = ["python", "fuzz/execute.py", "-s", "temp/val-prof-7.so", "-f", "foo", "-t", 'int', '-v', '-5']
-  cmd = ["python", "fuzz/execute.py", "-s", "temp/fibo2.so", "-f", "fib2", "-t", 'int', '-v', '100']
+  # cmd = ["python", "fuzz/execute.py", "-s", "temp/fibo2.so", "-f", "fib2", "-t", 'int', '-v', '100']
+  status = os.system("gcc -fPIC -shared -o temp/gofast.so temp/gofast.c > /dev/null 2>&1")
+  cmd = ["python", "fuzz/execute.py", "-s", "temp/gofast.so", "-f", "stupid", "-t", 'int,int', '-v', '16396,16396', '-r', 'int']
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
   out, err, = proc.communicate(timeout=5)
   print(out)
   print(err)
-  print(cache.load("temp/fibo2.pkl"))
+  print(cache.load('temp/gofast.pkl'))
   print(proc.returncode, -signal.SIGSEGV)
 
 
