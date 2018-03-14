@@ -246,12 +246,13 @@ def aggregate_valid_status(folder):
   logger.info("Ran: %d; Valid: %d; %%age: %f" % (total, valids, report["percentage"]))
 
 
-def download_clean_save(blob, download_path, valids_path):
-  prefix = blob.rsplit("/", 1)[-1].split(".")[0]
-  logger.info("Running for %s" % prefix)
+def download_clean_save(file_id, file_name, download_path, valids_path):
+  prefix = file_name.rsplit(".")[0]
+  logger.info("Running for %s" % file_name)
   temp_file = cache.create_file_path("%s/pkl/" % valids_path, prefix, ext=".tmp")
   stats_file = cache.create_file_path("%s/stats/" % valids_path, prefix, ext=".pkl")
   valid_file = cache.create_file_path("%s/pkl/" % valids_path, prefix, ext=".pkl")
+  download_file = cache.create_file_path(download_path, file_name)
   if cache.file_exists(valid_file):
     logger.info("%s file exists" % valid_file)
     return
@@ -259,8 +260,7 @@ def download_clean_save(blob, download_path, valids_path):
     logger.info("%s file being processed" % valid_file)
     return
   cache.save(temp_file, {"Processing": True})
-  logger.info("Index: %s; Downloading: %s" % (prefix, blob))
-  download_file = google_storage.download_blob(blob, download_path)
+  google_storage.download_from_google_drive(file_id, download_file)
   header, row_count = get_header_and_row_count(download_file)
   with open(download_file) as csv_file:
     header_reader = handled_csv_reader(csv.reader(csv_file))
@@ -289,11 +289,10 @@ def download_clean_save(blob, download_path, valids_path):
     logger.info("SAVING: %s; Processed: %d; Status: %s" % (prefix, cnt, status_map))
 
 
-def download_clean_save_folder(prefix_path, base_path, download_ext, valids_ext, n_jobs=1, max_results=None):
-  blobs = google_storage.list_blobs(prefix_path, max_results)
-  download_path = cache.create_file_path(base_path, download_ext)
-  valids_path = cache.create_file_path(base_path, valids_ext)
-  Parallel(n_jobs=n_jobs)(delayed(download_clean_save)(blob, download_path, valids_path) for blob in blobs)
+def download_clean_save_folder(download_path, valids_path, n_jobs=1):
+  uploaded_files = google_storage.load_uploaded_files_to_gdrive()
+  Parallel(n_jobs=n_jobs)(delayed(download_clean_save)(file_id, file_name, download_path, valids_path)
+                          for file_id, file_name in sorted(uploaded_files, key=lambda x: x[1]))
 
 
 def _save_valids_in_folder():
@@ -322,17 +321,14 @@ def _aggregate():
 
 
 def _download_clean_save_folder():
-  prefix_path = "cfiles/csv_all"
-  base_path = "data/cfiles_dump"
-  download_ext = "csv_all"
-  valids_ext = "valids_all"
-  max_results = None
+  download_path = "data/cfiles_dump/csv_all"
+  valids_path = "data/cfiles_dump/valids_all"
   n_jobs = 1
   args = sys.argv
   if len(args) >= 2 and lib.is_int(args[1]):
     n_jobs = int(args[1])
   logger.info("RUNNING %d JOBS" % n_jobs)
-  download_clean_save_folder(prefix_path, base_path, download_ext, valids_ext, n_jobs, max_results)
+  download_clean_save_folder(download_path, valids_path, n_jobs)
 
 
 if __name__ == "__main__":
@@ -340,5 +336,5 @@ if __name__ == "__main__":
   # tokenize_folder("data/cfiles_dump/cleaned")
   # save_valids("data/cfiles_dump/csv/000000000000.csv", "data/cfiles_dump/valids")
   # _save_valids_in_folder()
-  _aggregate()
-  # _download_clean_save_folder()
+  # _aggregate()
+  _download_clean_save_folder()

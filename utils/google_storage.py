@@ -43,6 +43,7 @@ CREDENTIAL_PATHS = {
 }
 GDRIVE_FOLDER_ID = "1cogKeBQ29iNes100sEnG4-CJ2-G2WpqQ"
 UPLOADED_FILE_STORE = "data/cfiles_dump/transferred.pkl"
+GOOGLE_DRIVE_UPLOADED_FILE_STORE = "data/cfiles_dump/uploaded.pkl"
 
 
 def get_file_args():
@@ -262,12 +263,10 @@ def upload_file_to_drive(source, destination, folder_id=GDRIVE_FOLDER_ID, owner=
 
 
 def list_file_names():
-  # drive = load_drive()
-  # file_list = drive.ListFile({'q': "'%s' in parents and trashed=false"%GDRIVE_FOLDER_ID}).GetList()
-  # file_names = set()
-  # for file1 in file_list:
-  #   file_names.add(file1['title'])
-  # return file_names
+  """
+  List file names from google drive which is saved locally
+  :return:
+  """
   file_names, cnt = None, 0
   while file_names is None and cnt < 5:
     file_names = cache.load(UPLOADED_FILE_STORE)
@@ -277,6 +276,28 @@ def list_file_names():
   if file_names is None:
     raise RuntimeError("File Names is none. Stop and restart")
   return file_names
+
+
+def save_uploaded_files_to_gdrive(save_file=GOOGLE_DRIVE_UPLOADED_FILE_STORE):
+  """
+  Save id and title of uploaded files from google drive to a local file
+  :param save_file: Local file to save the id and title of files
+  """
+  drive = load_drive(owner='main')
+  file_list = drive.ListFile({'q': "'%s' in parents and trashed=false" % GDRIVE_FOLDER_ID}).GetList()
+  file_names = set()
+  for g_file in file_list:
+    file_names.add((g_file['id'], g_file['title']))
+  cache.save(save_file, file_names)
+
+
+def load_uploaded_files_to_gdrive(save_file=GOOGLE_DRIVE_UPLOADED_FILE_STORE):
+  """
+  Return id and title as set of tuples uploaded to google drive
+  :param save_file: Save file to load data from folder.
+  :return: Set of tuples
+  """
+  return cache.load(save_file)
 
 
 def transfer_file_from_storage_to_drive(storage_source, local_folder, owner):
@@ -326,7 +347,17 @@ def transfer_from_storage_to_drive(storage_folder, local_folder, owner, n_jobs):
                           for name in blobs)
 
 
+def download_from_google_drive(file_id, save_path):
+  drive = load_drive("main")
+  gfile = drive.CreateFile({'id': file_id})
+  splits = save_path.rsplit("/", 1)
+  if len(splits) > 1: cache.mkdir(splits[0])
+  gfile.GetContentFile(save_path)
+  logger.info("Downloaded %s to %s" % (gfile['title'], save_path))
+
+
 def _transfer_from_storage_to_drive():
+  _save_uploaded_files()
   args = get_file_args()
   n_jobs = args.n_jobs
   owner = args.owner
@@ -348,6 +379,10 @@ def _save_uploaded_files():
     file_names.add(file1['title'])
   logger.info("# Uploaded Files = %d" % len(file_names))
   cache.save(UPLOADED_FILE_STORE, file_names)
+
+
+def _save_uploaded_files_to_gdrive():
+  save_uploaded_files_to_gdrive('data/cfiles_dump/uploaded.pkl')
 
 
 def test_google_drive(owner):
@@ -375,6 +410,6 @@ if __name__ == "__main__":
   # _download_blobs("cfiles/csv_all", "data/cfiles_dump/csv_all", start=1, max_results=100)
   # _list_blobs()
   # test_google_drive("rahul")
-  _save_uploaded_files()
-  _transfer_from_storage_to_drive()
+  # _transfer_from_storage_to_drive()
+  _save_uploaded_files_to_gdrive()
 
