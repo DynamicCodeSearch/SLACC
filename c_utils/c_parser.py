@@ -55,7 +55,7 @@ def read(sources_file, destination_folder):
     functions += n_functions
     n_errors += n_error
     if (i + 1) % 20 == 0:
-      logger.info("Read %d/%d of files. Errors: %d" % (i + 1, n_rows, n_errors))
+      logger.info("In %s.pkl; Read %d/%d of files. Errors: %d" % (prefix, i + 1, n_rows, n_errors))
   cache.delete(temp_file)
   cache.save(destination_file, functions)
   logger.info("Finished processing %s.pkl. Errors: %d/%d" % (prefix, n_errors, n_rows))
@@ -323,11 +323,12 @@ def _test_static():
 
 
 def parse_c_file(file_name):
-  cmd = ['python', 'utils/c_ast_gen.py', file_name]
+  ast_save_file = "%s.pkl" % file_name.rsplit(".", 1)[0]
+  cmd = ['python', 'utils/c_ast_gen.py', file_name, ast_save_file]
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
   error = "".join(proc.stderr.readlines())
-  ast = cache.load(c_ast_gen.AST_SAVE)
-  cache.delete(c_ast_gen.AST_SAVE)
+  ast = cache.load(ast_save_file)
+  cache.delete(ast_save_file)
   if error:
     handle_not_found_exception(error)
   return ast, error

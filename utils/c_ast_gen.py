@@ -12,7 +12,6 @@ from utils import cache
 import signal
 
 FAKE_LIBS_PATH = "utils/fake_libc_include"
-AST_SAVE = "temp/ast.pkl"
 
 
 class TimeoutException(Exception):  # Custom exception class
@@ -26,13 +25,13 @@ def timeout_handler(signum, frame):  # Custom signal handler
 signal.signal(signal.SIGALRM, timeout_handler)
 
 
-def parse(path):
+def parse(path, save_file):
   signal.alarm(5)
   ast = parse_file(path, use_cpp=True, cpp_args=[r'-I%s' % FAKE_LIBS_PATH])
-  cache.save(AST_SAVE, ast)
+  cache.save(save_file, ast)
 
 
 if __name__ == "__main__":
   args = sys.argv
-  if len(args) == 2:
-    parse(args[1])
+  if len(args) == 3:
+    parse(args[1], args[2])
