@@ -107,3 +107,4 @@ temp
 include
 secrets
 utils/fake_libc_include
+slurm*
