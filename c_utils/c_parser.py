@@ -10,11 +10,13 @@ from pycparser import c_parser, c_ast, parse_file, c_generator
 from pycparser.plyparser import ParseError
 from utils.lib import O
 from utils.logger import get_logger
+from joblib import Parallel, delayed
 import csv
 import logging
 import re
 import subprocess
 import itertools
+import argparse
 
 
 LOG_LEVEL = logging.INFO
@@ -25,20 +27,38 @@ FAKE_FILE_CONTENT = """#include "_fake_defines.h"
 #include "_fake_typedefs.h"
 """
 
+def get_file_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-n", "--n_jobs", type=int, default=2, help="Number of jobs")
+  return parser.parse_args()
 
-def read(sources_file, destination_file, start=0):
+
+def read(sources_file, destination_folder):
+  prefix = sources_file.rsplit("/", 1)[-1].split(".")[0]
+  destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
+  temp_file = cache.create_file_path(destination_folder, prefix, ".tmp")
+  logger.info("Running for %s" % prefix)
+  if cache.file_exists(destination_file):
+    logger.info("Already processed %s" % prefix)
+    return
+  if cache.file_exists(temp_file):
+    logger.info("Processing %s" % prefix)
+    return
+  cache.save(temp_file, {'processing': True})
   sources = cache.load(sources_file)
   functions = []
   n_rows = len(sources)
   n_errors = 0
-  for i, row in enumerate(sources[start:]):
-    name = row['path'].rsplit("/", 1)[-1].split(".")[0].split()[0]
+  for i, row in enumerate(sources):
+    name = row['path'].rsplit("/", 1)[-1].split(".")[0]
     n_functions, n_error = c_extract(row['id'], name, row['content'], repeat=True)
     functions += n_functions
     n_errors += n_error
-    if (i + 1) % 100 == 0:
-      logger.info("Read %d/%d of files. Errors: %d" % (start + i + 1, n_rows, n_errors))
+    if (i + 1) % 20 == 0:
+      logger.info("Read %d/%d of files. Errors: %d" % (i + 1, n_rows, n_errors))
+  cache.delete(temp_file)
   cache.save(destination_file, functions)
+  logger.info("Finished processing %s.pkl. Errors: %d/%d" % (prefix, n_errors, n_rows))
   return functions
 
 
@@ -260,14 +280,32 @@ def handle_not_found_exception(message):
   matches = re.search('fatal error: (.+?): No such file or directory', message)
   if matches:
     header_file = cache.create_file_path(FAKE_LIBS_PATH, matches.group(1))
-    logger.info("Creating fake header file %s" % header_file)
+    # logger.info("Creating fake header file %s" % header_file)
     cache.save_text(header_file, FAKE_FILE_CONTENT)
+
+
+def extract_all_functions(source_folder, destination_folder, n_jobs):
+  files = []
+  for source_file in cache.list_files(source_folder, is_relative=False):
+    extension = source_file.rsplit(".", 1)[-1]
+    if extension != "tmp":
+      files.append(source_file)
+  Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
+
+
+def _extract_all_functions():
+  args = get_file_args()
+  source_folder = "data/cfiles_dump/valids_all/pkl"
+  destination_folder = "data/cfiles_dump/valids_all/functions"
+  n_jobs = args.n_jobs
+  logger.info("# JOBS = %d" % n_jobs)
+  extract_all_functions(source_folder, destination_folder, n_jobs)
 
 
 def _read():
   sources_file = "data/cfiles_dump/valids/valid.pkl"
   destination_file = "data/cfiles_dump/valids/functions.pkl"
-  read(sources_file, destination_file, start=0)
+  read(sources_file, destination_file)
 
 
 def _test_exception():
@@ -296,7 +334,7 @@ def parse_c_file(file_name):
 
 
 if __name__ == "__main__":
-  _read()
+  _extract_all_functions()
   # _test_static()
   # _test_exception()
   # parse_file('temp/fixdep.c', use_cpp=True, cpp_args=[r'-I%s' % FAKE_LIBS_PATH])
