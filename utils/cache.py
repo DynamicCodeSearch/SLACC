@@ -22,6 +22,9 @@ def load(file_name, verbose=False):
   with open(file_name) as f:
     try:
       return cPkl.load(f)
+    except cPkl.UnpicklingError as e:
+      print("Oops!! Encountered unpickling error")
+      return None
     except EOFError as e:
       return None
 
