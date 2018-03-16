@@ -103,6 +103,7 @@ ENV/
 # Ignore folders
 data/cfiles_dump
 data/pyfiles_dump
+data/javafiles_dump
 temp
 include
 secrets
