@@ -51,9 +51,12 @@ def read(sources_file, destination_folder):
   n_errors = 0
   for i, row in enumerate(sources):
     name = row['path'].rsplit("/", 1)[-1].split(".")[0]
-    n_functions, n_error = c_extract(row['id'], name, row['content'], repeat=True)
-    functions += n_functions
-    n_errors += n_error
+    try:
+      n_functions, n_error = c_extract(row['id'], name, row['content'], repeat=True)
+      functions += n_functions
+      n_errors += n_error
+    except Exception as e:
+      logger.info("ERROR in %s.pkl while extracting row %d" % (prefix, i))
     if (i + 1) % 20 == 0:
       logger.info("In %s.pkl; Read %d/%d of files. Errors: %d" % (prefix, i + 1, n_rows, n_errors))
   cache.delete(temp_file)
