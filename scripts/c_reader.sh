@@ -7,4 +7,4 @@
 ###SBATCH --time 03-23:59:59
 # Use modules to set the software environment
 
-python readers/c_reader.py 64
+python c_utils/c_reader.py 64
