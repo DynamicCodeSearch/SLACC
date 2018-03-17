@@ -6,7 +6,7 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-from utils import cache
+from utils import cache, lib
 from c_utils.c_parser import Function, Arg, Return
 import ctypes
 from utils.logger import get_logger
@@ -16,15 +16,14 @@ if os.name == 'posix' and sys.version_info[0] < 3:
   import subprocess32 as subprocess
 else:
   import subprocess
+from joblib import Parallel, delayed
 
 
 LOG_LEVEL = logging.INFO
 logger = get_logger(__name__, LOG_LEVEL)
 
-VALID_FILE = "data/cfiles_dump/valids/functions.pkl"
 
-
-def load_c_functions(file_name=VALID_FILE):
+def load_c_functions(file_name):
   return cache.load(file_name)
 
 
@@ -48,7 +47,8 @@ def get_c_arg(data_type):
 
 
 def exec_function(source_exec, function_name, arg_types, arg_vals, ret_type, timeout=5):
-  cmd = ["python", "fuzz/execute.py", "-s", source_exec, "-f", function_name, "-t", arg_types, '-v', arg_vals, '-r', ret_type]
+  cmd = ["python", "fuzz/execute.py", "-s", source_exec, "-f", function_name, "-t", arg_types,
+         '-v', arg_vals, '-r', ret_type]
   ret_data, error = None, None
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
   try:
@@ -89,8 +89,19 @@ def fuzz(function):
   return rets, None
 
 
-def fuzz_functions(save_file, arg_limit=None):
-  functions = load_c_functions()
+def fuzz_functions(functions_file, save_folder, arg_limit=None):
+  prefix = functions_file.rsplit("/", 1)[-1].split(".")[0]
+  logger.info("Running for %s.pkl" % prefix)
+  temp_file = cache.create_file_path(save_folder, prefix, ext=".tmp")
+  save_file = cache.create_file_path(save_folder, prefix, ext=".pkl")
+  if cache.file_exists(save_file):
+    logger.info("%s file exists" % save_file)
+    return
+  if cache.file_exists(temp_file):
+    logger.info("%s file being processed" % save_file)
+    return
+  cache.save(temp_file, {"Processing": True})
+  functions = load_c_functions(functions_file)
   cnt, fuzzables = 0, 0
   results = {}
   n_functions = len(functions)
@@ -104,16 +115,32 @@ def fuzz_functions(save_file, arg_limit=None):
           "error": error,
           "function": function
       }
-    if cnt % 10 == 0:
-      logger.info("Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (cnt, n_functions, fuzzables))
-    if cnt % 100 == 0:
-      logger.info("SAVING to %s" % save_file)
-      cache.save(save_file, results)
+    if cnt % 25 == 0:
+      logger.info("In %s.pkl; Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (prefix, cnt, n_functions, fuzzables))
+  logger.info("Finished %s.pkl; Fuzzed funcs: %d/%d" % (prefix, fuzzables, n_functions))
+  cache.delete(temp_file)
   cache.save(save_file, results)
 
 
-def _fuzz_functions():
-  fuzz_functions("data/cfiles_dump/fuzzed/uniform.pkl", arg_limit=4)
+def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
+  files = []
+  for source_file in cache.list_files(source_folder, is_relative=False):
+    extension = source_file.rsplit(".", 1)[-1]
+    if extension == "pkl":
+      files.append(source_file)
+  Parallel(n_jobs=n_jobs)(delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
+
+
+def _fuzz_functions_folder():
+  source_folder = "data/cfiles_dump/valids_all/functions"
+  destination_folder = "data/cfiles_dump/valids_all/uniform_fuzzed"
+  arg_limit = 4
+  n_jobs = 1
+  args = sys.argv
+  if len(args) >= 2 and lib.is_int(args[1]):
+    n_jobs = int(args[1])
+  logger.info("RUNNING %d JOBS" % n_jobs)
+  fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit)
 
 
 def _test_ctypes():
@@ -128,8 +155,9 @@ def _test_ctypes():
 def _test_remote_call():
   # cmd = ["python", "fuzz/execute.py", "-s", "temp/val-prof-7.so", "-f", "foo", "-t", 'int', '-v', '-5']
   # cmd = ["python", "fuzz/execute.py", "-s", "temp/fibo2.so", "-f", "fib2", "-t", 'int', '-v', '100']
-  status = os.system("gcc -fPIC -shared -o temp/gofast.so temp/gofast.c > /dev/null 2>&1")
-  cmd = ["python", "fuzz/execute.py", "-s", "temp/gofast.so", "-f", "stupid", "-t", 'int,int', '-v', '16396,16396', '-r', 'int']
+  os.system("gcc -fPIC -shared -o temp/gofast.so temp/gofast.c > /dev/null 2>&1")
+  cmd = ["python", "fuzz/execute.py", "-s", "temp/gofast.so", "-f", "stupid", "-t",
+         'int,int', '-v', '16396,16396', '-r', 'int']
   proc = subprocess.Popen(cmd, stderr=subprocess.PIPE)
   out, err, = proc.communicate(timeout=5)
   print(out)
@@ -151,5 +179,5 @@ def _verify():
 if __name__ == "__main__":
   # _test()
   # _test_remote_call()
-  _fuzz_functions()
   # _verify()
+  _fuzz_functions_folder()
