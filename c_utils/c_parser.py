@@ -291,7 +291,7 @@ def extract_all_functions(source_folder, destination_folder, n_jobs):
   files = []
   for source_file in cache.list_files(source_folder, is_relative=False):
     extension = source_file.rsplit(".", 1)[-1]
-    if extension != "tmp":
+    if extension == "pkl":
       files.append(source_file)
   Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
 
