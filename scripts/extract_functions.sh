@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name codeseer_extract_functions
+#SBATCH --job-name csExtractFunctions
 #SBATCH -N 4
 #SBATCH -n 16
 #SBATCH -p opteron
