@@ -122,6 +122,10 @@ def fuzz_functions(functions_file, save_folder, arg_limit=None):
   cache.save(save_file, results)
 
 
+def wrap_fuzz_functions(args):
+  fuzz_functions(*args)
+
+
 def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
   files = []
   for source_file in cache.list_files(source_folder, is_relative=False):
@@ -130,7 +134,13 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
     destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
     if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
-  Parallel(n_jobs=n_jobs)(delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
+  try:
+    Parallel(n_jobs=n_jobs)(
+        delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
+  except Exception as e:
+    logger.info("ERROR while parallel processing. Restarting all over again")
+    Parallel(n_jobs=n_jobs)(
+        delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
 
 
 def _fuzz_functions_folder():

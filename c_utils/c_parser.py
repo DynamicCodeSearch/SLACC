@@ -64,6 +64,7 @@ def read(sources_file, destination_folder, max_time_limit=5):
   cache.save(temp_file, {'processing': True})
   sources = cache.load(sources_file)
   functions = []
+  if sources is None: return functions
   n_rows = len(sources)
   n_errors = 0
   for i, row in enumerate(sources):
