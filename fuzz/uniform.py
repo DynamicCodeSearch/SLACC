@@ -17,10 +17,18 @@ if os.name == 'posix' and sys.version_info[0] < 3:
 else:
   import subprocess
 from joblib import Parallel, delayed
+import argparse
 
 
 LOG_LEVEL = logging.INFO
 logger = get_logger(__name__, LOG_LEVEL)
+
+
+def get_file_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-n", "--n_jobs", type=int, default=2, help="Number of jobs")
+  parser.add_argument("-f", "--function", type=str, default="oops", help="Fuzz functions")
+  return parser.parse_args()
 
 
 def load_c_functions(file_name):
@@ -146,14 +154,40 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
     fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit)
 
 
-def _fuzz_functions_folder():
+def aggregate(source_folder, destination_file):
+  """
+  Aggregate all files in folder and dump in destination
+  :param source_folder:
+  :param destination_file:
+  :return:
+  """
+  cnt = 0
+  aggregated = {}
+  for source_file in cache.list_files(source_folder, is_relative=False):
+    extension = source_file.rsplit(".", 1)[-1]
+    if extension != "pkl": continue
+    logger.info("Processing %s" % source_file)
+    source = cache.load(source_file)
+    if source:
+      functions = cache.load(source_file).values()
+      for function in functions:
+        aggregated[cnt] = function
+        cnt += 1
+  logger.info("Total number of functions = %d" % cnt)
+  cache.save(destination_file, aggregated)
+
+
+def _aggregate():
+  source_folder = "data/cfiles_dump/valids_all/uniform_fuzzed"
+  destination_file = "data/cfiles_dump/valids_all/uniform_aggregate.pkl"
+  aggregate(source_folder, destination_file)
+
+
+def _fuzz_functions_folder(args):
   source_folder = "data/cfiles_dump/valids_all/functions"
   destination_folder = "data/cfiles_dump/valids_all/uniform_fuzzed"
   arg_limit = 4
-  n_jobs = 1
-  args = sys.argv
-  if len(args) >= 2 and lib.is_int(args[1]):
-    n_jobs = int(args[1])
+  n_jobs = args.n_jobs
   logger.info("RUNNING %d JOBS" % n_jobs)
   fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit)
 
@@ -191,8 +225,19 @@ def _verify():
   print(failed, n_fuzzed)
 
 
+def _main():
+  args = get_file_args()
+  f_name = args.function
+  if f_name == "fuzz":
+    _fuzz_functions_folder(args)
+  elif f_name == "aggregate":
+    _aggregate()
+  else:
+    print("WTF is %s!!!" % f_name)
+
+
 if __name__ == "__main__":
   # _test()
   # _test_remote_call()
   # _verify()
-  _fuzz_functions_folder()
+  _main()
