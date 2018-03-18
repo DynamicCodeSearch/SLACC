@@ -11,7 +11,6 @@ from pycparser.plyparser import ParseError
 from utils.lib import O
 from utils.logger import get_logger
 from joblib import Parallel, delayed
-import csv
 import logging
 import re
 import subprocess
@@ -21,7 +20,6 @@ import argparse
 
 LOG_LEVEL = logging.INFO
 logger = get_logger(__name__, LOG_LEVEL)
-csv.field_size_limit(sys.maxsize)
 FAKE_LIBS_PATH = "utils/fake_libc_include"
 FAKE_FILE_CONTENT = """#include "_fake_defines.h"
 #include "_fake_typedefs.h"
