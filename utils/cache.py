@@ -19,13 +19,13 @@ def load(file_name, verbose=False):
     if verbose:
       print("File %s does not exist" % file_name)
     return None
-  with open(file_name) as f:
-    try:
+  try:
+    with open(file_name) as f:
       return cPkl.load(f)
-    except Exception as e:
-      if verbose:
-        print("Exception while loading file" % file_name)
-      return None
+  except Exception as e:
+    if verbose:
+      print("Exception while loading file" % file_name)
+    return None
 
 
 def save(file_name, obj):
