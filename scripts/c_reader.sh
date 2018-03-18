@@ -4,7 +4,7 @@
 #SBATCH -N 16
 #SBATCH -n 64
 #SBATCH -p opteron
-#SBATCH -x c[79-98, 101-107]
+#SBATCH -x c[79-98,101-107]
 ###SBATCH --time 03-23:59:59
 # Use modules to set the software environment
 
