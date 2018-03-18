@@ -76,7 +76,6 @@ def read(sources_file, destination_folder, max_time_limit=5):
         functions += n_functions
         n_errors += n_error
     except Exception as e:
-      raise e
       logger.info("PARSE ERROR in %s.pkl while extracting row %d" % (prefix, i))
     if (i + 1) % 20 == 0:
       logger.info("In %s.pkl; Read %d/%d of files. Errors: %d" % (prefix, i + 1, n_rows, n_errors))
