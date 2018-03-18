@@ -138,9 +138,12 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
     Parallel(n_jobs=n_jobs)(
         delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
   except Exception as e:
-    logger.info("ERROR while parallel processing. Restarting all over again")
-    Parallel(n_jobs=n_jobs)(
-        delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
+    logger.info("** ERROR WHILE PARALLEL PROCESSING. RESTARTING ALL OVER AGAIN")
+    for temp_file in cache.list_files(destination_folder, is_relative=False):
+      extension = temp_file.rsplit(".", 1)[-1]
+      if extension == "tmp":
+        cache.delete(temp_file)
+    fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit)
 
 
 def _fuzz_functions_folder():
