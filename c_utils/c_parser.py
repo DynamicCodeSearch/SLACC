@@ -294,7 +294,12 @@ def extract_all_functions(source_folder, destination_folder, n_jobs):
     destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
     if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
-  Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
+  if n_jobs > 1:
+    Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
+  else:
+    for source_file in files:
+      read(source_file, destination_folder)
+
 
 
 def _extract_all_functions():
