@@ -15,7 +15,10 @@ import re
 import subprocess
 import itertools
 import argparse
-from multiprocessing import Pool
+import multiprocessing as mp
+import multiprocessing.pool as mp_pool
+from joblib import Parallel, delayed
+import signal
 
 
 LOG_LEVEL = logging.INFO
@@ -24,6 +27,17 @@ FAKE_LIBS_PATH = "utils/fake_libc_include"
 FAKE_FILE_CONTENT = """#include "_fake_defines.h"
 #include "_fake_typedefs.h"
 """
+
+
+class TimeOutException(Exception):
+  pass
+
+
+def timeout_handler(signum, frame):  # Custom signal handler
+  raise TimeOutException("Function timed out.")
+
+# Change the behavior of SIGALRM
+signal.signal(signal.SIGALRM, timeout_handler)
 
 
 def get_file_args():
@@ -36,7 +50,7 @@ def read_pool_wrapper(args):
   read(*args)
 
 
-def read(sources_file, destination_folder):
+def read(sources_file, destination_folder, max_time_limit=5):
   prefix = sources_file.rsplit("/", 1)[-1].split(".")[0]
   destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
   temp_file = cache.create_file_path(destination_folder, prefix, ".tmp")
@@ -55,11 +69,15 @@ def read(sources_file, destination_folder):
   for i, row in enumerate(sources):
     name = row['path'].rsplit("/", 1)[-1].split(".")[0]
     try:
-      n_functions, n_error = c_extract(row['id'], name, row['content'], repeat=True)
-      functions += n_functions
-      n_errors += n_error
+      n_functions, n_error = timed_c_extract(row['id'], name, row['content'], repeat=True, time_limit=5)
+      if n_functions is None and n_error is None:
+        logger.info("TIMEOUT ERROR in %s.pkl while extracting row %d." % (prefix, i))
+      else:
+        functions += n_functions
+        n_errors += n_error
     except Exception as e:
-      logger.info("ERROR in %s.pkl while extracting row %d" % (prefix, i))
+      raise e
+      logger.info("PARSE ERROR in %s.pkl while extracting row %d" % (prefix, i))
     if (i + 1) % 20 == 0:
       logger.info("In %s.pkl; Read %d/%d of files. Errors: %d" % (prefix, i + 1, n_rows, n_errors))
   cache.delete(temp_file)
@@ -253,6 +271,15 @@ class FuncDefStatCollector(c_ast.NodeVisitor):
     return func
 
 
+def timed_c_extract(i_d, name, source, repeat, time_limit):
+  signal.alarm(time_limit)
+  try:
+    functions, errors = c_extract(i_d, name, source, repeat)
+  except TimeOutException:
+    functions, errors = None, None
+  return functions, errors
+
+
 def c_extract(i_d, name, source, repeat=True):
   """
   Compile c source code.
@@ -290,6 +317,24 @@ def handle_not_found_exception(message):
     cache.save_text(header_file, FAKE_FILE_CONTENT)
 
 
+class NoDaemonProcess(mp.Process):
+  # make 'daemon' attribute always return False
+  def _get_daemon(self):
+    return False
+
+  def _set_daemon(self, value):
+    pass
+
+  daemon = property(_get_daemon, _set_daemon)
+
+
+class NDPool(mp_pool.Pool):
+  """
+  Non Daemon Class of pool
+  """
+  Process = NoDaemonProcess
+
+
 def extract_all_functions(source_folder, destination_folder, n_jobs):
   files = []
   for source_file in cache.list_files(source_folder, is_relative=False):
@@ -298,8 +343,9 @@ def extract_all_functions(source_folder, destination_folder, n_jobs):
     destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
     if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
-  p = Pool(n_jobs)
-  p.map(read_pool_wrapper, [(source_file, destination_folder) for source_file in files])
+  Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
+  # p = NDPool(n_jobs)
+  # p.map(read_pool_wrapper, [(source_file, destination_folder) for source_file in files])
   # if n_jobs > 1:
   #   Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
   # else:
