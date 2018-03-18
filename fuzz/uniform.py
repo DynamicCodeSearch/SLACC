@@ -126,7 +126,9 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
   files = []
   for source_file in cache.list_files(source_folder, is_relative=False):
     extension = source_file.rsplit(".", 1)[-1]
-    if extension == "pkl":
+    prefix = source_file.rsplit("/", 1)[-1].split(".")[0]
+    destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
+    if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
   Parallel(n_jobs=n_jobs)(delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
 
