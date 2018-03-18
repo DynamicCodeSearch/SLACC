@@ -1,9 +1,8 @@
 #!/bin/bash
 
 #SBATCH --job-name csExtractFunctions
-#SBATCH -N 4
-#SBATCH -n 8
+#SBATCH -N 1
 #SBATCH -p opteron
 ### Use modules to set the software environment
 
-python c_utils/c_parser.py -n 8
+python c_utils/c_parser.py -n 1
