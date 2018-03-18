@@ -10,12 +10,12 @@ from pycparser import c_parser, c_ast, parse_file, c_generator
 from pycparser.plyparser import ParseError
 from utils.lib import O
 from utils.logger import get_logger
-from joblib import Parallel, delayed
 import logging
 import re
 import subprocess
 import itertools
 import argparse
+from multiprocessing import Pool
 
 
 LOG_LEVEL = logging.INFO
@@ -30,6 +30,10 @@ def get_file_args():
   parser = argparse.ArgumentParser()
   parser.add_argument("-n", "--n_jobs", type=int, default=2, help="Number of jobs")
   return parser.parse_args()
+
+
+def read_pool_wrapper(args):
+  read(*args)
 
 
 def read(sources_file, destination_folder):
@@ -294,12 +298,13 @@ def extract_all_functions(source_folder, destination_folder, n_jobs):
     destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
     if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
-  if n_jobs > 1:
-    Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
-  else:
-    for source_file in files:
-      read(source_file, destination_folder)
-
+  p = Pool(n_jobs)
+  p.map(read_pool_wrapper, [(source_file, destination_folder) for source_file in files])
+  # if n_jobs > 1:
+  #   Parallel(n_jobs=n_jobs)(delayed(read)(source_file, destination_folder) for source_file in files)
+  # else:
+  #   for source_file in files:
+  #     read(source_file, destination_folder)
 
 
 def _extract_all_functions():
