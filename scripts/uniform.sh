@@ -2,7 +2,7 @@
 
 #SBATCH --job-name csUniform
 #SBATCH -N 24
-#SBATCH -o out/%j.out
+#####SBATCH -o out/%j.out
 #####SBATCH -n 16
 #SBATCH -p opteron
 #SBATCH -x c[79-98,101-107]
