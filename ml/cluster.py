@@ -141,7 +141,8 @@ def union_find(ret_type, points, destination_folder):
     if len(p.outputs) == 0: continue
     if i % 100 == 0:
       logger.info("In %s; Processed %d/%d functions" % (ret_type, i, len(points)))
-    for q in points:
+    for q in uf.get_representatives():
+    # for q in points:
       if uf.find(p, q) or len(q.outputs) == 0: continue
       # if set(p.outputs) == set(q.outputs):
       if sorted(p.outputs) == sorted(q.outputs):
