@@ -41,6 +41,12 @@ class UnionFind:
       self._id[j] = i
       self._sz[i] += self._sz[j]
 
+  def get_representatives(self):
+    reps = []
+    for p_id, c_id in self._id.items():
+      if p_id == c_id:
+        reps.append(self.ref[p_id])
+    return reps
 
   def get_clusters(self):
     clusters = defaultdict(list)
