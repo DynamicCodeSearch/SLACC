@@ -34,7 +34,7 @@ class TimeOutException(Exception):
 
 
 def timeout_handler(signum, frame):  # Custom signal handler
-  raise TimeOutException("Function timed out.")
+  logger.info("Function timed out.")
 
 # Change the behavior of SIGALRM
 signal.signal(signal.SIGALRM, timeout_handler)
