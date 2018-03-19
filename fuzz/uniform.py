@@ -17,6 +17,7 @@ if os.name == 'posix' and sys.version_info[0] < 3:
 else:
   import subprocess
 from joblib import Parallel, delayed
+from multiprocessing import Pool
 import argparse
 
 
@@ -142,10 +143,14 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
     destination_file = cache.create_file_path(destination_folder, prefix, ".pkl")
     if extension == "pkl" and not cache.file_exists(destination_file):
       files.append(source_file)
+
   try:
-    Parallel(n_jobs=n_jobs)(
-        delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
-  except Exception as e:
+    p = Pool(processes=n_jobs)
+    args = [(source_file, destination_folder, arg_limit) for source_file in files]
+    p.map(wrap_fuzz_functions, args)
+    # Parallel(n_jobs=n_jobs)(
+    #     delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
+  except KeyboardInterrupt as e:
     logger.info("** ERROR WHILE PARALLEL PROCESSING. RESTARTING ALL OVER AGAIN")
     for temp_file in cache.list_files(destination_folder, is_relative=False):
       extension = temp_file.rsplit(".", 1)[-1]
