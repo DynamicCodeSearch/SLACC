@@ -36,24 +36,40 @@ class Point(O):
     O.__init__(self)
     self.outputs = []
     self.errors = []
+    self.arguments = []
     self.function_body = None
     self.function_name = None
+    self.arg_types = []
     self.return_type = None
     self.cluster_id = None
+
 
   @staticmethod
   def from_function(function):
     if function['results'] is None: return None
     point = Point()
     for result in function['results']:
-      if result[1] is not None:
-        point.outputs.append(result[1])
-      else:
-        point.errors.append(result[2])
+      point.arguments.append(result[0])
+      point.outputs.append(result[1])
+      point.errors.append(result[2])
+      # if result[1] is not None:
+      #   point.outputs.append(result[1])
+      # else:
+      #   point.errors.append(result[2])
+    # point.outputs = function['results']
+    # point.errors = function['errors']
+    point.arg_types = [arg.type for arg in function['function'].args]
     point.function_name = function['function'].name
     point.function_body = function['function'].body
     point.return_type = function['function'].ret.type
     return point
+
+  @staticmethod
+  def equal(a, b):
+    if a.return_type != b.return_type: return False
+    if a.arg_types != b.arg_types: return False
+    if a.arguments != b.arguments: return False
+    return a.outputs == b.outputs
 
 
 class Clusterer(O):
@@ -143,9 +159,9 @@ def union_find(ret_type, points, destination_folder):
       logger.info("In %s; Processed %d/%d functions" % (ret_type, i, len(points)))
     for q in uf.get_representatives():
     # for q in points:
-      if uf.find(p, q) or len(q.outputs) == 0: continue
+      if uf.find(p, q): continue
       # if set(p.outputs) == set(q.outputs):
-      if sorted(p.outputs) == sorted(q.outputs):
+      if Point.equal(p, q):
         uf.union(p, q)
   # Bookmarks for stats
   direct_clones = []
@@ -176,7 +192,7 @@ def union_find(ret_type, points, destination_folder):
   )
   print(result)
   destination_file = cache.create_file_path(destination_folder, ret_type, ext=".pkl")
-  cache.save(destination_file, O(stats=result, clusters=direct_clones))
+  cache.save(destination_file, O(stats=result, clusters=direct_clones, uf=uf))
 
 
 
@@ -207,14 +223,14 @@ def pre_process(functions):
 
 def _create_clone(args):
   function_file = "data/cfiles_dump/valids_all/uniform_aggregate.pkl"
-  destination_folder = "data/cfiles_dump/valids_all/clones2"
+  destination_folder = "data/cfiles_dump/valids_all/clones"
   functions = cache.load(function_file)
   clusterer = Clusterer(functions)
   clusterer.clones(destination_folder, args.n_jobs)
 
 
 def _save_clone_clusters():
-  save_clone_clusters("data/cfiles_dump/valids_all/clones2", "results/valids_all/clones")
+  save_clone_clusters("data/cfiles_dump/valids_all/clones", "results/valids_all/clones")
 
 
 def _main():
