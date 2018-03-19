@@ -6,4 +6,4 @@
 #SBATCH -x c[79-98,101-107]
 ### Use modules to set the software environment
 
-python ml/cluster.py -f create_clone
+python ml/cluster.py -f create_clone -n 3
