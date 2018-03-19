@@ -150,7 +150,7 @@ def fuzz_functions_folder(source_folder, destination_folder, n_jobs, arg_limit):
     p.map(wrap_fuzz_functions, args)
     # Parallel(n_jobs=n_jobs)(
     #     delayed(fuzz_functions)(source_file, destination_folder, arg_limit) for source_file in files)
-  except KeyboardInterrupt as e:
+  except (KeyboardInterrupt, IOError) as e:
     logger.info("** ERROR WHILE PARALLEL PROCESSING. RESTARTING ALL OVER AGAIN")
     for temp_file in cache.list_files(destination_folder, is_relative=False):
       extension = temp_file.rsplit(".", 1)[-1]
