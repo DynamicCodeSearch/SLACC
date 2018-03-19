@@ -15,8 +15,13 @@ from scipy import stats
 from collections import defaultdict
 from utils.uf import UnionFind
 import argparse
+from joblib import Parallel, delayed
+from utils.logger import get_logger
+import logging
 
 FUNCTION_FILE = "data/cfiles_dump/fuzzed/uniform.pkl"
+LOG_LEVEL = logging.INFO
+logger = get_logger(__name__, LOG_LEVEL)
 
 
 def get_file_args():
@@ -116,53 +121,62 @@ class Clusterer(O):
       point_clusters.append(points)
     cache.save("data/cfiles_dump/clusters/dbscan.pkl", point_clusters)
 
-  def clones(self, destination_folder):
+  def clones(self, destination_folder, n_jobs):
     ret_groups = defaultdict(list)
     ret_points = defaultdict(list)
     rets = set()
+    logger.info("Sorting by return types")
     for point, x in zip(self.points, self.X):
       rets.add(point.return_type)
       ret_groups[point.return_type].append(x)
       ret_points[point.return_type].append(point)
-    for ret_type, points in ret_points.items():
-      uf = UnionFind(points)
-      for p in points:
-        if len(p.outputs) == 0: continue
-        for q in points:
-          if uf.find(p, q) or len(q.outputs) == 0: continue
-          # if set(p.outputs) == set(q.outputs):
-          if sorted(p.outputs) == sorted(q.outputs):
-            uf.union(p, q)
-      # Bookmarks for stats
-      direct_clones = []
-      grouped = 0
-      outputs_in_clusters = defaultdict(int)
-      methods_in_clusters = defaultdict(int)
-      for cluster in uf.get_clusters():
-        if len(cluster) > 1:
-          ## Test
-          # for i in range(min(3, len(cluster))):
-          #   print(cluster[i].function_body)
-          #   print(cluster[i].outputs)
-          # exit()
-          output_size = len(set(cluster[0].outputs))
-          if output_size >= 7:
-            output_size = "7+"
-          outputs_in_clusters[output_size] += 1
-          methods_in_clusters[output_size] += len(cluster)
-          grouped += len(cluster)
-          direct_clones.append(cluster)
-      result = O(
-          ret_type=ret_type,
-          n_methods=len(points),
-          n_direct_clones_cluster=len(direct_clones),
-          n_no_clones=len(points) - grouped,
-          num_clusters_wrt_size=outputs_in_clusters,
-          num_methods_in_clusters_wrt_size=methods_in_clusters
-      )
-      print(result)
-      destination_file = cache.create_file_path(destination_folder, ret_type, ext=".pkl")
-      cache.save(destination_file, O(stats=result, clusters=direct_clones))
+    logger.info("Return Types: %s" % rets)
+    Parallel(n_jobs=n_jobs)(delayed(union_find)(ret_type, points, destination_folder) for ret_type, points in ret_points.items())
+
+
+def union_find(ret_type, points, destination_folder):
+  logger.info("Identifying clones for %s" % ret_type)
+  uf = UnionFind(points)
+  for i, p in enumerate(points):
+    if len(p.outputs) == 0: continue
+    if i % 100 == 0:
+      logger.info("In %s; Processed %d/%d functions" % (ret_type, i, len(points)))
+    for q in points:
+      if uf.find(p, q) or len(q.outputs) == 0: continue
+      # if set(p.outputs) == set(q.outputs):
+      if sorted(p.outputs) == sorted(q.outputs):
+        uf.union(p, q)
+  # Bookmarks for stats
+  direct_clones = []
+  grouped = 0
+  outputs_in_clusters = defaultdict(int)
+  methods_in_clusters = defaultdict(int)
+  for cluster in uf.get_clusters():
+    if len(cluster) > 1:
+      ## Test
+      # for i in range(min(3, len(cluster))):
+      #   print(cluster[i].function_body)
+      #   print(cluster[i].outputs)
+      # exit()
+      output_size = len(set(cluster[0].outputs))
+      if output_size >= 7:
+        output_size = "7+"
+      outputs_in_clusters[output_size] += 1
+      methods_in_clusters[output_size] += len(cluster)
+      grouped += len(cluster)
+      direct_clones.append(cluster)
+  result = O(
+    ret_type=ret_type,
+    n_methods=len(points),
+    n_direct_clones_cluster=len(direct_clones),
+    n_no_clones=len(points) - grouped,
+    num_clusters_wrt_size=outputs_in_clusters,
+    num_methods_in_clusters_wrt_size=methods_in_clusters
+  )
+  print(result)
+  destination_file = cache.create_file_path(destination_folder, ret_type, ext=".pkl")
+  cache.save(destination_file, O(stats=result, clusters=direct_clones))
+
 
 
 def save_clone_clusters(root_folder, write_folder):
@@ -190,23 +204,23 @@ def pre_process(functions):
   return points
 
 
-def _create_clone():
+def _create_clone(args):
   function_file = "data/cfiles_dump/valids_all/uniform_aggregate.pkl"
-  destination_folder = "data/cfiles_dump/valids_all/clones"
+  destination_folder = "data/cfiles_dump/valids_all/clones2"
   functions = cache.load(function_file)
   clusterer = Clusterer(functions)
-  clusterer.clones(destination_folder)
+  clusterer.clones(destination_folder, args.n_jobs)
 
 
 def _save_clone_clusters():
-  save_clone_clusters("data/cfiles_dump/valids_all/clones", "results/valids_all/clones")
+  save_clone_clusters("data/cfiles_dump/valids_all/clones2", "results/valids_all/clones")
 
 
 def _main():
   args = get_file_args()
   f_name = args.function
   if f_name == "create_clone":
-    _create_clone()
+    _create_clone(args)
   elif f_name == "save_clone":
     _save_clone_clusters()
   else:
