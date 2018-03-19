@@ -118,12 +118,15 @@ def fuzz_functions(functions_file, save_folder, arg_limit=None):
     cnt += 1
     if function.is_fuzzable(arg_limit=arg_limit):
       fuzzables += 1
-      fuzzed, error = fuzz(function)
-      results[cnt] = {
-          "results": fuzzed,
-          "error": error,
-          "function": function
-      }
+      try:
+        fuzzed, error = fuzz(function)
+        results[cnt] = {
+            "results": fuzzed,
+            "error": error,
+            "function": function
+        }
+      except Exception as e:
+        logger.info("Error while fuzzing function")
     if cnt % 25 == 0:
       logger.info("In %s.pkl; Fuzzed %d/%d of functions. Fuzzed funcs: %d" % (prefix, cnt, n_functions, fuzzables))
   logger.info("Finished %s.pkl; Fuzzed funcs: %d/%d" % (prefix, fuzzables, n_functions))
