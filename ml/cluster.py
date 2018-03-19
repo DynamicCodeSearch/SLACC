@@ -14,8 +14,16 @@ import scipy as sp
 from scipy import stats
 from collections import defaultdict
 from utils.uf import UnionFind
+import argparse
 
 FUNCTION_FILE = "data/cfiles_dump/fuzzed/uniform.pkl"
+
+
+def get_file_args():
+  parser = argparse.ArgumentParser()
+  parser.add_argument("-n", "--n_jobs", type=int, default=2, help="Number of jobs")
+  parser.add_argument("-f", "--function", type=str, default="oops", help="Fuzz functions")
+  return parser.parse_args()
 
 
 class Point(O):
@@ -108,7 +116,7 @@ class Clusterer(O):
       point_clusters.append(points)
     cache.save("data/cfiles_dump/clusters/dbscan.pkl", point_clusters)
 
-  def clones(self):
+  def clones(self, destination_folder):
     ret_groups = defaultdict(list)
     ret_points = defaultdict(list)
     rets = set()
@@ -153,10 +161,12 @@ class Clusterer(O):
           num_methods_in_clusters_wrt_size=methods_in_clusters
       )
       print(result)
-      cache.save("data/cfiles_dump/clones/%s.pkl" % ret_type, O(stats=result, clusters=direct_clones))
+      destination_file = cache.create_file_path(destination_folder, ret_type, ext=".pkl")
+      cache.save(destination_file, O(stats=result, clusters=direct_clones))
 
 
 def save_clone_clusters(root_folder, write_folder):
+  cache.delete(write_folder)
   for clone_file in cache.list_files(root_folder, is_relative=False):
     data = cache.load(clone_file)
     ret_type = data.stats.ret_type
@@ -180,16 +190,28 @@ def pre_process(functions):
   return points
 
 
-def _main():
-  functions = cache.load(FUNCTION_FILE)
+def _create_clone():
+  function_file = "data/cfiles_dump/valids_all/uniform_aggregate.pkl"
+  destination_folder = "data/cfiles_dump/valids_all/clones"
+  functions = cache.load(function_file)
   clusterer = Clusterer(functions)
-  clusterer.clones()
+  clusterer.clones(destination_folder)
 
 
 def _save_clone_clusters():
-  save_clone_clusters("data/cfiles_dump/clones", "results/clones")
+  save_clone_clusters("data/cfiles_dump/valids_all/clones", "results/valids_all/clones")
+
+
+def _main():
+  args = get_file_args()
+  f_name = args.function
+  if f_name == "create_clone":
+    _create_clone()
+  elif f_name == "save_clone":
+    _save_clone_clusters()
+  else:
+    print("WTF is %s!!!" % f_name)
 
 
 if __name__ == "__main__":
-  # _main()
-  _save_clone_clusters()
+  _main()
