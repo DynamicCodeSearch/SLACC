@@ -17,6 +17,7 @@ from utils.uf import UnionFind
 import argparse
 from joblib import Parallel, delayed
 from utils.logger import get_logger
+import matplotlib.pyplot as plt
 import logging
 
 FUNCTION_FILE = "data/cfiles_dump/fuzzed/uniform.pkl"
@@ -195,6 +196,33 @@ def union_find(ret_type, points, destination_folder):
   cache.save(destination_file, O(stats=result, clusters=direct_clones, uf=uf))
 
 
+def plot_clone_cluster_sizes(root_folder):
+  def bar_plot(x, y, save_file, title):
+    x_i = np.arange(len(x))
+    plt.bar(x_i, y)
+    plt.xticks(x, x_i)
+    plt.xlabel("# Clones in cluster")
+    plt.ylabel("# Clusters")
+    plt.ylim(0, max(y) + 1)
+    plt.title(title)
+    plt.savefig(save_file)
+    plt.clf()
+
+  sizes = defaultdict(int)
+  for clone_file in cache.list_files(root_folder, is_relative=False):
+    extension = clone_file.rsplit(".", 1)[-1]
+    if extension != "pkl": continue
+    data = cache.load(clone_file)
+    for cluster in data.clusters:
+      if len(set(cluster[0].outputs)) == 1: continue
+      sizes[len(cluster)] += 1
+  max_val = max(sizes.keys())
+  x_axis = range(2, max_val + 1)
+  y_axis = [sizes.get(x_val, 0) for x_val in x_axis]
+  bar_plot(x_axis, y_axis, cache.create_file_path(root_folder, "cluster_sizes", ".png"),
+           "Num of clusters vs Size of clusters")
+
+
 
 def save_clone_clusters(root_folder, write_folder):
   cache.delete(write_folder)
@@ -245,4 +273,5 @@ def _main():
 
 
 if __name__ == "__main__":
-  _main()
+  # _main()
+  plot_clone_cluster_sizes("data/cfiles_dump/valids_all/clones")
