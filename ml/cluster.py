@@ -12,7 +12,7 @@ from sklearn.cluster import dbscan
 import numpy as np
 import scipy as sp
 from scipy import stats
-from collections import defaultdict
+from collections import defaultdict, Counter
 from utils.uf import UnionFind
 import argparse
 from joblib import Parallel, delayed
@@ -199,8 +199,7 @@ def union_find(ret_type, points, destination_folder):
 def plot_clone_cluster_sizes(root_folder):
   def bar_plot(x, y, save_file, title):
     x_i = np.arange(len(x))
-    plt.bar(x_i, y)
-    plt.xticks(x, x_i)
+    plt.plot(x_i, y)
     plt.xlabel("# Clones in cluster")
     plt.ylabel("# Clusters")
     plt.ylim(0, max(y) + 1)
@@ -208,19 +207,32 @@ def plot_clone_cluster_sizes(root_folder):
     plt.savefig(save_file)
     plt.clf()
 
-  sizes = defaultdict(int)
+  def log_bar_plot(x, y, save_file, title):
+    x_i = np.arange(len(x))
+    plt.semilogy(x_i, y)
+    plt.xlabel("# Clones in cluster")
+    plt.ylabel("# Clusters")
+    plt.title(title)
+    plt.savefig(save_file)
+    plt.clf()
+
   for clone_file in cache.list_files(root_folder, is_relative=False):
     extension = clone_file.rsplit(".", 1)[-1]
     if extension != "pkl": continue
     data = cache.load(clone_file)
+    data_type = clone_file.rsplit("/", 1)[-1].split(".")[0]
+    sizes = Counter()
     for cluster in data.clusters:
       if len(set(cluster[0].outputs)) == 1: continue
       sizes[len(cluster)] += 1
-  max_val = max(sizes.keys())
-  x_axis = range(2, max_val + 1)
-  y_axis = [sizes.get(x_val, 0) for x_val in x_axis]
-  bar_plot(x_axis, y_axis, cache.create_file_path(root_folder, "cluster_sizes", ".png"),
-           "Num of clusters vs Size of clusters")
+    max_val = max(sizes.keys())
+    print(sizes)
+    x_axis = range(2, max_val + 1)
+    y_axis = [sizes.get(x_val, 0) for x_val in x_axis]
+    bar_plot(x_axis, y_axis, cache.create_file_path(root_folder, "%s_cluster_sizes" % data_type, ".png"),
+             "Num of clusters vs Size of clusters")
+    log_bar_plot(x_axis, y_axis, cache.create_file_path(root_folder, "%s_log_cluster_sizes" % data_type, ".png"),
+             "Num of clusters vs Size of clusters")
 
 
 

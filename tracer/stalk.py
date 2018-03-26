@@ -19,6 +19,8 @@ from utils.lib import O
 import importlib
 from utils import cache
 from copy import deepcopy
+from utils.uf import UnionFind
+
 
 LOG_LEVEL = logging.INFO
 logger = get_logger(__name__, LOG_LEVEL)
@@ -59,15 +61,15 @@ def splice_list(l, s):
   return None
 
 
-def load_class(module_path, class_name="Solution"):
+def load_attr(module_path, attr_name="Solution"):
   """
   Load the class from module's path
   :param module_path: Path of the module
-  :param class_name: Name of the class. Defaults to "Solution"
+  :param attr_name: Name of the attr. Defaults to "Solution"
   :return:
   """
   module = importlib.import_module(module_path)
-  return getattr(module, class_name)
+  return getattr(module, attr_name)
 
 
 def get_file(module_path):
@@ -247,6 +249,30 @@ class TraceBlock(O):
     return self.function_input == other.function_input and state_changes_1 == state_changes_2
 
 
+class BlockStates(O):
+  """
+  block: block of code
+  input_states: (<function input>, <list of state changes for block>)
+  """
+  def __init__(self, block):
+    O.__init__(self)
+    self.block = block
+    self.input_states = []
+
+  def equals(self, other):
+    """
+    Check if two block states are equal
+    :param other:
+    :return:
+    """
+    if len(self.input_states) != len(other.input_states):
+      return False
+    for input_state_1, input_state_2 in zip(self.input_states, other.input_states):
+      if input_state_1[0] != input_state_2[0] or input_state_1[1] != input_state_2[1]:
+        return False
+    return True
+
+
 def clone(frame):
   """
   Clone an instance of trace frame
@@ -344,54 +370,110 @@ class Tracer(O):
     # print(inspect.getargvalues(frame))
 
 
-def trace(module_path, func_name, *args):
+def trace_module(blocks, module_path, func_name, *args):
   """
   Trace a function from the module and executing the args
+  :param blocks: List of blocks; blocks = parse_tree(get_file(module_path))
   :param module_path: Path of the module
   :param func_name: Name of the function
   :param args: Args passed to the function
   :return:
   """
-  tracer_blocks = {block.start: TraceBlock(block, args) for block in parse_tree(get_file(module_path))}
+  tracer_blocks = {block.start: TraceBlock(block, args) for block in blocks}
   tracer = Tracer(module_path, func_name, tracer_blocks)
-  solution = load_class(module_path)
+  solution = load_attr(module_path)
   sys.settrace(tracer.trace_calls)
   solution().twoSum(*args)
   return tracer
 
 
-def cluster_blocks(blocks):
-  for i in range(0, len(blocks) - 1):
-    for j in range(i, len(blocks)):
-      if i == j: continue
-      if blocks[i].equals(blocks[j]):
-        print("Wohoo")
-        print((blocks[i].block.file_name, blocks[i].block.start))
-        print((blocks[j].block.file_name, blocks[j].block.start))
+def trace_problem(problem_id):
+  """
+  Trace all the files in a folder
+  :param problem_id: ID of the problem or name of the folder
+  :return:
+  """
+  args = load_attr(problem_id, attr_name="args")
+  func_name = load_attr(problem_id, attr_name="func_name")
+  all_block_states = []
+  for file_name in cache.list_files(cache.create_file_path(BASE_PATH, problem_id), is_relative=True):
+    if file_name == "__init__.py": continue
+    module_path = "%s.%s" % (problem_id, file_name.rsplit(".", 1)[0])
+    blocks = parse_tree(get_file(module_path))
+    module_block_states = [BlockStates(block) for block in blocks]
+    for arg in args:
+      tracer = trace_module(blocks, module_path, func_name, *arg)
+      for block_stat in module_block_states:
+        tracer_block = tracer.tracer_blocks[block_stat.block.start]
+        block_stat.input_states.append((tracer_block.function_input, tracer_block.get_state_changes()))
+    print(file_name, len(module_block_states))
+    all_block_states += module_block_states
+  return all_block_states
+
+
+def cluster_blocks(block_states):
+  uf = UnionFind(block_states)
+  for i, p in enumerate(block_states):
+    for q in uf.get_representatives():
+      if uf.find(p, q): continue
+      if p.equals(q):
+        uf.union(p, q)
+  i = 1
+  for cluster in uf.get_clusters():
+    if len(cluster) == 1:
+      continue
+    print("\n**** Cluster **** %d" % i)
+    i += 1
+    for block_state in cluster:
+      print("\n")
+      print(block_state.block.text)
+      print("\n")
+
+
+
+
+# def cluster_blocks(blocks):
+#   for i in range(0, len(blocks) - 1):
+#     for j in range(i, len(blocks)):
+#       if i == j: continue
+#       if blocks[i].equals(blocks[j]):
+#         print("Wohoo")
+#         print((blocks[i].block.file_name, blocks[i].block.start))
+#         print((blocks[j].block.file_name, blocks[j].block.start))
 
 
 def _verify_clustering():
-  tracer1 = trace("1.1", "twoSum", [1, 2, 3, 4], 7)
-  blocks1 = tracer1.tracer_blocks.values()
-  tracer2 = trace("1.3", "twoSum", [1, 2, 3, 4], 7)
-  blocks2 = tracer2.tracer_blocks.values()
-  cluster_blocks(blocks1 + blocks2)
+  blocks1 = parse_tree(get_file("1.1"))
+  tracer1 = trace_module(blocks1, "1.1", "twoSum", [1, 2, 3, 4], 7)
+  tracer_blocks1 = tracer1.tracer_blocks.values()
+  blocks2 = parse_tree(get_file("1.3"))
+  tracer2 = trace_module(blocks2, "1.3", "twoSum", [1, 2, 3, 4], 7)
+  tracer_blocks2 = tracer2.tracer_blocks.values()
+  cluster_blocks(tracer_blocks1 + tracer_blocks2)
 
 
 def _verify_deltas():
-  tracer = trace("1.1", "twoSum", [1, 2, 3, 4], 7)
+  blocks1 = parse_tree(get_file("1.1"))
+  tracer = trace_module(blocks1, "1.1", "twoSum", [1, 2, 3, 4], 7)
   blocks = tracer.tracer_blocks.values()
   for block in blocks:
     print(block.block.start, block.function_input)
     print(block.state_changes)
   print("\n*********\n")
-  tracer = trace("1.3", "twoSum", [1, 2, 3, 4], 7)
+  blocks2 = parse_tree(get_file("1.3"))
+  tracer = trace_module(blocks2, "1.3", "twoSum", [1, 2, 3, 4], 7)
   blocks = tracer.tracer_blocks.values()
   for block in blocks:
     print(block.block.start, block.function_input)
     print(block.state_changes)
 
 
+def _trace_and_cluster_blocks():
+  blocks = trace_problem("1")
+  cluster_blocks(blocks)
+
+
 if __name__ == "__main__":
   # print(trace("1.1", "twoSum", [1, 2, 3, 4], 11))
-  _verify_clustering()
+  # _verify_clustering()
+  _trace_and_cluster_blocks()
