@@ -1,0 +1,588 @@
+
+
+****** Cluster 0 ******
+public static int func_2727d79a4f6944ab83d76e5c571bb4e7(int prime, int age) {
+    int result = 1;
+    result = prime * result + age;
+    return result;
+}
+public static int func_39134076c44348c68aef1cb1f90a89c6(int prime, int intelligence) {
+    int result = 1;
+    result = prime * result + intelligence;
+    return result;
+}
+
+
+****** Cluster 1 ******
+public static int func_abdb80fad8624fc1abd85b140fe19fb6(int age) {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + age;
+    return prime;
+}
+public static int func_e085e5c539df4cb08e8482d967901d60(int intelligence) {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + intelligence;
+    return prime;
+}
+
+
+****** Cluster 2 ******
+public static int func_e24f5f00d446482bb5c938ff5aed0c83(int age) {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + age;
+    return result;
+}
+public static int func_44b29c032bf340cbbdc3df4446411368(int intelligence) {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + intelligence;
+    return result;
+}
+
+
+****** Cluster 3 ******
+public static int func_657a653f3daa42698cf29eedc94c1a69(String addressLineTwo, String city, int result) {
+    result = 31 * result + (addressLineTwo != null ? addressLineTwo.hashCode() : 0);
+    result = 31 * result + (city != null ? city.hashCode() : 0);
+    return result;
+}
+public static int func_03b0ab14e4a64149b8a05a41f44e97c6(String functionName, String functionVersion, int result) {
+    result = 31 * result + (functionName != null ? functionName.hashCode() : 0);
+    result = 31 * result + (functionVersion != null ? functionVersion.hashCode() : 0);
+    return result;
+}
+
+
+****** Cluster 4 ******
+public static int func_f59a35859fd34470b6ed201a2ad0f955(String state, String city, int result) {
+    result = 31 * result + (city != null ? city.hashCode() : 0);
+    result = 31 * result + (state != null ? state.hashCode() : 0);
+    return result;
+}
+public static int func_b96278744dca4b41949b0b91d487265d(String functionName, String logStreamName, int result) {
+    result = 31 * result + (logStreamName != null ? logStreamName.hashCode() : 0);
+    result = 31 * result + (functionName != null ? functionName.hashCode() : 0);
+    return result;
+}
+
+
+****** Cluster 5 ******
+public static int func_a427c88c76d0472ea5b2c3218c9a53fe(int ageYears, int massTons) {
+    ageYears *= 2;
+    massTons = 0;
+    return ageYears;
+}
+public static int func_aaf252945c6a42b59375204b7ac1d027(int ageYears, int massTons) {
+    ageYears *= 2;
+    massTons *= 8;
+    return ageYears;
+}
+
+
+****** Cluster 6 ******
+public static int func_b3161faa75aa4aa38c572de1f9cd6fd8(int numCarrots, int numPotatoes) {
+    if (numPotatoes > 0) {
+        numPotatoes--;
+    }
+    if (numCarrots > 0) {
+        numCarrots--;
+    }
+    return numCarrots;
+}
+public static int func_15b141b2520e4aa88e5e5adc99e3333a(int numCarrots, int numMeat) {
+    if (numCarrots > 0) {
+        numCarrots--;
+    }
+    if (numMeat > 0) {
+        numMeat--;
+    }
+    return numCarrots;
+}
+
+
+****** Cluster 7 ******
+public static int func_4ad61cfb92984dee8f3f14bb2df0c0ce(int numCarrots, int numPotatoes) {
+    if (numPotatoes > 0) {
+        numPotatoes--;
+    }
+    if (numCarrots > 0) {
+        numCarrots--;
+    }
+    return numPotatoes;
+}
+public static int func_93a871aeadf446c4b93564bb3757edf5(int numCarrots, int numMeat) {
+    if (numCarrots > 0) {
+        numCarrots--;
+    }
+    if (numMeat > 0) {
+        numMeat--;
+    }
+    return numMeat;
+}
+
+
+****** Cluster 8 ******
+public static int func_fb9b2ac763ce4551b1c276fcd098e9f2(int numPotatoes) {
+    if (numPotatoes > 0) {
+        numPotatoes--;
+    }
+    return numPotatoes;
+}
+public static int func_7036b796dfe64cd9924d1de9f19f4e2f(int numCarrots) {
+    if (numCarrots > 0) {
+        numCarrots--;
+    }
+    return numCarrots;
+}
+public static int func_ec9db37277b74a10b4fa075bd576efdc(int numMeat) {
+    if (numMeat > 0) {
+        numMeat--;
+    }
+    return numMeat;
+}
+public static int func_186a3d27f6334f37b5f01973cfe6ffae(int numPeppers) {
+    if (numPeppers > 0) {
+        numPeppers--;
+    }
+    return numPeppers;
+}
+
+
+****** Cluster 9 ******
+public static String func_3833aae201914c1c841417a255369e66(String a) {
+    System.out.println("a=" + a);
+    a = "456";
+    return a;
+}
+public static String func_35202373f7744c5c920ddff275e05151(String a) {
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+public static String func_5095c6c2cd644fdaaac4f3ce64deb646(String a) {
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+public static String func_604ab56a27ec4ec88055be01da13f8d5(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return a;
+}
+public static String func_3fa0f1d7a45f4657af01cd4bd2a9a791(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+
+
+****** Cluster 10 ******
+public static String func_755cb193059045778ec5f0479a0a45de(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    return b;
+}
+public static String func_66ed67a5a25d40668a5e316ce647e38d(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    return c;
+}
+public static String func_d6913c87ce9b4630a01621b7e1a35a3b(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    return b;
+}
+public static String func_c0312b5550d04cb8b91c0c34be1c482d(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    return c;
+}
+public static String func_dfd513744ba54028a2b9f336a826c8fe(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    return b;
+}
+public static String func_8f67c35155c74e079ced6c1991499fc7(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return c;
+}
+public static String func_3da1606e30934b28a72b26417e6f3a05(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return b;
+}
+public static String func_f4ee382d864a4cd5a4e8f9a92f9f879d(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return c;
+}
+public static String func_c304e9c2ed1f4ae0aef126bea0d9b110(String a) {
+    String b = "123";
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return b;
+}
+
+
+****** Cluster 11 ******
+public static String func_68c58393360a449ab2335b7a01eeb877(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    return c;
+}
+public static String func_caff1b56094540efb5baafac5f8cd6d6(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    return c;
+}
+public static String func_0704ef4043694f8dbe8511109d6ad501(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return c;
+}
+public static String func_fe0afadc9c5b4222a6df56ab801fa433(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return c;
+}
+
+
+****** Cluster 12 ******
+public static String func_b60cfad27a0c4f2097866558c2089a4d(String c, String a) {
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return a;
+}
+public static String func_eeeccdd6f5b04f86888fcc51b3f8866f(String c, String a) {
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+public static String func_af81b56032184f1ea92fcc8a4f274d0a(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return a;
+}
+public static String func_d5a0210e72e745ada1698f8b6716b2d4(String a, String b) {
+    String c = new String("123");
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+
+
+****** Cluster 13 ******
+public static String func_99f737f5ebe3407c875210d086b8efb7(String c, String a, String b) {
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    return a;
+}
+public static String func_cde7de565f3b4c578acd813e34eb3747(String c, String a, String b) {
+    System.out.println("a=b:" + (a == b));
+    System.out.println("a=c:" + (a == c));
+    System.out.println("a=" + a);
+    a = "456";
+    System.out.println("a=" + a);
+    return a;
+}
+
+
+****** Cluster 14 ******
+public static int func_2b58ac121c2b45e3a603869264578bc5(int recursiveCount) {
+    recursiveCount++;
+    System.out.println("recursiveCount==" + recursiveCount);
+    return recursiveCount;
+}
+public static int func_9f272049747a49e88e540d0270d62e8a(int recursiveCount) {
+    recursiveCount++;
+    System.out.println("recursiveCount===" + recursiveCount);
+    return recursiveCount;
+}
+
+
+****** Cluster 15 ******
+public static int func_dbcc7d7f7beb4ff087f4e73fe9ea4c4d(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    return minMoney;
+}
+public static int func_aad7836c8dcb4b77877adf8a07e8ffc1(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    return minMoney;
+}
+public static int func_46107b27c450421e89973e0a5396d7bf(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    return minMoney;
+}
+public static int func_0a7e934f036b4221a164ef7fa896fc30(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    int lastMoney = totalMoney - redPacket;
+    return minMoney;
+}
+
+
+****** Cluster 16 ******
+public static int func_e3582ee21d444252b6a15690e539e23b(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    return count;
+}
+public static int func_411405c346204a55b6f74d0c6beb3e68(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    return count;
+}
+public static int func_525e5663adcb4e8897b90b3a423f37db(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    return count;
+}
+public static int func_a7bc1213fdc843478b3f52af1ebda33a(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    int lastMoney = totalMoney - redPacket;
+    return count;
+}
+
+
+****** Cluster 17 ******
+public static int func_248c805814584e88b207ba2cb6cdae2f(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    return totalMoney;
+}
+public static int func_5ed028a9d29941e5ade44b073cf99eff(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    return totalMoney;
+}
+public static int func_819039f255e243d3be90e91527c731da(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    int lastMoney = totalMoney - redPacket;
+    return totalMoney;
+}
+
+
+****** Cluster 18 ******
+public static int func_598b36909eca49babfc9e30af17a62e1(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    return maxMoney;
+}
+public static int func_4d971659d6e44ad4a51fe9326fc3cb89(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    return maxMoney;
+}
+public static int func_ac3d3a5ae476438e8c6ca956439000bf(int minMoney, int totalMoney, int maxMoney) {
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    int lastMoney = totalMoney - redPacket;
+    return maxMoney;
+}
+
+
+****** Cluster 19 ******
+public static int func_b61e8470eaf84b01b68d6b1bb12f9c6f(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    return maxMoney;
+}
+public static int func_84e6f8fb02b74051a436ae7e5398fb38(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    return maxMoney;
+}
+public static int func_3277344bc87744d2bb281d49792967b5(int minMoney, int totalMoney, int count, int maxMoney) {
+    if (count == 1) {
+        return totalMoney;
+    }
+    if (minMoney == maxMoney) {
+        return minMoney;
+    }
+    maxMoney = maxMoney > totalMoney ? totalMoney : maxMoney;
+    int redPacket = (int) (Math.random() * (maxMoney - minMoney) + minMoney);
+    int lastMoney = totalMoney - redPacket;
+    return maxMoney;
+}
+
+
+****** Cluster 20 ******
+public static int func_d2a53a24eca2420ea04253ad4b8f8b61(int count) {
+    for (int i = 0; i < 10000; i++) {
+        count++;
+    }
+    return count;
+}
+public static int func_a65ab7378ee1419c8308708dc799cbce(int count) {
+    for (int i = 0; i < 10000; i++) {
+        count++;
+    }
+    return count;
+}
+
+
+****** Cluster 21 ******
+public static String func_abb549c54b384346a463936c1e1c74ed(String vmName1, String current, String warnMessage1) {
+    if (vmName1 != null && current.contains(vmName1)) {
+        return warnMessage1;
+    }
+    return vmName1;
+}
+public static String func_ba7ce7edfae04d679a39b799bea5298f(String vmName2, String current, String warnMessage2) {
+    if (vmName2 != null && current.contains(vmName2)) {
+        return warnMessage2;
+    }
+    return vmName2;
+}
+
+
+****** Cluster 22 ******
+public static String func_58a8fc04994a4da2aa0b124603e1008c(String vmName1, String current, String warnMessage1) {
+    if (vmName1 != null && current.contains(vmName1)) {
+        return warnMessage1;
+    }
+    return current;
+}
+public static String func_7f3f2f534e6f4fdeb11895f7c95c6461(String vmName2, String current, String warnMessage2) {
+    if (vmName2 != null && current.contains(vmName2)) {
+        return warnMessage2;
+    }
+    return current;
+}
