@@ -1,19 +1,23 @@
 package edu.ncsu.config;
 
-import org.apache.commons.lang3.StringUtils;
-import java.io.File;
+import edu.ncsu.utils.Utils;
 
 public class Properties {
 
     public static String HOME = System.getenv("HOME");
 
-    public static String ROOT_PATH = StringUtils.join(new Object[]{HOME, "Raise", "ProgramRepair"}, File.separator);
+    public static String ROOT_PATH = Utils.pathJoin(HOME, "Raise", "ProgramRepair");
 
-    public static String PROJECT_HOME = StringUtils.join(new Object[]{ROOT_PATH, "CodeSeer"}, File.separator);
+    public static String PROJECT_HOME = Utils.pathJoin(ROOT_PATH, "CodeSeer");
 
-    public static String CODE_HOME = StringUtils.join(new Object[]{PROJECT_HOME, "code"}, File.separator);
+    public static String CODE_HOME = Utils.pathJoin(PROJECT_HOME, "code");
 
-    public static String CODEJAM_JAVA_FOLDER = StringUtils.join(new Object[]{CODE_HOME, "projects", "java"},
-            File.separator);
+    public static String CODEJAM_JAVA_FOLDER = Utils.pathJoin(PROJECT_HOME, "projects", "src", "main", "java");
+
+    public static String META_STORE = Utils.pathJoin(CODE_HOME, "metastore");
+
+    public static String CODEJAM_OBJECT_STORE = Utils.pathJoin(META_STORE, "codejam", "classes.json");
+
+    public static int MIN_STATEMENT_SIZE = 2;
 
 }

@@ -137,4 +137,5 @@ code.iml
 hs_err_pid*
 
 # Local
-projects
+projects/src/main/Y*
+code/metastore

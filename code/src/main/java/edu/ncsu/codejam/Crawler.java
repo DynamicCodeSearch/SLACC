@@ -1,4 +1,4 @@
-package edu.ncsu.crawler;
+package edu.ncsu.codejam;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -6,12 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.ncsu.utils.InMemoryJavaCompiler;
+import edu.ncsu.utils.Utils;
+import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,9 +25,9 @@ import org.jsoup.nodes.Element;
 import edu.ncsu.config.Properties;
 
 
-public class CodeJamCrawler {
+public class Crawler {
 
-    private static final Logger LOGGER = Logger.getLogger(CodeJamCrawler.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(Crawler.class.getName());
 
     private static final String BASE_URL = "http://www.go-hero.net/jam/";
 
@@ -32,13 +38,8 @@ public class CodeJamCrawler {
             FileOutputStream fos = new FileOutputStream(destFile);
             String fileHeader = "package " + packageName + ";\n\n";
             fos.write(fileHeader.getBytes());
-            int bufferSize = 4096;
-            byte[] buf = new byte[bufferSize];
-            int n = inputStream.read(buf);
-            while (n >= 0) {
-                fos.write(buf, 0, n);
-                n = inputStream.read(buf);
-            }
+            String content = IOUtils.toString(inputStream).replaceAll("^\\s*package\\s+.+;", "");
+            fos.write(IOUtils.toByteArray(content));
             fos.flush();
             fos.close();
         } catch (Exception ex) {
@@ -96,57 +97,83 @@ public class CodeJamCrawler {
         }
     }
 
-    public static void main(String[] args) throws Exception{
-        if (args.length < 3) {
-            LOGGER.log(Level.SEVERE, "Illegal number of arguments. Provide year, round and id.");
-            System.exit(0);
-        }
+    public static int crawlLink(String link, String problemKey) {
         try {
-            int year = Integer.parseInt(args[0]);
-            System.out.println(String.format("Code jam year: %d", year));
-//			int year = 11;
-            int round = Integer.parseInt(args[1]);
-            System.out.println(String.format("Code jam round (World Finals = 6): %d", round));
-//            int round = 5;
-            int problemId = Integer.parseInt(args[2]);
-            System.out.println(String.format("Problem id: %d", problemId));
-//            int problemId = 2;
-            String problemKey = String.format("Y%dR%dP%d", year, round, problemId);
-            String finalUrl = BASE_URL + year + "/solutions/" + round + "/" + problemId + "/Java";
             String codeRepo = Properties.CODEJAM_JAVA_FOLDER;
-
             File problemDir = new File(codeRepo + "/" + problemKey);
             if (!problemDir.exists()) {
                 problemDir.mkdirs();
             }
-            Document codeJamHome = Jsoup.connect(finalUrl).validateTLSCertificates(false).get();
+            String[] sep = link.split("&");
+            String userString = sep[sep.length - 1];
+            int eqPos = userString.indexOf("=");
+            String userName = userString.substring(eqPos + 1).replaceAll("\\.", "").replaceAll("\\d", "");
+            File userDir = new File(problemDir.getAbsolutePath(), userName);
+            if (!userDir.exists()) {
+                userDir.mkdirs();
+            }
+            File tmpFile = File.createTempFile("arc", ".zip", userDir);
+            tmpFile.deleteOnExit();
+            downloadFile(tmpFile, link);
+            String packageName = problemKey + "." + userName;
+            int num_files = unpackArchive(tmpFile, userDir, packageName);
+            for (String javaFileName: Utils.listFilesWithExtension(userDir.getAbsolutePath(), ".java", true, true)) {
+                if (!InMemoryJavaCompiler.compile(javaFileName, false)) {
+                    LOGGER.info(String.format("%s has a compilation error. Deleting it.", javaFileName));
+                    File javaFile = new File(javaFileName);
+                    File parentFolder = javaFile.getParentFile();
+                    javaFile.delete();
+                    List<String> kids = Utils.listFilesWithExtension(parentFolder.getAbsolutePath(), ".java", false, false);
+                    if (kids.size() == 0)
+                        parentFolder.delete();
+                    num_files -= 1;
+                }
+            }
+            return num_files;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    public static void crawl(int year, int round, int problemId){
+        String problemKey = String.format("Y%dR%dP%d", year, round, problemId);
+        String finalUrl = BASE_URL + year + "/solutions/" + round + "/" + problemId + "/Java";
+        try {
+            Document codeJamHome = Jsoup.connect(finalUrl).validateTLSCertificates(false).get();
             int userCounter = 0;
             for (Element e: codeJamHome.select("a[href]")) {
                 String link = e.attr("abs:href");
                 if (link.startsWith(MATCH_STRING)) {
-                    String[] sep = link.split("&");
-
-                    String userString = sep[sep.length - 1];
-                    int eqPos = userString.indexOf("=");
-                    String userName = userString.substring(eqPos + 1, userString.length())
-                            .replaceAll("\\.", "").replaceAll("\\d", "");
-                    File userDir = new File(problemDir.getAbsolutePath(), userName);
-                    if (!userDir.exists()) {
-                        userDir.mkdirs();
-                    }
-                    File tmpFile = File.createTempFile("arc", ".zip", userDir);
-                    tmpFile.deleteOnExit();
-                    downloadFile(tmpFile, link);
-                    String packageName = problemKey + "." + userName;
-                    userCounter += unpackArchive(tmpFile, userDir, packageName);
+                    userCounter += crawlLink(link, problemKey);
                 }
             }
             System.out.println("Total code files: " + userCounter);
-        } catch (Exception ex) {
-//			ex.printStackTrace();
-            throw ex;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
+
+    }
+
+    public static void crawlMain(String[] args) {
+        if (args.length < 3) {
+            LOGGER.log(Level.SEVERE, "Illegal number of arguments. Provide year, round and id.");
+            System.exit(0);
+        }
+        int year = Integer.parseInt(args[0]);
+        System.out.println(String.format("Code jam year: %d", year));
+//			int year = 11;
+        int round = Integer.parseInt(args[1]);
+        System.out.println(String.format("Code jam round (World Finals = 6): %d", round));
+//            int round = 5;
+        int problemId = Integer.parseInt(args[2]);
+        System.out.println(String.format("Problem id: %d", problemId));
+//            int problemId = 2;
+        crawl(year, round, problemId);
+    }
+
+    public static void main(String[] args) {
+//        crawlMain(new String[]{"12", "5", "1"});
+        crawlMain(args);
     }
 
 }
