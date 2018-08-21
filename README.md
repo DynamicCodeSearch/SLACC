@@ -9,6 +9,8 @@ Similarity in Source Code
 
 
 ### Research Questions:
+0. Coverage:
+    In  the  2012  study  of  input  generation across five projects for clone detection conducted by Deissenboecket al. found that  input  generation  and  execution  failed  for  approximately 28% of the methods. Can we do better than this?
 1. Clone Detection Rate:  
     How are clones detected compared to HitoshiIO and SourcererCC
 2. Quality of Clones:  
