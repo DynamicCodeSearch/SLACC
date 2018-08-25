@@ -94,7 +94,8 @@ public class Imports {
             sb.append("import java.util.UUID;").append("\n");
             sb.append("import java.util.Vector;").append("\n");
             sb.append("import java.util.WeakHashMap;").append("\n");
-            INDIVIDUAL_IMPORT_HEADERS.put(key, sb.toString());
+//            INDIVIDUAL_IMPORT_HEADERS.put(key, sb.toString());
+            INDIVIDUAL_IMPORT_HEADERS.put(key, "import java.util.*;\n");
         }
     }
 

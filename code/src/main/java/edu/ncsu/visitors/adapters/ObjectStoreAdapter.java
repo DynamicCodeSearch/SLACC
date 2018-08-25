@@ -12,6 +12,7 @@ import com.google.gson.JsonArray;
 import edu.ncsu.config.Properties;
 import edu.ncsu.store.ObjectStore;
 import edu.ncsu.visitors.blocks.Variable;
+import edu.ncsu.visitors.helpers.VisitorHelper;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,12 +41,8 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
         return imports;
     }
 
-    public String getPackage() {
-        return compilationUnit.getPackage().getName().toStringWithoutComments();
-    }
-
     public void storeClasses(ObjectStore store) {
-        String packageName = getPackage();
+        String packageName = VisitorHelper.getPackage(compilationUnit);
         JsonArray imports = new JsonArray();
         for (String imp0rt : getImports())
             imports.add(imp0rt);

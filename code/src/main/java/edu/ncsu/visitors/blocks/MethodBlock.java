@@ -196,6 +196,16 @@ public class MethodBlock {
         return true;
     }
 
+    public boolean updateVariableUsage(String variableName, VariablePosition position, boolean updateAssign) {
+        Variable variable = getNearestVariable(variableName, position);
+        if (variable == null)
+            return false;
+        if (updateAssign || variable.isMutable())
+            variable.insertAssignPosition(position);
+        insertVariableUsage(variableName, position);
+        return true;
+    }
+
     /***
      * Retrieve the nearest variable of a name and the position
      * @param variableName Name of the variable
@@ -210,7 +220,7 @@ public class MethodBlock {
         Variable variable = null;
         for (Integer lineNum: lineNumbers) {
             Variable currentVariable = variableDeclareMap.get(variableName).get(lineNum);
-            if (currentVariable.getStartPosition().isBefore(position)) {
+            if (currentVariable.getStartPosition().isOnOrBefore(position)) {
                 variable = currentVariable;
             } else if (currentVariable.getStartPosition().isAfter(position)) {
                 break;
@@ -338,7 +348,7 @@ public class MethodBlock {
     private List<List<StatementBlock>> getCombinations(List<StatementBlock> statementGroup) {
         List<List<StatementBlock>> combinations = new ArrayList<>();
         for (int step_size = Properties.MIN_STATEMENT_SIZE; step_size < statementGroup.size(); step_size++) {
-            for (int counter=0; counter < statementGroup.size()-step_size; counter++) {
+            for (int counter=0; counter <= statementGroup.size()-step_size; counter++) {
                 List<StatementBlock> combination = statementGroup.subList(counter, counter + step_size);
                 combinations.add(combination);
             }

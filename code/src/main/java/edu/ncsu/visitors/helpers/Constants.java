@@ -10,7 +10,6 @@ public class Constants {
     public final static Set<String> PERMITTED_CLASSES = new HashSet<>();
 
     static  {
-        IGNORES.add("System");
         PERMITTED_CLASSES.add("String");
         PERMITTED_CLASSES.add("Integer");
         PERMITTED_CLASSES.add("Long");
