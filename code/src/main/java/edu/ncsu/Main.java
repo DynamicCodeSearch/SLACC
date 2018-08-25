@@ -2,6 +2,7 @@ package edu.ncsu;
 
 import edu.ncsu.codejam.ClassStore;
 import edu.ncsu.codejam.Crawler;
+import edu.ncsu.codejam.Snipper;
 
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -19,6 +20,8 @@ public class Main {
             Crawler.main(Arrays.copyOfRange(args, 1, args.length));
         } else if (args[0].equals("store_objects")) {
             ClassStore.main(args);
+        } else if (args[0].equals("snip")) {
+            Snipper.main(args);
         } else {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }

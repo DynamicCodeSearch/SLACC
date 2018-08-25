@@ -96,6 +96,14 @@ public class ClassBlock {
         return methodBlocks;
     }
 
+
+    /**
+     * @return The name of the package
+     */
+    public String getPackageName() {
+        return packageName;
+    }
+
     /***
      * @return Get class AST Node
      */

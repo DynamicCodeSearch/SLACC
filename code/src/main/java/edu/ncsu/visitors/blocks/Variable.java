@@ -10,7 +10,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import static edu.ncsu.visitors.blocks.Type.*;
+
 public class Variable {
+
+    public final static String PUBLIC = "public";
+
+    public final static String PRIVATE = "private";
+
+    public final static String PROTECTED = "protected";
+
+    public final static String DEFAULT = "default";
+
     /**
      * Unique ID of Variable
      */
@@ -51,6 +62,11 @@ public class Variable {
      */
     protected List<VariablePosition> usedPositions;
 
+    /***
+     * Positions where variables had their values changed
+     */
+    protected List<VariablePosition> assignPositions;
+
     /**
      * End scope of variable
      */
@@ -89,6 +105,27 @@ public class Variable {
         if (usedPositions == null)
             usedPositions = new ArrayList<>();
         usedPositions.add(position);
+    }
+
+    public void insertAssignPosition(VariablePosition position) {
+        if (assignPositions == null)
+            assignPositions = new ArrayList<>();
+        assignPositions.add(position);
+    }
+
+    /**
+     * @return The number of dimensions in the array
+     */
+    public Integer getArrayDimensions() {
+        return arrayDimensions;
+    }
+
+    /**
+     * Set the arrayDimensions for the variable
+     * @param arrayDimensions The dimensions of variable
+     */
+    public void setArrayDimensions(int arrayDimensions) {
+        this.arrayDimensions = arrayDimensions;
     }
 
     public Variable(String name, Type type, String scope) {
@@ -195,13 +232,35 @@ public class Variable {
 
     public static String getModifier(int modifierCode) {
         if (ModifierSet.isPublic(modifierCode)) {
-            return "public";
+            return PUBLIC;
         } else if (ModifierSet.isProtected(modifierCode)) {
-            return "protected";
+            return PROTECTED;
         } else if (ModifierSet.isPrivate(modifierCode)) {
-            return "private";
+            return PRIVATE;
         } else {
-            return "default";
+            return DEFAULT;
         }
     }
+
+    public String toTypeString() {
+        StringBuilder typeString = new StringBuilder(this.type);
+        for (int i=0; i<this.arrayDimensions; i++)
+            typeString.append("[]");
+        return typeString.toString();
+    }
+
+    public boolean isAssignedInRange(VariablePosition start, VariablePosition end) {
+        if (assignPositions == null || assignPositions.size() == 0)
+            return false;
+        for (VariablePosition assignedPosition: assignPositions) {
+            if (assignedPosition.isOnOrAfter(start) && assignedPosition.isOnOrBefore(end))
+                return true;
+        }
+        return false;
+    }
+
+    public boolean isMutable() {
+        return !(IMMUTABLES.contains(type));
+    }
+
 }

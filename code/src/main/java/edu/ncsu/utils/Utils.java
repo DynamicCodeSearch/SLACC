@@ -1,11 +1,14 @@
 package edu.ncsu.utils;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Utils {
 
@@ -79,5 +82,34 @@ public class Utils {
     public static String pathJoin(String... paths) {
         return StringUtils.join(paths, File.separator);
     }
+
+    /***
+     * Read all lines from a file as a list of strings
+     * @param fileName Complete path of the file.
+     * @return. Content of file as a list of strings
+     */
+    public static List<String> readLinesFromFile(String fileName) {
+        List<String> lines = new ArrayList<>();
+        String line;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            while ((line = reader.readLine()) != null)
+                lines.add(line);
+            reader.close();
+        } catch (IOException ex) {
+            System.err.println(ex.getMessage());
+            return null;
+        }
+        return lines;
+    }
+
+    /***
+     * Create a random string.
+     * @return Random string
+     */
+    public static String randomString() {
+        return UUID.randomUUID().toString().replaceAll("-", "");
+    }
+
 }
 

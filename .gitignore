@@ -138,4 +138,5 @@ hs_err_pid*
 
 # Local
 projects/src/main/java/Y*
-code/metastore
+code/meta_store
+code/meta_results

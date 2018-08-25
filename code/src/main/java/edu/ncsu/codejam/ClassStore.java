@@ -8,6 +8,7 @@ import edu.ncsu.store.ObjectStore;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.ObjectStoreAdapter;
 import edu.ncsu.visitors.blocks.Type;
+import edu.ncsu.visitors.blocks.Variable;
 
 import java.util.logging.Logger;
 
@@ -66,7 +67,7 @@ public class ClassStore {
                 if (parentVariables != null && parentVariables.size() > 0) {
                     for (JsonElement variable: parentJSON.getAsJsonArray()) {
                         JsonObject variableJSON = variable.getAsJsonObject();
-                        if (!variableJSON.get("scope").toString().equals("private")){
+                        if (!variableJSON.get("scope").toString().equals(Variable.PRIVATE)){
                             variables.add(variableJSON);
                         }
                     }
