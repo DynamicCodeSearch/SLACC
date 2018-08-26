@@ -4,6 +4,7 @@ import edu.ncsu.config.Properties;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.MethodAndVariableAdapter;
 
+import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class Snipper {
@@ -12,7 +13,9 @@ public class Snipper {
 
     private static void snipProblem(String problem) {
         String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
-        for (String user: Utils.listDir(problemDir)) {
+        String[] users = Utils.listDir(problemDir);
+        Arrays.sort(users);
+        for (String user: users) {
             String userDir = Utils.pathJoin(problemDir, user);
             for (String javaFile: Utils.listFilesWithExtension(userDir, ".java", true, true)) {
                 String fileName = Utils.getFileName(javaFile);
