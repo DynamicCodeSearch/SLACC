@@ -196,7 +196,7 @@ public class DummyMethod {
      * @return True if valid function
      */
     private boolean isValidFunction(String functionAsString) {
-        String className = "temp_class_" + Utils.randomString();
+        String className = Properties.TEMPORARY_CLASS_PREFIX + Utils.randomString();
         StringBuilder javaContent = new StringBuilder();
         javaContent.append("package ").append(packageName).append(";\n\n").
                 append(Imports.defaultImports()).

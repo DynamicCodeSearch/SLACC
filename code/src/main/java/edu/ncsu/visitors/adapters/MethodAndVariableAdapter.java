@@ -236,7 +236,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         List<String> functions = new ArrayList<>();
         for (ClassBlock classBlock: this.getClassBlocks()) {
             for (MethodBlock methodBlock: classBlock.getMethodBlocks()) {
-                LOGGER.info(String.format("*** %s.%s ***", classBlock.getName(), methodBlock.getName()));
+//                LOGGER.info(String.format("*** %s.%s ***", classBlock.getName(), methodBlock.getName()));
                 Map<String, Object> visitorArg = new HashMap<>();
                 visitorArg.put("class", classBlock);
                 visitorArg.put("method", methodBlock);
@@ -261,7 +261,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private String saveMethods(List<String> functions) {
-        String className = "generated_class_" + Utils.randomString();
+        String className = Properties.GENERATED_CLASS_PREFIX + Utils.randomString();
         String packageName = VisitorHelper.getPackage(compilationUnit);
         String writePath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(writePath);
