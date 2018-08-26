@@ -39,7 +39,7 @@ public class Crawler {
             String fileHeader = "package " + packageName + ";\n\n";
             fos.write(fileHeader.getBytes());
             String content = IOUtils.toString(inputStream).replaceAll("^\\s*package\\s+.+;", "");
-            content = content.replaceAll("^\\s*private\\s+", "");
+//            content = content.replaceAll("\\s*private\\s+", "");
             fos.write(IOUtils.toByteArray(content));
             fos.flush();
             fos.close();
