@@ -21,7 +21,7 @@ public class Main {
         } else if (args[0].equals("store_objects")) {
             ClassStore.main(args);
         } else if (args[0].equals("snip")) {
-            Snipper.main(args);
+            Snipper.main(Arrays.copyOfRange(args, 1, args.length));
         } else {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }

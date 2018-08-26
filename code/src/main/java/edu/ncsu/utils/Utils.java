@@ -49,6 +49,11 @@ public class Utils {
         return file.exists();
     }
 
+    public static String getFileName(String path) {
+        File file = new File(path);
+        return file.getName();
+    }
+
     /**
      * List all files in folder with the matching extension.
      * @param folderPath Path of the folder
