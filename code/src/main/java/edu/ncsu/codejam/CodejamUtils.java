@@ -19,8 +19,8 @@ public class CodejamUtils {
                 String userDir = Utils.pathJoin(problemDir, user);
                 for (String javaFile: Utils.listFilesWithExtension(userDir, ".java", true, true)) {
                     String fileName = Utils.getFileName(javaFile);
-                    if (fileName.startsWith(Properties.GENERATED_CLASS_PREFIX))
-                        generatedFiles.add(fileName);
+                    if (!fileName.startsWith(Properties.GENERATED_CLASS_PREFIX))
+                        generatedFiles.add(javaFile);
                 }
             }
         }
