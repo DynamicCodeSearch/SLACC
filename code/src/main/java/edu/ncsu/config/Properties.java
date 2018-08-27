@@ -41,10 +41,15 @@ public class Properties {
      */
     public static String META_STORE = Utils.pathJoin(CODE_HOME, "meta_store");
 
+    /***
+     * Codejam meta-store folder.
+     */
+    public static String CODEJAM_META_STORE = Utils.pathJoin(META_STORE, "codejam");
+
     /**
      * Class objects folder
      */
-    public static String CODEJAM_OBJECT_STORE = Utils.pathJoin(META_STORE, "codejam", "classes.json");
+    public static String CODEJAM_OBJECT_STORE = Utils.pathJoin(CODEJAM_META_STORE, "classes.json");
 
     /**
      * Meta-results folder
