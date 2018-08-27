@@ -9,10 +9,7 @@ import edu.ncsu.executors.models.Primitive;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ConstantAdapter extends VoidVisitorAdapter{
 
@@ -39,83 +36,63 @@ public class ConstantAdapter extends VoidVisitorAdapter{
         }
     }
 
+    private void addPrimitive(Primitive primitive, Set<Object> values) {
+        Set<Object> existing = new HashSet<>();
+        if (constantsMap.containsKey(primitive))
+            existing = constantsMap.get(primitive);
+        existing.addAll(values);
+        constantsMap.put(primitive, existing);
+    }
+
+    private String getValidNumericString(String longString, String suffix) {
+        longString = longString.replaceAll("_", "");
+        if (suffix == null) {
+            return longString;
+        }
+        if (longString.toLowerCase().endsWith(suffix)) {
+            return longString.substring(0, longString.length()-1);
+        }
+        return longString;
+    }
+
 
     @Override
     public void visit(IntegerLiteralExpr n, Object arg) {
-        Primitive primitive = Primitive.SHORT;
-        Set<Object> shorts = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            shorts = constantsMap.get(primitive);
-        }
-        Short shortValue = Short.decode(getValidNumericString(n.getValue(), null));
-        shorts.add(shortValue);
-        shorts.add(shortValue + 1);
-        shorts.add(shortValue - 1);
-        constantsMap.put(primitive, shorts);
-
-        primitive = Primitive.INTEGER;
-        Set<Object> integers = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            integers = constantsMap.get(primitive);
-        }
-        Integer longValue = Integer.decode(getValidNumericString(n.getValue(), null));
-        integers.add(longValue);
-        integers.add(longValue + 1);
-        integers.add(longValue - 1);
-        constantsMap.put(primitive, integers);
+        int value = Integer.decode(getValidNumericString(n.getValue(), null));
+        Set<Object> values = new HashSet<Object>(Arrays.asList(value, value + 1, value - 1));
+        if (value > (Short.MIN_VALUE + 1) && value < (Short.MAX_VALUE - 1))
+            addPrimitive(Primitive.SHORT, values);
+        addPrimitive(Primitive.INTEGER, values);
+        addPrimitive(Primitive.LONG, values);
     }
 
     @Override
     public void visit(LongLiteralExpr n, Object arg) {
-        Primitive primitive = Primitive.LONG;
-        Set<Object> longs = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            longs = constantsMap.get(primitive);
-        }
-        Long value = Long.decode(getValidNumericString(n.getValue(), "l"));
-        longs.add(value);
-        longs.add(value + 1);
-        longs.add(value - 1);
-        constantsMap.put(primitive, longs);
+        long value = Long.decode(getValidNumericString(n.getValue(), "l"));
+        Set<Object> values = new HashSet<Object>(Arrays.asList(value, value + 1, value - 1));
+        if (value > (Short.MIN_VALUE + 1) && value < (Short.MAX_VALUE - 1))
+            addPrimitive(Primitive.SHORT, values);
+        if (value > (Integer.MIN_VALUE + 1) && value < (Integer.MAX_VALUE - 1))
+            addPrimitive(Primitive.INTEGER, values);
+        addPrimitive(Primitive.LONG, values);
     }
 
     @Override
     public void visit(DoubleLiteralExpr n, Object arg) {
-        Primitive primitive = Primitive.FLOAT;
-        Set<Object> floats = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            floats = constantsMap.get(primitive);
-        }
-        Float floatValue = Float.parseFloat(getValidNumericString(n.getValue(), "f"));
-        floats.add(floatValue);
-        floats.add(floatValue + 1.0f);
-        floats.add(floatValue - 1.0f);
-        constantsMap.put(primitive, floats);
-
-        primitive = Primitive.DOUBLE;
-        Set<Object> doubles = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            doubles = constantsMap.get(primitive);
-        }
-        Double doubleValue = Double.parseDouble(getValidNumericString(n.getValue(), "d"));
-        doubles.add(doubleValue);
-        doubles.add(doubleValue + 1.0);
-        doubles.add(doubleValue - 1.0);
-        constantsMap.put(primitive, doubles);
+        float floatValue = Float.parseFloat(getValidNumericString(n.getValue(), "f"));
+        Set<Object> floatValues = new HashSet<Object>(Arrays.asList(floatValue, floatValue + 1, floatValue - 1));
+        if (floatValue  > (Float.MIN_VALUE + 1) && floatValue < (Float.MAX_VALUE - 1))
+            addPrimitive(Primitive.FLOAT, floatValues);
+        double doubleValue = Double.parseDouble(getValidNumericString(n.getValue(), "d"));
+        Set<Object> doubleValues = new HashSet<Object>(Arrays.asList(doubleValue, doubleValue + 1, doubleValue - 1));
+        addPrimitive(Primitive.DOUBLE, doubleValues);
     }
 
     @Override
     public void visit(CharLiteralExpr c, Object arg) {
-        Primitive primitive = Primitive.CHARACTER;
-        Set<Object> characters = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            characters = constantsMap.get(primitive);
-        }
-        Character value = c.getValue().charAt(0);
-        characters.add(value);
-        characters.add(value - 1);
-        characters.add(value + 1);
-        constantsMap.put(primitive, characters);
+        char value = c.getValue().charAt(0);
+        Set<Object> values = new HashSet<Object>(Arrays.asList(value, value + 1, value - 1));
+        addPrimitive(Primitive.CHARACTER, values);
     }
 
     @Override
@@ -131,17 +108,6 @@ public class ConstantAdapter extends VoidVisitorAdapter{
 
     public Map<Primitive, Set<Object>> getConstantsMap() {
         return constantsMap;
-    }
-
-    public String getValidNumericString(String longString, String suffix) {
-        longString = longString.replaceAll("_", "");
-        if (suffix == null) {
-            return longString;
-        }
-        if (longString.toLowerCase().endsWith(suffix)) {
-            return longString.substring(0, longString.length()-1);
-        }
-        return longString;
     }
 
 }
