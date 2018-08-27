@@ -1,5 +1,6 @@
 package edu.ncsu;
 
+import edu.ncsu.codejam.Arguments;
 import edu.ncsu.codejam.ClassStore;
 import edu.ncsu.codejam.Crawler;
 import edu.ncsu.codejam.Snipper;
@@ -22,6 +23,8 @@ public class Main {
             ClassStore.main(args);
         } else if (args[0].equals("snip")) {
             Snipper.main(Arrays.copyOfRange(args, 1, args.length));
+        } else if (args[0].equals("extract_primitive_args")) {
+            Arguments.main(args);
         } else {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }
