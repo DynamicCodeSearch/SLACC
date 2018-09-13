@@ -73,8 +73,23 @@ public class Properties {
     public static String GENERATED_CLASS_PREFIX = "generated_class_";
 
     /**
+     * Generated function prefix
+     */
+    public static String GENERATED_FUNCTION_PREFIX = "func_";
+
+    /**
      * Temporary class prefix
      */
     public static String TEMPORARY_CLASS_PREFIX = "temp_class_";
+
+    /**
+     * Number of threads for execution
+     */
+    public static int NUM_THREADS = 4;
+
+    /**
+     * Maximum wait time for execution
+     */
+    public final static int METHOD_EXECUTION_WAIT_TIME = 1;
 
 }
