@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.utils.Utils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -15,7 +16,28 @@ public class ArgumentStore {
 
     public static final String PRIMITIVE_ARGUMENTS_STORE = Utils.pathJoin(Properties.CODEJAM_META_STORE, "primitive_arguments.json");
 
+    public static final String FUZZED_ARGUMENTS_STORE = Utils.pathJoin(Properties.CODEJAM_META_STORE, "fuzzed_arguments.json");
+
     private static final Logger LOGGER = Logger.getLogger(ArgumentStore.class.getName());
+
+    private volatile Map<String, List<List<Object>>> cache;
+
+    private volatile Map<Primitive, Set<Object>> defaultPrimitiveArgs;
+
+    private static volatile ArgumentStore argumentStore = null;
+
+    private ArgumentStore() {
+        cache = loadFromJSONFile();
+        defaultPrimitiveArgs = loadPrimitiveArguments();
+    }
+
+    public static ArgumentStore loadArgumentStore() {
+        if (argumentStore == null) {
+            argumentStore = new ArgumentStore();
+        }
+        return argumentStore;
+    }
+
 
     /**
      * Load Primitive Arguments
@@ -45,7 +67,7 @@ public class ArgumentStore {
      * Save primitive arguments
      * @param primitiveArguments - Map of Primitive and Set of arguments.
      */
-    public static synchronized void savePrimitiveArgumetns(Map<Primitive, Set<Object>> primitiveArguments) {
+    public static synchronized void savePrimitiveArguments(Map<Primitive, Set<Object>> primitiveArguments) {
         LOGGER.info("Saving primitive arguments ... ");
         try (Writer writer = new FileWriter(PRIMITIVE_ARGUMENTS_STORE)) {
             Map<String, Set<Object>> gsonFriendlyArguments = new HashMap<>();
@@ -56,6 +78,28 @@ public class ArgumentStore {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static synchronized Map<String, List<List<Object>>> loadFromJSONFile() {
+        Map<String, List<List<Object>>> cache = new HashMap<>();
+        File jsonFile = new File(FUZZED_ARGUMENTS_STORE);
+        if (!jsonFile.exists())
+            return cache;
+        try (Reader reader = new FileReader(FUZZED_ARGUMENTS_STORE)){
+            Gson gson = new GsonBuilder().create();
+            Map<String, List<List<String>>> gsonData = gson.fromJson(reader, new TypeToken<HashMap<String, List<List<String>>>>(){}.getType());
+            for (String key: gsonData.keySet()) {
+                if (StringUtils.isEmpty(key))
+                    continue;
+//                List<DataType> dataTypes = new ArrayList<>();
+//                for (String dataTypeName: Arrays.asList(key.split("\\s*,\\s*")))
+//                    dataTypes.add(DataType.getDataTypeByName(dataTypeName));
+//                cache.put(key, ArgumentGenerator.convertToArguments(dataTypes, gsonData.get(key)));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return cache;
     }
 
 }

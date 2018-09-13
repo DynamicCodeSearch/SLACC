@@ -23,7 +23,7 @@ public class ClassStore {
             String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
             for (String user: Utils.listDir(problemDir)) {
                 String userDir = Utils.pathJoin(problemDir, user);
-                for (String javaFile: Utils.listFilesWithExtension(userDir, ".java", true, true)) {
+                for (String javaFile: Utils.listNonGeneratedJavaFiles(userDir)) {
                     LOGGER.info(String.format("Processing: %s", javaFile));
                     new ObjectStoreAdapter(javaFile).storeClasses(objectStore);
                 }
@@ -54,6 +54,7 @@ public class ClassStore {
         }
         JsonArray parents = classObject.getAsJsonArray("parents");
         JsonArray variables = classObject.getAsJsonArray("variables");
+        JsonArray constructors = classObject.getAsJsonArray("constructors");
         if (parents != null) {
             for (JsonElement parent: parents) {
                 JsonObject parentJSON = getClassJSON(store, packageName, parent.toString());
@@ -79,25 +80,48 @@ public class ClassStore {
         for (JsonElement variable: variables) {
             JsonObject variableJSON = variable.getAsJsonObject();
             String type = variableJSON.get("type").getAsString();
-            JsonObject typeObject = getClassJSON(store,  packageName, type);
-            if (typeObject != null) {
-                if (!Boolean.parseBoolean(typeObject.get("isValid").toString())) {
-                    isValid = false;
-                    break;
-                }
-            } else if (!Type.isValidType(type)) {
+            if (!isValidType(store, packageName, type)) {
                 isValid = false;
                 break;
             }
-
         }
+        JsonArray updatedConstructors = new JsonArray();
+        for (JsonElement constructor: constructors) {
+            boolean isValidConstructor = true;
+            JsonObject constructorJSON = constructor.getAsJsonObject();
+            for (JsonElement variable: constructorJSON.getAsJsonArray("parameters")) {
+                JsonObject variableJSON = variable.getAsJsonObject();
+                String type = variableJSON.get("type").getAsString();
+                if (!isValidType(store, packageName, type)) {
+                    isValidConstructor = false;
+                    break;
+                }
+            }
+            constructorJSON.addProperty("isValid", isValidConstructor);
+            updatedConstructors.add(constructorJSON);
+        }
+        classObject.add("constructors", updatedConstructors);
         classObject.addProperty("isValid", isValid);
         packageObject.add(className, classObject);
         store.add(packageName, packageObject);
         return classObject;
     }
 
+    private static boolean isValidType(JsonObject store, String packageName, String type) {
+        JsonObject typeObject = getClassJSON(store, packageName, type);
+        boolean isValid = true;
+        if (typeObject != null) {
+            if (!Boolean.parseBoolean(typeObject.get("isValid").toString())) {
+                isValid = false;
+            }
+        } else if (!Type.isValidType(type)) {
+            isValid = false;
+        }
+        return isValid;
+    }
+
     public static void main(String[] args) {
+        objectStore.deleteStore();
         storeClasses();
         markClasses();
     }

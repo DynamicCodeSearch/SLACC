@@ -9,6 +9,7 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
 import edu.ncsu.store.ObjectStore;
 import edu.ncsu.visitors.blocks.Variable;
@@ -51,6 +52,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
                 continue;
             ClassOrInterfaceDeclaration classDeclaration = (ClassOrInterfaceDeclaration) type;
             JsonArray variables =  new JsonArray();
+            JsonArray constructors = new JsonArray();
             JsonArray extendsList = null;
             if (classDeclaration.getExtends().size() > 0) {
                 extendsList = new JsonArray();
@@ -66,9 +68,26 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
                         String variableName = fieldVariable.getId().getName();
                         variables.add(new Variable(variableName, fieldType, modifier).toJson());
                     }
+                } else if (member instanceof ConstructorDeclaration) {
+                    ConstructorDeclaration constructorDeclaration = (ConstructorDeclaration) member;
+                    String modifier = Variable.getModifier(constructorDeclaration.getModifiers());
+                    if (modifier.equals(Variable.PUBLIC) || modifier.equals(Variable.DEFAULT)) {
+                        JsonArray arguments = new JsonArray();
+                        for (Parameter parameter: constructorDeclaration.getParameters()) {
+                            String paramName = parameter.getId().getName();
+                            arguments.add(new Variable(paramName, parameter.getType(), Variable.DEFAULT).toJson());
+                        }
+                        JsonObject constructor = new JsonObject();
+                        constructor.addProperty("scope", modifier);
+                        constructor.add("parameters", arguments);
+                        constructors.add(constructor);
+                    }
                 }
             }
-            store.saveClass(packageName, classDeclaration.getName(), imports, variables, extendsList);
+            boolean isTemplate = ModifierSet.isAbstract(classDeclaration.getModifiers())
+                    || classDeclaration.isInterface();
+            store.saveClass(packageName, classDeclaration.getName(), imports, variables,
+                    extendsList, constructors, isTemplate);
         }
     }
 

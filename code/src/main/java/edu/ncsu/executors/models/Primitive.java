@@ -2,7 +2,7 @@ package edu.ncsu.executors.models;
 
 import java.util.*;
 
-public enum Primitive {
+public enum  Primitive {
 
     SHORT("short", "short", "Short", "java.lang.Short"),
     INTEGER("integer", "int", "Integer", "java.lang.Integer"),
@@ -54,6 +54,14 @@ public enum Primitive {
      */
     public static Primitive getPrimitive(String type) {
         return typeToPrimitiveMap.get(type);
+    }
+
+    /**
+     * @param type - Type as string
+     * @return - Return true if Primitive Enum exists for type
+     */
+    public static boolean isValidType(String type) {
+        return typeToPrimitiveMap.containsKey(type);
     }
 
     /**

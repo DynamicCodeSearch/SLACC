@@ -13,7 +13,7 @@ public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) {
         if (args.length < 1) {
             LOGGER.log(Level.SEVERE, String.format("Size of arguments is less than 0. Arguments = %s",
                     Arrays.toString(args)));

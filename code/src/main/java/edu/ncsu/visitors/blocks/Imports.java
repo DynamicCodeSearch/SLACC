@@ -106,6 +106,13 @@ public class Imports {
         return defaultImportKeys;
     }
 
+    public static List<String> getDefaultImportPackages() {
+        List<String> defaultImportPackages = new ArrayList<>();
+        defaultImportPackages.add("java.lang");
+        defaultImportPackages.add("java.util");
+        return defaultImportPackages;
+    }
+
     /***
      * Default imports currently being run.
      * @return

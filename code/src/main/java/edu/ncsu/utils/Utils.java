@@ -3,6 +3,7 @@ package edu.ncsu.utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import edu.ncsu.config.Properties;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
@@ -66,7 +67,10 @@ public class Utils {
                                                       boolean isAbsolute, boolean checkNest) {
         File directory = new File(folderPath);
         List<String> files = new ArrayList<>();
-        for (File file : directory.listFiles()) {
+        File[] contents = directory.listFiles();
+        if (contents == null)
+            return files;
+        for (File file : contents) {
             if (file.isFile() && file.getName().endsWith(extension)) {
                 if (isAbsolute)
                     files.add(file.getAbsolutePath());
@@ -74,6 +78,22 @@ public class Utils {
                     files.add(file.getName());
             } else if (checkNest && file.isDirectory()) {
                 files.addAll(listFilesWithExtension(file.getAbsolutePath(), extension, isAbsolute, true));
+            }
+        }
+        return files;
+    }
+
+    public static List<String> listNonGeneratedJavaFiles(String folderPath) {
+        File directory = new File(folderPath);
+        List<String> files = new ArrayList<>();
+        File[] contents = directory.listFiles();
+        if (contents == null)
+            return files;
+        for (File file : contents) {
+            if (file.isFile() && !file.getName().startsWith(Properties.GENERATED_CLASS_PREFIX) && file.getName().endsWith(".java")) {
+                files.add(file.getAbsolutePath());
+            } else if (file.isDirectory()) {
+                files.addAll(listNonGeneratedJavaFiles(file.getAbsolutePath()));
             }
         }
         return files;
