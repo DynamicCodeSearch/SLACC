@@ -20,7 +20,7 @@ public class ArgumentStore {
 
     private static final Logger LOGGER = Logger.getLogger(ArgumentStore.class.getName());
 
-    private volatile Map<String, List<List<Object>>> cache;
+    private volatile Map<String, Object> cache;
 
     private volatile Map<Primitive, Set<Object>> defaultPrimitiveArgs;
 
@@ -38,6 +38,19 @@ public class ArgumentStore {
         return argumentStore;
     }
 
+    public synchronized boolean fuzzedKeyExists(String key) {
+        return cache.containsKey(key);
+    }
+
+    public synchronized void saveFuzzedArguments(String key, Object arguments) {
+        cache.put(key, arguments);
+        try(Writer writer = new FileWriter(FUZZED_ARGUMENTS_STORE)) {
+            Gson gson = new GsonBuilder().create();
+            gson.toJson(cache, writer);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Load Primitive Arguments
@@ -80,14 +93,15 @@ public class ArgumentStore {
         }
     }
 
-    private static synchronized Map<String, List<List<Object>>> loadFromJSONFile() {
-        Map<String, List<List<Object>>> cache = new HashMap<>();
+    private static synchronized Map<String, Object> loadFromJSONFile() {
+        Map<String, Object> cache = new HashMap<>();
         File jsonFile = new File(FUZZED_ARGUMENTS_STORE);
         if (!jsonFile.exists())
             return cache;
         try (Reader reader = new FileReader(FUZZED_ARGUMENTS_STORE)){
             Gson gson = new GsonBuilder().create();
-            Map<String, List<List<String>>> gsonData = gson.fromJson(reader, new TypeToken<HashMap<String, List<List<String>>>>(){}.getType());
+            Map<String, Object> gsonData = gson.fromJson(reader, new TypeToken<HashMap<String, Object>>(){}.getType());
+            cache = gsonData;
             for (String key: gsonData.keySet()) {
                 if (StringUtils.isEmpty(key))
                     continue;

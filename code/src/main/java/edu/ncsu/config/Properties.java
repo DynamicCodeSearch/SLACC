@@ -68,6 +68,16 @@ public class Properties {
     public static int MIN_STATEMENT_SIZE = 2;
 
     /**
+     * Maximum array size
+     */
+    public static int MAX_ARRAY_SIZE = 100;
+
+    /***
+     * Number of arguments to generate while fuzzing
+     */
+    public static int FUZZ_ARGUMENT_SIZE = 256;
+
+    /**
      * Generated class prefix
      */
     public static String GENERATED_CLASS_PREFIX = "generated_class_";

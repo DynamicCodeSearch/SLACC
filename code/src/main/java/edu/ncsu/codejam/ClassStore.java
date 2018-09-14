@@ -86,19 +86,30 @@ public class ClassStore {
             }
         }
         JsonArray updatedConstructors = new JsonArray();
-        for (JsonElement constructor: constructors) {
-            boolean isValidConstructor = true;
-            JsonObject constructorJSON = constructor.getAsJsonObject();
-            for (JsonElement variable: constructorJSON.getAsJsonArray("parameters")) {
-                JsonObject variableJSON = variable.getAsJsonObject();
-                String type = variableJSON.get("type").getAsString();
-                if (!isValidType(store, packageName, type)) {
+        if (constructors != null && constructors.size() > 0) {
+            boolean hasOneValidConstructor = false;
+            for (JsonElement constructor: constructors) {
+                boolean isValidConstructor = true;
+                JsonObject constructorJSON = constructor.getAsJsonObject();
+                String scope = constructorJSON.get("scope").getAsString();
+                if (scope.equals(Variable.PUBLIC) || scope.equals(Variable.DEFAULT)) {
+                    for (JsonElement variable: constructorJSON.getAsJsonArray("parameters")) {
+                        JsonObject variableJSON = variable.getAsJsonObject();
+                        String type = variableJSON.get("type").getAsString();
+                        if (!isValidType(store, packageName, type)) {
+                            isValidConstructor = false;
+                            break;
+                        }
+                    }
+                } else {
                     isValidConstructor = false;
-                    break;
                 }
+                if (isValidConstructor)
+                    hasOneValidConstructor = true;
+                constructorJSON.addProperty("isValid", isValidConstructor);
+                updatedConstructors.add(constructorJSON);
             }
-            constructorJSON.addProperty("isValid", isValidConstructor);
-            updatedConstructors.add(constructorJSON);
+            isValid = isValid && hasOneValidConstructor;
         }
         classObject.add("constructors", updatedConstructors);
         classObject.addProperty("isValid", isValid);
@@ -114,7 +125,9 @@ public class ClassStore {
             if (!Boolean.parseBoolean(typeObject.get("isValid").toString())) {
                 isValid = false;
             }
-        } else if (!Type.isValidType(type)) {
+        }
+        // TODO: Check here for List, Set, Map etc.
+        else if (!Type.isValidType(type)) {
             isValid = false;
         }
         return isValid;

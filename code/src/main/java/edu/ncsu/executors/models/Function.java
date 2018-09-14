@@ -2,6 +2,7 @@ package edu.ncsu.executors.models;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -84,6 +85,18 @@ public class Function {
         returnVariable = FunctionVariable.getFunctionVariable(ast.getType(), getPackageName());
         if (!returnVariable.isFuzzable())
             this.isFuzzable = false;
+    }
+
+    public String makeArgumentsKey() {
+        List<String> argKeys = new ArrayList<>();
+        for (FunctionVariable argument: arguments) {
+            String argKey = argument.makeKey();
+            if (argKey != null)
+                argKeys.add(argKey);
+        }
+        if (argKeys.size() == 0)
+            return null;
+        return StringUtils.join(argKeys, ",");
     }
 
 }

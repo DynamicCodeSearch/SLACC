@@ -66,7 +66,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
                     String modifier = Variable.getModifier(fieldDeclaration.getModifiers());
                     for (VariableDeclarator fieldVariable: fieldDeclaration.getVariables()) {
                         String variableName = fieldVariable.getId().getName();
-                        variables.add(new Variable(variableName, fieldType, modifier).toJson());
+                        variables.add(new Variable(variableName, fieldType, packageName, modifier).toJson());
                     }
                 } else if (member instanceof ConstructorDeclaration) {
                     ConstructorDeclaration constructorDeclaration = (ConstructorDeclaration) member;
@@ -75,7 +75,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
                         JsonArray arguments = new JsonArray();
                         for (Parameter parameter: constructorDeclaration.getParameters()) {
                             String paramName = parameter.getId().getName();
-                            arguments.add(new Variable(paramName, parameter.getType(), Variable.DEFAULT).toJson());
+                            arguments.add(new Variable(paramName, parameter.getType(), packageName, Variable.DEFAULT).toJson());
                         }
                         JsonObject constructor = new JsonObject();
                         constructor.addProperty("scope", modifier);
