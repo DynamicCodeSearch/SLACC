@@ -58,6 +58,7 @@ public class Arguments {
         LOGGER.info("Generating random args. Here we go ....");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
         for (String javaFile: javaFiles) {
+            LOGGER.info(String.format("Running for %s", javaFile));
             generateForJavaFile(javaFile);
         }
     }
@@ -69,6 +70,7 @@ public class Arguments {
             Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
             String key = function.makeArgumentsKey();
             if (!store.fuzzedKeyExists(key)) {
+                LOGGER.info(String.format("Storing Key: %s", key));
                 List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(function);
                 store.saveFuzzedArguments(key, arguments);
             }
