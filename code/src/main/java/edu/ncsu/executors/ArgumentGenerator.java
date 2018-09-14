@@ -1,10 +1,14 @@
 package edu.ncsu.executors;
 
-import edu.ncsu.executors.models.ClassMethods;
-import edu.ncsu.executors.models.Function;
-import edu.ncsu.executors.models.Primitive;
+import edu.ncsu.config.Properties;
+import edu.ncsu.executors.models.*;
+import org.apache.commons.lang3.StringUtils;
+import org.omg.Dynamic.Parameter;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
@@ -56,7 +60,7 @@ public class ArgumentGenerator {
         } else if (probability < 0.9) {
             return randInteger(-1000, 1000);
         } else {
-            return randInteger(Integer.MIN_VALUE/2, Integer.MAX_VALUE/2);
+            return randInteger((Integer.MIN_VALUE + 2)/2, Integer.MAX_VALUE/2);
         }
     }
 
@@ -66,7 +70,7 @@ public class ArgumentGenerator {
      * @return - Random integer value in range.
      */
     private static Integer randInteger(Integer low, Integer high) {
-        return ThreadLocalRandom.current().nextInt(low, high);
+        return ThreadLocalRandom.current().nextInt(low, high + 1);
     }
 
     /**
@@ -81,7 +85,7 @@ public class ArgumentGenerator {
         } else if (probability < 0.9) {
             return randLong(-1000L, 1000L);
         } else {
-            return randLong(Long.MIN_VALUE/2, Long.MAX_VALUE/2);
+            return randLong((Long.MIN_VALUE + 2)/2, Long.MAX_VALUE/2);
         }
     }
 
@@ -91,7 +95,7 @@ public class ArgumentGenerator {
      * @return - Return a random long value
      */
     private static Long randLong(Long low, Long high) {
-        return ThreadLocalRandom.current().nextLong(low, high);
+        return ThreadLocalRandom.current().nextLong(low, high + 1);
     }
 
     /**
@@ -106,7 +110,7 @@ public class ArgumentGenerator {
         } else if (probability < 0.9) {
             return randFloat(-1000.0f, 1000.0f);
         } else {
-            return randFloat(Float.MIN_VALUE/2, Float.MAX_VALUE/2);
+            return randFloat((Float.MIN_VALUE + 2)/2, Float.MAX_VALUE/2);
         }
     }
 
@@ -117,7 +121,7 @@ public class ArgumentGenerator {
      * @return - Random float in range
      */
     private static Float randFloat(Float low, Float high) {
-        return (float) ThreadLocalRandom.current().nextDouble(low, high);
+        return (float) ThreadLocalRandom.current().nextDouble(low, high + 1);
     }
 
     /**
@@ -132,7 +136,7 @@ public class ArgumentGenerator {
         } else if (probability < 0.9) {
             return randDouble(-1000.0, 1000.0);
         } else {
-            return randDouble(Double.MIN_VALUE/2, Double.MAX_VALUE/2);
+            return randDouble((Double.MIN_VALUE + 2)/2, Double.MAX_VALUE/2);
         }
     }
 
@@ -143,7 +147,7 @@ public class ArgumentGenerator {
      * @return - Random double in range
      */
     private static Double randDouble(Double low, Double high) {
-        return ThreadLocalRandom.current().nextDouble(low, high);
+        return ThreadLocalRandom.current().nextDouble(low, high + 1);
     }
 
     /**
@@ -205,26 +209,76 @@ public class ArgumentGenerator {
     // *********************************************************************************** //
     // Objects and Functions
 
-    public static void generateArgumentsForClass(ClassMethods classMethods) {
-        for (Method method: classMethods.getMethods()) {
-            Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
-            generateArgumentsForFunction(function);
-        }
-    }
-
-    public static void generateArgumentsForFunction(Function function) {
+    public static List<Object> generateArgumentsForFunction(Function function) {
         if (!function.isValidArgs()) {
             LOGGER.info(String.format("%s does not contain valid arguments", function.getName()));
-            return;
+            return null;
         }
-        System.out.println("***********");
-        System.out.println(function.getName());
-        System.out.println(function.getArguments());
-        System.out.println(function.getReturnVariable());
-        System.out.println("Fuzzable : " + function.isFuzzable());
-        System.out.println("");
+        String argKey = function.makeArgumentsKey();
+//        System.out.println("***********");
+//        System.out.println(function.getName());
+//        System.out.println(function.getArguments());
+//        System.out.println(function.getReturnVariable());
+//        System.out.println("Fuzzable : " + function.isFuzzable());
+//        System.out.println("");
+//        System.out.println("Key: " + argKey);
+        if (StringUtils.isEmpty(argKey)) {
+            LOGGER.info(String.format("%s has an empty key", function.getName()));
+            return null;
+        }
+        List<Object> fuzzed = new ArrayList<>();
+        for (int i=0; i<Properties.FUZZ_ARGUMENT_SIZE; i++) {
+            List<Object> args = new ArrayList<>();
+            for (FunctionVariable variable: function.getArguments()) {
+                List<Object> generated = generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
+                if (generated != null) {
+                    if (generated.size() > 1)
+                        args.add(generated);
+                    else
+                        args.addAll(generated);
 
-        // TODO: Generate arguments based on function variables
+                }
+            }
+            if (args.size() == 0)
+                return null;
+            fuzzed.add(args);
+        }
+        Collections.shuffle(fuzzed);
+        return fuzzed;
+    }
+
+    public static List<Object> generateArgumentsForFunctionVariable(FunctionVariable variable) {
+        return generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
+    }
+
+    private static List<Object> generateArgumentsForFunctionVariable(FunctionVariable variable, int arraySize) {
+        List<Object> args = new ArrayList<>();
+        if (arraySize == 0) {
+            if (variable.getPrimitive() != null) {
+                args.add(generateRandomArgument(variable.getPrimitive()));
+            } else {
+                Constructor constructor = Constructor.getConstructor(variable.getPackageName(), variable.getDataType());
+                for (FunctionVariable param: constructor.getParameters()) {
+                    List<Object> paramArgs = generateArgumentsForFunctionVariable(param);
+                    if (paramArgs != null) {
+                        args.addAll(paramArgs);
+                    }
+                }
+                if (args.size() == 0)
+                    return null;
+            }
+        } else {
+            for (int i=0; i < randInteger(2, Properties.MAX_ARRAY_SIZE); i++) {
+                List<Object> arrArgs = generateArgumentsForFunctionVariable(variable, arraySize - 1);
+                if (arrArgs == null)
+                    return null;
+                if (arrArgs.size() > 1)
+                    args.add(arrArgs);
+                else
+                    args.addAll(arrArgs);
+            }
+        }
+        return args;
     }
 
 }

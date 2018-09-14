@@ -4,10 +4,14 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
+import com.google.gson.JsonObject;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.helpers.UserDefinedObjects;
 import edu.ncsu.visitors.blocks.Imports;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class FunctionVariable {
@@ -37,6 +41,22 @@ public class FunctionVariable {
         throw new RuntimeException("Invalid type " + type.getClass().getName());
     }
 
+    public static FunctionVariable fromJSON(JsonObject variableJSON) {
+        FunctionVariable functionVariable = new FunctionVariable();
+        String dataType = variableJSON.get("type").getAsString();
+        String packageName = null;
+        if (variableJSON.has("packageName"))
+            packageName = variableJSON.get("packageName").getAsString();
+        functionVariable.setType(dataType, packageName);
+        if (variableJSON.has("name"))
+            functionVariable.name = variableJSON.get("name").getAsString();
+        if (variableJSON.has("arrayDimensions"))
+            functionVariable.arrayDimensions = variableJSON.get("arrayDimensions").getAsInt();
+        return functionVariable;
+    }
+
+    private FunctionVariable(){}
+
     public FunctionVariable(PrimitiveType type) {
         this.primitive = Primitive.getPrimitive(type.toStringWithoutComments());
     }
@@ -51,23 +71,27 @@ public class FunctionVariable {
     }
 
     public FunctionVariable(ClassOrInterfaceType type, String packageName) {
-        UserDefinedObjects userDefinedObjects = UserDefinedObjects.getUserDefinedObjects();
-        String dataType = type.getName();
-        if (userDefinedObjects.canBeFuzzed(userDefinedObjects.getClassObject(packageName, dataType))) {
-            this.dataType = dataType;
+        setType(type.getName(), packageName);
+    }
+
+    public void setType(String type, String packageName) {
+        UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects();
+        if (packageName != null && udo.canBeFuzzed(udo.getClassObject(packageName, type))) {
+            this.dataType = type;
             this.packageName = packageName;
             return;
         }
-        if (Primitive.isValidType(dataType)) {
-            this.primitive = Primitive.getPrimitive(dataType);
+        if (Primitive.isValidType(type)) {
+            this.primitive = Primitive.getPrimitive(type);
             return;
         }
-        String systemPackage = getSystemPackage(dataType);
-        if (systemPackage != null) {
-            this.packageName = systemPackage;
-            return;
-        }
-        this.dataType = dataType;
+        // TODO: Uncomment lines below to support List, Set etc.
+//        String systemPackage = getSystemPackage(type);
+//        if (systemPackage != null) {
+//            this.packageName = systemPackage;
+//            return;
+//        }
+        this.dataType = type;
         this.isFuzzable = false;
     }
 
@@ -142,6 +166,10 @@ public class FunctionVariable {
         isFuzzable = isFuzzable;
     }
 
+    public String getPackageName() {
+        return packageName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -169,4 +197,28 @@ public class FunctionVariable {
         }
         return sb.toString();
     }
+
+    public String makeKey() {
+        String key;
+        if (primitive != null) {
+            key = primitive.getName();
+        } else {
+            Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            List<String> paramKeys = new ArrayList<>();
+            for (FunctionVariable parameter: constructor.getParameters()) {
+                String paramKey = parameter.makeKey();
+                if (paramKey != null) {
+                    paramKeys.add(paramKey);
+                }
+            }
+            if (paramKeys.size() == 0)
+                return null;
+            key = StringUtils.join(paramKeys, ",");
+        }
+        if (arrayDimensions > 0) {
+            key = "(" + key + ")@"+arrayDimensions;
+        }
+        return key;
+    }
+
 }

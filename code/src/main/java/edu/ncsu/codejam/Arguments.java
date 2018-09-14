@@ -4,10 +4,12 @@ import edu.ncsu.executors.ArgumentGenerator;
 import edu.ncsu.executors.MethodExecutor;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.models.ClassMethods;
+import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.store.ArgumentStore;
 import edu.ncsu.visitors.adapters.ConstantAdapter;
 
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -15,7 +17,7 @@ public class Arguments {
 
     private static final Logger LOGGER = Logger.getLogger(Arguments.class.getName());
 
-    private static void extractAndStorePrimitiveArguments() {
+    public static void extractAndStorePrimitiveArguments() {
         LOGGER.info("Extracting primitive arguments from generated classes ... ");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
         LOGGER.info(String.format("Number of java files: %d", javaFiles.size()));
@@ -52,24 +54,30 @@ public class Arguments {
         }
     }
 
-    private static void generateRandomArgs() {
+    public static void storeRandomArgs() {
         LOGGER.info("Generating random args. Here we go ....");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
-        ArgumentStore store = ArgumentStore.loadArgumentStore();
         for (String javaFile: javaFiles) {
             generateForJavaFile(javaFile);
-            System.exit(0);
         }
     }
 
     private static void generateForJavaFile(String javaFile) {
-        System.out.println(javaFile);
-        ArgumentGenerator.generateArgumentsForClass(new ClassMethods(javaFile));
-
+        ArgumentStore store = ArgumentStore.loadArgumentStore();
+        ClassMethods classMethods = new ClassMethods(javaFile);
+        for (Method method: classMethods.getMethods()) {
+            Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
+            String key = function.makeArgumentsKey();
+            if (!store.fuzzedKeyExists(key)) {
+                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(function);
+                store.saveFuzzedArguments(key, arguments);
+            }
+        }
     }
 
     public static void main(String[] args) {
-        extractAndStorePrimitiveArguments();
-//        generateForJavaFile("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java");
+//        extractAndStorePrimitiveArguments();
+//        storeRandomArgs();
+        generateForJavaFile("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java");
     }
 }

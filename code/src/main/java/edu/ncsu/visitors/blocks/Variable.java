@@ -6,6 +6,9 @@ import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.google.gson.JsonObject;
+import edu.ncsu.executors.helpers.PackageManager;
+import edu.ncsu.executors.models.Primitive;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -36,6 +39,11 @@ public class Variable {
      * Type of variable
      */
     protected String type;
+
+    /**
+     * Name of package
+     */
+    protected String packageName;
 
     /**
      * Name of variable
@@ -128,7 +136,7 @@ public class Variable {
         this.arrayDimensions = arrayDimensions;
     }
 
-    public Variable(String name, Type type, String scope) {
+    public Variable(String name, Type type, String packageName, String scope) {
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.scope = scope;
@@ -140,6 +148,7 @@ public class Variable {
             this.type = type.toStringWithoutComments();
             this.arrayDimensions = 0;
         }
+        this.packageName = getPackageName(packageName, this.type);
     }
 
     /**
@@ -224,6 +233,7 @@ public class Variable {
     public JsonObject toJson() {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("name", name);
+        jsonObject.addProperty("packageName", packageName);
         jsonObject.addProperty("type", type);
         jsonObject.addProperty("arrayDimensions", arrayDimensions);
         jsonObject.addProperty("scope", scope);
@@ -261,6 +271,24 @@ public class Variable {
 
     public boolean isMutable() {
         return !(IMMUTABLES.contains(type));
+    }
+
+
+    private static String getPackageName(String variablePackage, String type) {
+        try {
+            PackageManager.findClass(variablePackage, type);
+            return variablePackage;
+        } catch (RuntimeException e) {}
+        if (Primitive.isValidType(type))
+            return null;
+        for (String packageName: Imports.getDefaultImportPackages()) {
+            try {
+                PackageManager.findClass(packageName, type);
+                return packageName;
+            } catch (RuntimeException e) {
+            }
+        }
+        return null;
     }
 
 }

@@ -24,7 +24,9 @@ public class Main {
         } else if (args[0].equals("snip")) {
             Snipper.main(Arrays.copyOfRange(args, 1, args.length));
         } else if (args[0].equals("extract_primitive_args")) {
-            Arguments.main(args);
+            Arguments.extractAndStorePrimitiveArguments();
+        } else if (args[0].equals("extract_fuzzed_args")) {
+            Arguments.storeRandomArgs();
         } else {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }
