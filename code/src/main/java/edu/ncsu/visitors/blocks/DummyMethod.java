@@ -186,8 +186,7 @@ public class DummyMethod {
      * @return True of function is valid
      */
     private boolean isValid() {
-        return arguments.size() > 0 ;
-//                && returns.size() > 0;
+        return arguments.size() > 0 && returns.size() > 0;
     }
 
     /***
