@@ -68,6 +68,8 @@ public class Arguments {
         ClassMethods classMethods = new ClassMethods(javaFile);
         for (Method method: classMethods.getMethods()) {
             Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
+            if (!function.isValidArgs())
+                continue;
             String key = function.makeArgumentsKey();
             if (!store.fuzzedKeyExists(key)) {
                 LOGGER.info(String.format("Storing Key: %s", key));
