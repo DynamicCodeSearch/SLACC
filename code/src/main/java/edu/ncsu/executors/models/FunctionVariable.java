@@ -237,6 +237,8 @@ public class FunctionVariable {
             paramKeys.add(primitive.getName());
         } else {
             Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            if (constructor == null || constructor.getParameters() == null)
+                return null;
             for (FunctionVariable parameter: constructor.getParameters()) {
                 List<String> expandedParams = parameter.expandArgs();
                 if (expandedParams != null) {
@@ -298,7 +300,7 @@ public class FunctionVariable {
             for (Object argVal: (List) arg) {
                 vals.add(convertToFunctionArgument(argVal, arraySize - 1));
             }
-            Class arrayClass = Array.newInstance(getClassInstantiation(), arraySize).getClass();
+            Class arrayClass = Array.newInstance(getClassInstantiation(), vals.size()).getClass();
             return Arrays.copyOf(vals.toArray(), vals.size(), arrayClass);
         }
     }
