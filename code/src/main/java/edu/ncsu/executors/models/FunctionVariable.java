@@ -211,6 +211,8 @@ public class FunctionVariable {
             key = primitive.getName();
         } else {
             Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            if (constructor == null || constructor.getParameters() == null)
+                return null;
             List<String> paramKeys = new ArrayList<>();
             for (FunctionVariable parameter: constructor.getParameters()) {
                 String paramKey = parameter.makeKey();

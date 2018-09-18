@@ -1,5 +1,6 @@
 package edu.ncsu.codejam;
 
+import edu.ncsu.config.Properties;
 import edu.ncsu.executors.ArgumentGenerator;
 import edu.ncsu.executors.MethodExecutor;
 import edu.ncsu.executors.helpers.PackageManager;
@@ -7,6 +8,7 @@ import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.store.ArgumentStore;
+import edu.ncsu.store.StoreUtils;
 import edu.ncsu.visitors.adapters.ConstantAdapter;
 
 import java.lang.reflect.Method;
@@ -55,6 +57,7 @@ public class Arguments {
     }
 
     public static void storeRandomArgs() {
+        StoreUtils.deleteStore(Properties.CODEJAM_ARGUMENTS_FOLDER);
         LOGGER.info("Generating random args. Here we go ....");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
         for (String javaFile: javaFiles) {
