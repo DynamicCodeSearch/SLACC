@@ -19,3 +19,9 @@ Similarity in Source Code
     Manually verify how good these clones are between two languages.
 4. Performance
     Time taken to execute and run this entire process
+    
+============  
+5. Comparing graphs 
+    * Create DFA based graphs for python and java
+    * Graph similarity for both. This should be a proxy for code similarity
+    * Verify them
