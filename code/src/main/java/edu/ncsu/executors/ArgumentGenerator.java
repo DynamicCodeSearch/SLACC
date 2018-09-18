@@ -249,6 +249,8 @@ public class ArgumentGenerator {
                 args.add(generateRandomArgument(variable.getPrimitive()));
             } else {
                 Constructor constructor = Constructor.getConstructor(variable.getPackageName(), variable.getDataType());
+                if (constructor == null || constructor.getParameters() == null)
+                    return null;
                 for (FunctionVariable param: constructor.getParameters()) {
                     List<Object> paramArgs = generateArgumentsForFunctionVariable(param);
                     if (paramArgs != null) {
