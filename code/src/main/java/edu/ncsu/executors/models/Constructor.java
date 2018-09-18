@@ -17,7 +17,7 @@ public class Constructor {
 
     private String scope;
 
-    private List<FunctionVariable> parameters;
+    private List<FunctionVariable> parameters = new ArrayList<>();
 
     public String getPackageName() {
         return packageName;
@@ -38,7 +38,6 @@ public class Constructor {
     private Constructor(String packageName, String className) {
         this.packageName = packageName;
         this.className = className;
-        parameters = new ArrayList<>();
     }
 
     public static Constructor getConstructor(String packageName, String className) {

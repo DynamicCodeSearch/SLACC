@@ -59,10 +59,19 @@ public class ClassMethods {
         Class clazz = PackageManager.findClass(packageName, className);
         methodBodies = getMethodBodies();
         methods = new ArrayList<>();
-        for (Method method: clazz.getMethods()) {
+        for (Method method: clazz.getDeclaredMethods()) {
             if (method.getName().startsWith(Properties.GENERATED_FUNCTION_PREFIX)
                     && methodBodies.containsKey(method.getName()))
                 methods.add(method);
         }
+    }
+
+    public MethodDeclaration getMethodBody(String name) {
+        return getMethodBodies().get(name);
+    }
+
+    public Function getFunction(Method method) {
+        MethodDeclaration ast = getMethodBody(method.getName());
+        return new Function(method, ast);
     }
 }

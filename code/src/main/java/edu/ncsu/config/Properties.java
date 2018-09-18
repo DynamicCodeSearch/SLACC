@@ -47,6 +47,16 @@ public class Properties {
     public static String CODEJAM_META_STORE = Utils.pathJoin(META_STORE, "codejam");
 
     /**
+     * Codejam arguments folder
+     */
+    public static String CODEJAM_ARGUMENTS_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "arguments");
+
+    /**
+     * Codejam arguments index
+     */
+    public static String CODEJAM_ARGUMENTS_INDEX = Utils.pathJoin(CODEJAM_ARGUMENTS_FOLDER, "index.json");
+
+    /**
      * Class objects folder
      */
     public static String CODEJAM_OBJECT_STORE = Utils.pathJoin(CODEJAM_META_STORE, "classes.json");
@@ -71,11 +81,13 @@ public class Properties {
      * Maximum array size
      */
     public static int MAX_ARRAY_SIZE = 100;
+//    public static int MAX_ARRAY_SIZE = 5;
 
     /***
      * Number of arguments to generate while fuzzing
      */
     public static int FUZZ_ARGUMENT_SIZE = 256;
+//    public static int FUZZ_ARGUMENT_SIZE = 3;
 
     /**
      * Generated class prefix

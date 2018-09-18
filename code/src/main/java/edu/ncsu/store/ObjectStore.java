@@ -26,19 +26,7 @@ public class ObjectStore {
      * @return - JSONObject of the store file.
      */
     public synchronized JsonObject getStore() {
-        JsonParser parser = new JsonParser();
-        File storeFile = new File(store_path);
-        JsonObject jsonObject;
-        try {
-            if (storeFile.exists()) {
-                jsonObject = (JsonObject) parser.parse(new FileReader(storeFile));
-            } else {
-                jsonObject = new JsonObject();
-            }
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return jsonObject;
+        return StoreUtils.getJsonObject(store_path);
     }
 
     /**
@@ -46,12 +34,7 @@ public class ObjectStore {
      * @param jsonObject - JSONObject to update file.
      */
     public synchronized void saveStore(JsonObject jsonObject) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        try(FileWriter writer = new FileWriter(store_path)) {
-            writer.write(gson.toJson(jsonObject));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        StoreUtils.saveJsonObject(jsonObject, store_path, true);
     }
 
     /**

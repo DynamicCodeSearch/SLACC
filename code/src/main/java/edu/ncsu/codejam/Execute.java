@@ -15,10 +15,7 @@ public class Execute {
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
         ArgumentStore store = ArgumentStore.loadArgumentStore();
         for (String javaFile: javaFiles) {
-            String packageName = CodejamUtils.getPackageName(javaFile);
-            String className = CodejamUtils.getClassName(javaFile);
-            Class clazz = PackageManager.findClass(packageName, className);
-            MethodExecutor executor = new MethodExecutor(javaFile, clazz, store);
+            MethodExecutor executor = new MethodExecutor(javaFile, store);
             executor.process();
             System.exit(0);
         }

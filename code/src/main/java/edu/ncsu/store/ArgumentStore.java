@@ -1,9 +1,9 @@
 package edu.ncsu.store;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import edu.ncsu.config.Properties;
+import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.utils.Utils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,14 +20,12 @@ public class ArgumentStore {
 
     private static final Logger LOGGER = Logger.getLogger(ArgumentStore.class.getName());
 
-    private volatile Map<String, Object> cache;
 
     private volatile Map<Primitive, Set<Object>> defaultPrimitiveArgs;
 
     private static volatile ArgumentStore argumentStore = null;
 
     private ArgumentStore() {
-        cache = loadFromJSONFile();
         defaultPrimitiveArgs = loadPrimitiveArguments();
     }
 
@@ -38,19 +36,8 @@ public class ArgumentStore {
         return argumentStore;
     }
 
-    public synchronized boolean fuzzedKeyExists(String key) {
-        return cache.containsKey(key);
-    }
-
-    public synchronized void saveFuzzedArguments(String key, Object arguments) {
-        cache.put(key, arguments);
-        try(Writer writer = new FileWriter(FUZZED_ARGUMENTS_STORE)) {
-            Gson gson = new GsonBuilder().create();
-            gson.toJson(cache, writer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    // PRIMITIVE ARGUMENTS
+    // ****************************************
 
     /**
      * Load Primitive Arguments
@@ -82,38 +69,68 @@ public class ArgumentStore {
      */
     public static synchronized void savePrimitiveArguments(Map<Primitive, Set<Object>> primitiveArguments) {
         LOGGER.info("Saving primitive arguments ... ");
-        try (Writer writer = new FileWriter(PRIMITIVE_ARGUMENTS_STORE)) {
-            Map<String, Set<Object>> gsonFriendlyArguments = new HashMap<>();
-            for (Primitive primitive: primitiveArguments.keySet())
-                gsonFriendlyArguments.put(primitive.getName(), primitiveArguments.get(primitive));
-            Gson gson = new GsonBuilder().serializeSpecialFloatingPointValues().create();
-            gson.toJson(gsonFriendlyArguments, writer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Map<String, Set<Object>> gsonFriendlyArguments = new HashMap<>();
+        for (Primitive primitive: primitiveArguments.keySet())
+            gsonFriendlyArguments.put(primitive.getName(), primitiveArguments.get(primitive));
+        StoreUtils.saveObject(gsonFriendlyArguments, PRIMITIVE_ARGUMENTS_STORE);
     }
 
-    private static synchronized Map<String, Object> loadFromJSONFile() {
-        Map<String, Object> cache = new HashMap<>();
-        File jsonFile = new File(FUZZED_ARGUMENTS_STORE);
-        if (!jsonFile.exists())
-            return cache;
-        try (Reader reader = new FileReader(FUZZED_ARGUMENTS_STORE)){
-            Gson gson = new GsonBuilder().create();
-            Map<String, Object> gsonData = gson.fromJson(reader, new TypeToken<HashMap<String, Object>>(){}.getType());
-            cache = gsonData;
-            for (String key: gsonData.keySet()) {
-                if (StringUtils.isEmpty(key))
-                    continue;
-//                List<DataType> dataTypes = new ArrayList<>();
-//                for (String dataTypeName: Arrays.asList(key.split("\\s*,\\s*")))
-//                    dataTypes.add(DataType.getDataTypeByName(dataTypeName));
-//                cache.put(key, ArgumentGenerator.convertToArguments(dataTypes, gsonData.get(key)));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return cache;
+    // FUZZED ARGUMENTS
+    // ****************************************
+
+    /**
+     * Check if fuzzed key exists
+     * @param key - Key to be checked
+     * @return - True if key exists
+     */
+    public synchronized boolean fuzzedKeyExists(String key) {
+        return loadFuzzedArgumentIndices().has(key);
+    }
+
+    /**
+     * Save fuzzed arguments
+     * @param key - Key to be saved to
+     * @param arguments - Arguments to save
+     */
+    public synchronized void saveFuzzedArguments(String key, Object arguments) {
+        Utils.mkdir(Properties.CODEJAM_ARGUMENTS_FOLDER);
+        String indexKey = Utils.randomString();
+        saveArgumentIndex(key, indexKey);
+        String argsFile = Utils.pathJoin(Properties.CODEJAM_ARGUMENTS_FOLDER, String.format("%s.json", indexKey));
+        StoreUtils.saveObject(arguments, argsFile);
+    }
+
+    /**
+     * Save Argument Index for a key and index
+     * @param argKey - Argument key
+     * @param indexKey - Index key
+     */
+    private void saveArgumentIndex(String argKey, String indexKey) {
+        JsonObject jsonObject = loadFuzzedArgumentIndices();
+        jsonObject.addProperty(argKey, indexKey);
+        StoreUtils.saveJsonObject(jsonObject, Properties.CODEJAM_ARGUMENTS_INDEX, true);
+    }
+
+    /**
+     * Load fuzzed argument indices
+     * @return - Get a json object for codejam arguments.
+     */
+    private JsonObject loadFuzzedArgumentIndices() {
+        return StoreUtils.getJsonObject(Properties.CODEJAM_ARGUMENTS_INDEX);
+    }
+
+    /**
+     * Load fuzzed arguments.
+     * @param key - Argument key to load
+     * @return - Array of fuzzed arguments.
+     */
+    public JsonArray loadFuzzedArguments(String key) {
+        JsonObject index = loadFuzzedArgumentIndices();
+        if (!index.has(key))
+            return null;
+        String indexKey = index.get(key).getAsString();
+        String filePath = Utils.pathJoin(Properties.CODEJAM_ARGUMENTS_FOLDER, String.format("%s.json", indexKey));
+        return StoreUtils.getJsonArray(filePath);
     }
 
 }

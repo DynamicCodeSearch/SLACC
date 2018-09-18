@@ -2,10 +2,12 @@ package edu.ncsu.executors.models;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Function {
@@ -21,6 +23,8 @@ public class Function {
     private FunctionVariable returnVariable;
 
     private boolean isFuzzable = true;
+
+    private String argsKey;
 
     public String getPackageName() {
         return method.getDeclaringClass().getPackage().getName();
@@ -70,8 +74,16 @@ public class Function {
         return true;
     }
 
+    public List<String> getExpandedArgs() {
+        List<String> expandedArgs = new ArrayList<>();
+        for (FunctionVariable argument: arguments)
+            expandedArgs.addAll(argument.expandArgs());
+        return expandedArgs;
+    }
+
     public Function(Method method, MethodDeclaration ast) {
         this.method = method;
+        this.method.setAccessible(true);
         this.ast = ast;
         arguments = new ArrayList<>();
         for (Parameter parameter: ast.getParameters()) {
@@ -88,15 +100,43 @@ public class Function {
     }
 
     public String makeArgumentsKey() {
-        List<String> argKeys = new ArrayList<>();
-        for (FunctionVariable argument: arguments) {
-            String argKey = argument.makeKey();
-            if (argKey != null)
-                argKeys.add(argKey);
+        if (argsKey == null) {
+            List<String> argKeys = new ArrayList<>();
+            for (FunctionVariable argument: arguments) {
+                String argKey = argument.makeKey();
+                if (argKey != null)
+                    argKeys.add(argKey);
+            }
+            if (argKeys.size() == 0)
+                return null;
+            argsKey = StringUtils.join(argKeys, ",");
         }
-        if (argKeys.size() == 0)
-            return null;
-        return StringUtils.join(argKeys, ",");
+        return argsKey;
     }
 
+    public List<Object> convertToFunctionArguments(Object args) {
+        List argsList;
+        if (getExpandedArgs().size() == 1) {
+            argsList = Collections.singletonList(args);
+        } else {
+            argsList = (List) args;
+        }
+        List funcArgs = new ArrayList();
+        for(int i=0; i<getArguments().size(); i++) {
+            FunctionVariable functionVariable = getArguments().get(i);
+            funcArgs.add(functionVariable.convertToFunctionArgument(argsList.get(i)));
+        }
+        return funcArgs;
+    }
+
+    public JsonObject dumpReturnAsJSON(Object returnVal, String errorMessage) {
+        // TODO: convert to JSON
+        System.out.println(returnVal);
+        System.out.println(String.format("Error: %s", errorMessage));
+        return new JsonObject();
+    }
+
+    public static void main(String[] args) {
+
+    }
 }
