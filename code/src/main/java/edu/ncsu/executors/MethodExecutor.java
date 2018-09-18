@@ -68,7 +68,8 @@ public class MethodExecutor {
     public void process() {
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
-            processFunction(function);
+            if (function.isFuzzable() && function.makeArgumentsKey() != null)
+                processFunction(function);
         }
         shutdown();
     }
@@ -77,6 +78,10 @@ public class MethodExecutor {
     public void processFunction(Function function) {
         System.out.println(String.format("Function: %s", function.getName()));
         List<Object[]> executionArgs = fetchFunctionExecutionArgs(function);
+        if (executionArgs == null || executionArgs.size() == 0) {
+            LOGGER.info(String.format("Execution args does not exist for args key: %s", function.makeArgumentsKey()));
+            return;
+        }
         JsonArray array = new JsonArray();
         for (Object[] executionArg: executionArgs) {
             array.add(profileMethod(function, executionArg));
@@ -100,15 +105,18 @@ public class MethodExecutor {
         };
         Object returnVariable = null;
         String errorMessage = null;
+        long duration = Properties.METHOD_EXECUTION_WAIT_TIME * 1000;
         try {
+            long startTime = System.currentTimeMillis();
             returnVariable = timeLimiter.callWithTimeout(methodCall, Properties.METHOD_EXECUTION_WAIT_TIME,
                     TimeUnit.SECONDS, true);
+            duration = System.currentTimeMillis() - startTime;
         } catch (UncheckedTimeoutException e) {
             errorMessage = String.format("Method timed out after %d seconds", Properties.METHOD_EXECUTION_WAIT_TIME);
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
-        return function.dumpReturnAsJSON(returnVariable, errorMessage);
+        return function.dumpReturnAsJSON(returnVariable, errorMessage, duration);
     }
 
 

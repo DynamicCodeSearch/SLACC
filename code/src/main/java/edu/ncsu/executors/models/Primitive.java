@@ -1,5 +1,8 @@
 package edu.ncsu.executors.models;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonPrimitive;
+
 import java.util.*;
 
 public enum  Primitive {
@@ -110,13 +113,39 @@ public enum  Primitive {
             case FLOAT:
                 return (float) Double.parseDouble(argString);
             case DOUBLE:
-                return (double) Double.parseDouble(argString);
+                return Double.parseDouble(argString);
             case BOOLEAN:
                 return Boolean.parseBoolean(argString);
             case BYTE:
                 return Byte.parseByte(argString);
             case STRING:
                 return argString;
+            default:
+                throw new RuntimeException(String.format(
+                        "Currently we do not support the class %s", primitive.getName()));
+        }
+    }
+
+    public static JsonElement convertToArgumentJSON(Primitive primitive, String argString) {
+        switch (primitive) {
+            case SHORT:
+                return new JsonPrimitive((short) Double.parseDouble(argString));
+            case INTEGER:
+                return new JsonPrimitive((int) Double.parseDouble(argString));
+            case LONG:
+                return new JsonPrimitive((long) Double.parseDouble(argString));
+            case CHARACTER:
+                return new JsonPrimitive(argString.charAt(0));
+            case FLOAT:
+                return new JsonPrimitive((float) Double.parseDouble(argString));
+            case DOUBLE:
+                return new JsonPrimitive(Double.parseDouble(argString));
+            case BOOLEAN:
+                return new JsonPrimitive(Boolean.parseBoolean(argString));
+            case BYTE:
+                return new JsonPrimitive(Byte.parseByte(argString));
+            case STRING:
+                return new JsonPrimitive(argString);
             default:
                 throw new RuntimeException(String.format(
                         "Currently we do not support the class %s", primitive.getName()));
