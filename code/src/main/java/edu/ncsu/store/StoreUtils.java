@@ -54,4 +54,9 @@ public class StoreUtils {
         }
     }
 
+    public static void deleteStore(String storePath) {
+        File storeFile = new File(storePath);
+        storeFile.delete();
+    }
+
 }

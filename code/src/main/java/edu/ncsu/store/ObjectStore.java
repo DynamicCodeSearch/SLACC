@@ -9,15 +9,15 @@ public class ObjectStore {
 
     private final static Logger LOGGER = Logger.getLogger(ObjectStore.class.getName());
 
-    private String store_path;
+    private String storePath;
 
     /**
      * Create instance of object store
-     * @param store_path - Path of json object store
+     * @param storePath - Path of json object store
      */
-    public ObjectStore(String store_path) {
-        this.store_path = store_path;
-        File storeFile = new File(store_path);
+    public ObjectStore(String storePath) {
+        this.storePath = storePath;
+        File storeFile = new File(storePath);
         if (!storeFile.getParentFile().exists())
             storeFile.getParentFile().mkdirs();
     }
@@ -26,7 +26,7 @@ public class ObjectStore {
      * @return - JSONObject of the store file.
      */
     public synchronized JsonObject getStore() {
-        return StoreUtils.getJsonObject(store_path);
+        return StoreUtils.getJsonObject(storePath);
     }
 
     /**
@@ -34,16 +34,15 @@ public class ObjectStore {
      * @param jsonObject - JSONObject to update file.
      */
     public synchronized void saveStore(JsonObject jsonObject) {
-        StoreUtils.saveJsonObject(jsonObject, store_path, true);
+        StoreUtils.saveJsonObject(jsonObject, storePath, true);
     }
 
     /**
      * Delete JSON file.
      * @return - Status of delete
      */
-    public synchronized boolean deleteStore() {
-        File storeFile = new File(store_path);
-        return storeFile.delete();
+    public synchronized void deleteStore() {
+        StoreUtils.deleteStore(storePath);
     }
 
     /***
