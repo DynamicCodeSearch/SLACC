@@ -94,9 +94,14 @@ public class Function {
                 this.isFuzzable = false;
             arguments.add(variable);
         }
-        returnVariable = FunctionVariable.getFunctionVariable(ast.getType(), getPackageName());
-        if (!returnVariable.isFuzzable())
+        try {
+            returnVariable = FunctionVariable.getFunctionVariable(ast.getType(), getPackageName());
+            if (!returnVariable.isFuzzable())
+                this.isFuzzable = false;
+        } catch (RuntimeException e) {
+            returnVariable = null;
             this.isFuzzable = false;
+        }
     }
 
     public String makeArgumentsKey() {
