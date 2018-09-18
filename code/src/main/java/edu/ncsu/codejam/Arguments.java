@@ -77,7 +77,8 @@ public class Arguments {
             if (!store.fuzzedKeyExists(key)) {
                 LOGGER.info(String.format("Storing Key: %s", key));
                 List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(function);
-                store.saveFuzzedArguments(key, arguments);
+                if (arguments != null)
+                    store.saveFuzzedArguments(key, arguments);
             }
         }
     }
