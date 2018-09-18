@@ -10,7 +10,11 @@ import edu.ncsu.executors.helpers.UserDefinedObjects;
 import edu.ncsu.visitors.blocks.Imports;
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -83,6 +87,9 @@ public class FunctionVariable {
         }
         if (Primitive.isValidType(type)) {
             this.primitive = Primitive.getPrimitive(type);
+            if (Primitive.isBoxed(type)) {
+                this.dataType = type;
+            }
             return;
         }
         // TODO: Uncomment lines below to support List, Set etc.
@@ -218,7 +225,129 @@ public class FunctionVariable {
         if (arrayDimensions > 0) {
             key = "(" + key + ")@"+arrayDimensions;
         }
+
         return key;
+    }
+
+    public List<String> expandArgs() {
+        List<String> paramKeys = new ArrayList<>();
+        if (primitive != null) {
+            paramKeys.add(primitive.getName());
+        } else {
+            Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            for (FunctionVariable parameter: constructor.getParameters()) {
+                List<String> expandedParams = parameter.expandArgs();
+                if (expandedParams != null) {
+                    paramKeys.addAll(expandedParams);
+                }
+            }
+            if (paramKeys.size() == 0)
+                return null;
+        }
+        if (arrayDimensions > 0) {
+            return Collections.singletonList("(" + StringUtils.join(paramKeys, ",") + ")@"+arrayDimensions);
+        }
+        return paramKeys;
+    }
+
+    public Object convertToFunctionArgument(Object arg) {
+        return convertToFunctionArgument(arg, arrayDimensions);
+    }
+
+    private Object convertToFunctionArgument(Object arg, int arraySize) {
+        if (arraySize == 0) {
+            if (primitive != null) {
+                if (arg instanceof List) {
+                    List argList = (List) arg;
+                    Object argVal = argList.get(0);
+                    argList.remove(0);
+                    return Primitive.convertToArgument(primitive, argVal.toString());
+                } else {
+                    return Primitive.convertToArgument(primitive, arg.toString());
+                }
+            } else {
+                Constructor constructor = Constructor.getConstructor(packageName, dataType);
+                List<Object> argVals = new ArrayList();
+                if (constructor.getParameters().size() > 0) {
+                    List argList;
+                    if (constructor.getParameters().size() == 1) {
+                        argList = Collections.singletonList(arg);
+                    } else {
+                        argList = (List) arg;
+                    }
+                    for (int i=0; i<constructor.getParameters().size(); i++) {
+                        FunctionVariable parameter = constructor.getParameters().get(i);
+                        argVals.add(parameter.convertToFunctionArgument(argList));
+                    }
+                }
+                java.lang.reflect.Constructor classConstructor = getClassConstructor();
+                try {
+                    return classConstructor.newInstance(argVals.toArray());
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(String.format("InstantiationException: %s", e.getMessage()), e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(String.format("IllegalAccessException: %s", e.getMessage()), e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(String.format("InvocationTargetException: %s", e.getMessage()), e.getTargetException());
+                }
+            }
+        } else {
+            List<Object> vals = new ArrayList<>();
+            for (Object argVal: (List) arg) {
+                vals.add(convertToFunctionArgument(argVal, arraySize - 1));
+            }
+            Class arrayClass = Array.newInstance(getClassInstantiation(), arraySize).getClass();
+            return Arrays.copyOf(vals.toArray(), vals.size(), arrayClass);
+        }
+    }
+
+    public Class getClassInstantiation() {
+        if (primitive != null) {
+            if (dataType != null) {
+                return Primitive.getPrimitiveBoxedClass(primitive);
+            } else {
+                return Primitive.getPrimitiveClass(primitive);
+            }
+        } else {
+            return PackageManager.findClass(packageName, dataType);
+        }
+    }
+
+    public java.lang.reflect.Constructor getClassConstructor() {
+        if (primitive != null) {
+            throw new RuntimeException(String.format("Constructor cannot be created for primitive type: %s", primitive.getName()));
+        }
+        Class objClass = getClassInstantiation();
+        List<Class> constructorClasses = new ArrayList<>();
+        Constructor constructor = Constructor.getConstructor(packageName, dataType);
+        for (FunctionVariable parameter: constructor.getParameters()) {
+            constructorClasses.add(parameter.getClassInstantiation());
+        }
+        try {
+            java.lang.reflect.Constructor classConstructor = objClass.getDeclaredConstructor(constructorClasses.toArray(new Class[0]));
+            classConstructor.setAccessible(true);
+            return classConstructor;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void xyz(Object x) {
+        if (x instanceof List) {
+            List y = ((List) x);
+            y.remove(0);
+        }
+    }
+
+    public static void main(String[] args) {
+        List<String> arrayList = new ArrayList<>();
+        arrayList.add("a");
+        arrayList.add("b");
+        arrayList.add("c");
+        System.out.println(arrayList);
+        xyz(arrayList);
+        System.out.println(arrayList);
+
     }
 
 }

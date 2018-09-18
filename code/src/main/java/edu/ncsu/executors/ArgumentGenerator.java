@@ -3,9 +3,7 @@ package edu.ncsu.executors;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.*;
 import org.apache.commons.lang3.StringUtils;
-import org.omg.Dynamic.Parameter;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -215,13 +213,6 @@ public class ArgumentGenerator {
             return null;
         }
         String argKey = function.makeArgumentsKey();
-//        System.out.println("***********");
-//        System.out.println(function.getName());
-//        System.out.println(function.getArguments());
-//        System.out.println(function.getReturnVariable());
-//        System.out.println("Fuzzable : " + function.isFuzzable());
-//        System.out.println("");
-//        System.out.println("Key: " + argKey);
         if (StringUtils.isEmpty(argKey)) {
             LOGGER.info(String.format("%s has an empty key", function.getName()));
             return null;

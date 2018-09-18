@@ -34,6 +34,15 @@ public enum  Primitive {
      */
     private List<String> types;
 
+    static {
+        // Populating the maps
+        for (Primitive dataType: Primitive.values()) {
+            nameToPrimitiveMap.put(dataType.name, dataType);
+            for (String className: dataType.getTypes())
+                typeToPrimitiveMap.put(className, dataType);
+        }
+    }
+
     /**
      * @return - Name of the Primitive.
      */
@@ -82,28 +91,26 @@ public enum  Primitive {
         this.types = new ArrayList<>(Arrays.asList(types));
     }
 
-    static {
-        for (Primitive dataType: Primitive.values()) {
-            nameToPrimitiveMap.put(dataType.name, dataType);
-            for (String className: dataType.getTypes())
-                typeToPrimitiveMap.put(className, dataType);
-        }
-    }
-
+    /**
+     *
+     * @param primitive
+     * @param argString
+     * @return
+     */
     public static Object convertToArgument(Primitive primitive, String argString) {
         switch (primitive) {
             case SHORT:
-                return Short.parseShort(argString);
+                return (short) Double.parseDouble(argString);
             case INTEGER:
-                return Integer.parseInt(argString);
+                return (int) Double.parseDouble(argString);
             case LONG:
-                return Long.parseLong(argString);
+                return (long) Double.parseDouble(argString);
             case CHARACTER:
                 return argString.charAt(0);
             case FLOAT:
-                return Float.parseFloat(argString);
+                return (float) Double.parseDouble(argString);
             case DOUBLE:
-                return Double.parseDouble(argString);
+                return (double) Double.parseDouble(argString);
             case BOOLEAN:
                 return Boolean.parseBoolean(argString);
             case BYTE:
@@ -114,5 +121,69 @@ public enum  Primitive {
                 throw new RuntimeException(String.format(
                         "Currently we do not support the class %s", primitive.getName()));
         }
+    }
+
+    /**
+     * Get class of primitive type
+     * @param primitive - Enum of primitive
+     * @return - Class of primitive type
+     */
+    public static Class getPrimitiveClass(Primitive primitive) {
+        switch (primitive) {
+            case SHORT:
+                return short.class;
+            case INTEGER:
+                return int.class;
+            case LONG:
+                return long.class;
+            case CHARACTER:
+                return char.class;
+            case FLOAT:
+                return float.class;
+            case DOUBLE:
+                return double.class;
+            case BOOLEAN:
+                return boolean.class;
+            case BYTE:
+                return byte.class;
+            default:
+                throw new RuntimeException(String.format(
+                        "Currently we do not support the class %s", primitive.getName()));
+        }
+    }
+
+    /**
+     * Get boxed version class of primitive type
+     * @param primitive - Enum of primitive
+     * @return - Class of boxed primitive type
+     */
+    public static Class getPrimitiveBoxedClass(Primitive primitive) {
+        switch (primitive) {
+            case SHORT:
+                return Short.class;
+            case INTEGER:
+                return Integer.class;
+            case LONG:
+                return Long.class;
+            case CHARACTER:
+                return Character.class;
+            case FLOAT:
+                return Float.class;
+            case DOUBLE:
+                return Double.class;
+            case BOOLEAN:
+                return Boolean.class;
+            case BYTE:
+                return Byte.class;
+            case STRING:
+                return String.class;
+            default:
+                throw new RuntimeException(String.format(
+                        "Currently we do not support the class %s", primitive.getName()));
+        }
+    }
+
+    public static boolean isBoxed(String type) {
+        return Character.isUpperCase(type.charAt(0));
     }
 }
