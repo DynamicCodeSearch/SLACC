@@ -253,7 +253,12 @@ public class Variable {
     }
 
     public String toTypeString() {
-        StringBuilder typeString = new StringBuilder(this.type);
+        StringBuilder typeString = new StringBuilder();
+        if (Primitive.isValidType(type)) {
+            typeString.append(Primitive.getBoxedName(Primitive.getPrimitive(type)));
+        } else {
+            typeString.append(type);
+        }
         for (int i=0; i<this.arrayDimensions; i++)
             typeString.append("[]");
         return typeString.toString();

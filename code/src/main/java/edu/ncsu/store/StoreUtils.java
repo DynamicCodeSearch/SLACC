@@ -9,18 +9,18 @@ public class StoreUtils {
     public static JsonElement getJsonElement(String filePath) {
         JsonParser parser = new JsonParser();
         File storeFile = new File(filePath);
-        JsonObject jsonObject;
+        JsonElement jsonElement;
         try {
             if (storeFile.exists()) {
-                jsonObject = (JsonObject) parser.parse(new FileReader(storeFile));
+                jsonElement = parser.parse(new FileReader(storeFile));
             } else {
-                jsonObject = new JsonObject();
+                jsonElement = new JsonObject();
             }
 
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return jsonObject;
+        return jsonElement;
     }
 
     public static JsonObject getJsonObject(String filePath) {

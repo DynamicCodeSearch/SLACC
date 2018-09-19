@@ -10,6 +10,7 @@ import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.store.ArgumentStore;
+import edu.ncsu.store.StoreUtils;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -20,7 +21,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 public class MethodExecutor {
@@ -66,26 +66,41 @@ public class MethodExecutor {
 
 
     public void process() {
+        JsonObject results = new JsonObject();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
-            if (function.isFuzzable() && function.makeArgumentsKey() != null)
-                processFunction(function);
+            if (function.isFuzzable() && function.makeArgumentsKey() != null) {
+                JsonObject processResults = processFunction(function);
+                if (processResults != null) {
+                    results.add(function.getName(), processResults);
+                }
+            }
+
+        }
+        if (results.size() == 0) {
+            LOGGER.info("None of the functions logged from " + classMethods.getClassName());
+        } else {
+            StoreUtils.saveJsonObject(results, "temp.json", true);
         }
         shutdown();
     }
 
 
-    public void processFunction(Function function) {
+    public JsonObject processFunction(Function function) {
         System.out.println(String.format("Function: %s", function.getName()));
         List<Object[]> executionArgs = fetchFunctionExecutionArgs(function);
         if (executionArgs == null || executionArgs.size() == 0) {
             LOGGER.info(String.format("Execution args does not exist for args key: %s", function.makeArgumentsKey()));
-            return;
+            return null;
         }
-        JsonArray array = new JsonArray();
+        JsonArray executions = new JsonArray();
         for (Object[] executionArg: executionArgs) {
-            array.add(profileMethod(function, executionArg));
+            executions.add(profileMethod(function, executionArg));
         }
+        JsonObject functionData = new JsonObject();
+        functionData.addProperty("inputKey", function.makeArgumentsKey());
+        functionData.add("outputs", executions);
+        return functionData;
     }
 
 

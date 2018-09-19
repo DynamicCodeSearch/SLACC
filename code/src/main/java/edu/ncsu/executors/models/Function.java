@@ -126,88 +126,100 @@ public class Function {
     }
 
     public List<Object> convertToFunctionArguments(Object args) {
-        List argsList;
-        if (getExpandedArgs().size() == 1) {
-            argsList = Collections.singletonList(args);
-        } else {
-            argsList = (List) args;
-        }
+        JsonArray argsJsonArray = (JsonArray) args;
         List funcArgs = new ArrayList();
         for(int i=0; i<getArguments().size(); i++) {
             FunctionVariable functionVariable = getArguments().get(i);
-            funcArgs.add(functionVariable.convertToFunctionArgument(argsList.get(i)));
+            funcArgs.add(functionVariable.convertToFunctionArgument(argsJsonArray));
         }
         return funcArgs;
     }
 
     public JsonObject dumpReturnAsJSON(Object returnVal, String errorMessage, long duration) {
         // TODO: convert to JSON
-        System.out.println(returnVal);
-        System.out.println(String.format("Error: %s", errorMessage));
-        return new JsonObject();
+        JsonObject formatted = new JsonObject();
+        formatted.add("return", formatAsJSON(returnVal));
+        formatted.addProperty("errorMessage", errorMessage);
+        formatted.addProperty("duration", duration);
+        return formatted;
     }
 
     private static JsonElement formatAsJSON(Object object) {
-        Field[] fields = object.getClass().getDeclaredFields();
-        JsonObject jsonObject = new JsonObject();
-        try {
-            for (Field field: fields) {
-                field.setAccessible(true);
-                Object value = field.get(object);
-                if (field.getType().isArray()) {
-                    JsonArray array = new JsonArray();
-                    Class arrayClass = Array.newInstance(field.getType().getComponentType(),
-                            Array.getLength(value)).getClass();
-                    for (Object arrayElement: Arrays.copyOf((Object[]) value, Array.getLength(value), arrayClass)) {
-                        array.add(formatAsJSON(arrayElement));
+        if (object == null)
+            return null;
+        if (object != null && object.getClass().isArray()) {
+            JsonArray array = new JsonArray();
+            for (Object obj: (Object []) object) {
+                array.add(formatAsJSON(obj));
+            }
+            return array;
+        } else {
+            JsonObject jsonObject = new JsonObject();
+            if (Primitive.isValidType(object.getClass().getSimpleName())) {
+                Primitive primitive = Primitive.getPrimitive(object.getClass().getSimpleName());
+                return Primitive.convertToArgumentJSON(primitive, object.toString());
+            } else {
+                Field[] fields = object.getClass().getDeclaredFields();
+                try {
+                    for (Field field: fields) {
+                        field.setAccessible(true);
+                        Object value = field.get(object);
+                        if (field.getType().isArray()) {
+                            JsonArray array = new JsonArray();
+                            Class arrayClass = Array.newInstance(field.getType().getComponentType(),
+                                    Array.getLength(value)).getClass();
+                            for (Object arrayElement: Arrays.copyOf((Object[]) value, Array.getLength(value), arrayClass)) {
+                                array.add(formatAsJSON(arrayElement));
+                            }
+                            jsonObject.add(field.getName(), array);
+                        } else {
+                            String type = value.getClass().getSimpleName();
+                            if (Primitive.isValidType(type)) {
+                                Primitive primitive = Primitive.getPrimitive(type);
+                                jsonObject.add(field.getName(), Primitive.convertToArgumentJSON(primitive, value.toString()));
+                            } else {
+                                jsonObject.add(field.getName(), formatAsJSON(value));
+                            }
+                        }
                     }
-                    jsonObject.add(field.getName(), array);
-                } else {
-                    String type = value.getClass().getSimpleName();
-                    if (Primitive.isValidType(type)) {
-                        Primitive primitive = Primitive.getPrimitive(type);
-                        jsonObject.add(field.getName(), Primitive.convertToArgumentJSON(primitive, value.toString()));
-                    } else {
-                        jsonObject.add(field.getName(), formatAsJSON(value));
-                    }
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
                 }
             }
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
+            return jsonObject;
         }
-        return jsonObject;
     }
 
-    public static void main(String[] args) {
-        Point a = new Point(2, 3);
-        Point b = new Point(4, 5);
-        Segment segment = new Segment(a, b);
-        System.out.println(Function.formatAsJSON(segment));;
-    }
+//    public static void main(String[] args) {
+//        Point a = new Point(2, 3);
+//        Point b = new Point(4, 5);
+//        Segment segment = new Segment(a, b);
+//        System.out.println(Function.formatAsJSON(segment));;
+//    }
 }
 
-class Point {
-    double x;
-    private double y;
-
-    Point(double x, double y) {
-        this.x = x;
-        this.y = y;
-    }
-}
-
-
-class Segment {
-    private Point[] points;
-    int x = 5;
-    Point p1;
-    Point p2;
-
-    Segment(Point p1, Point p2) {
-        this.p1 = p1;
-        this.p2 = p2;
-        points = new Point[2];
-        points[0] = p1;
-        points[1] = p2;
-    }
-}
+//class Point {
+//    double x;
+//    private double y;
+//
+//    Point(double x, double y) {
+//        this.x = x;
+//        this.y = y;
+//    }
+//}
+//
+//
+//class Segment {
+//    private Point[] points;
+//    int x = 5;
+//    Point p1;
+//    Point p2;
+//
+//    Segment(Point p1, Point p2) {
+//        this.p1 = p1;
+//        this.p2 = p2;
+//        points = new Point[2];
+//        points[0] = p1;
+//        points[1] = p2;
+//    }
+//}

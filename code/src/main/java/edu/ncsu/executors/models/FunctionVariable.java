@@ -4,6 +4,8 @@ import com.github.javaparser.ast.type.ClassOrInterfaceType;
 import com.github.javaparser.ast.type.PrimitiveType;
 import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.helpers.UserDefinedObjects;
@@ -254,34 +256,23 @@ public class FunctionVariable {
         return paramKeys;
     }
 
-    public Object convertToFunctionArgument(Object arg) {
+    public Object convertToFunctionArgument(JsonArray arg) {
         return convertToFunctionArgument(arg, arrayDimensions);
     }
 
-    private Object convertToFunctionArgument(Object arg, int arraySize) {
+    private Object convertToFunctionArgument(JsonArray arg, int arraySize) {
         if (arraySize == 0) {
             if (primitive != null) {
-                if (arg instanceof List) {
-                    List argList = (List) arg;
-                    Object argVal = argList.get(0);
-                    argList.remove(0);
-                    return Primitive.convertToArgument(primitive, argVal.toString());
-                } else {
-                    return Primitive.convertToArgument(primitive, arg.toString());
-                }
+                Object argVal = arg.get(0);
+                arg.remove(0);
+                return Primitive.convertToArgument(primitive, argVal.toString());
             } else {
                 Constructor constructor = Constructor.getConstructor(packageName, dataType);
-                List<Object> argVals = new ArrayList();
-                if (constructor.getParameters().size() > 0) {
-                    List argList;
-                    if (constructor.getParameters().size() == 1) {
-                        argList = Collections.singletonList(arg);
-                    } else {
-                        argList = (List) arg;
-                    }
+                List<Object> argVals = new ArrayList<>();
+                if (constructor != null && constructor.getParameters() != null && constructor.getParameters().size() > 0) {
                     for (int i=0; i<constructor.getParameters().size(); i++) {
                         FunctionVariable parameter = constructor.getParameters().get(i);
-                        argVals.add(parameter.convertToFunctionArgument(argList));
+                        argVals.add(parameter.convertToFunctionArgument(arg));
                     }
                 }
                 java.lang.reflect.Constructor classConstructor = getClassConstructor();
@@ -296,11 +287,14 @@ public class FunctionVariable {
                 }
             }
         } else {
+            JsonElement arrayArg = arg.get(0);
+            arg.remove(0);
             List<Object> vals = new ArrayList<>();
-            for (Object argVal: (List) arg) {
-                vals.add(convertToFunctionArgument(argVal, arraySize - 1));
+            for (JsonElement argVal: arrayArg.getAsJsonArray()) {
+                vals.add(convertToFunctionArgument(argVal.getAsJsonArray(), arraySize - 1));
             }
-            Class arrayClass = Array.newInstance(getClassInstantiation(), vals.size()).getClass();
+            Class baseClass = getClassInstantiation();
+            Class arrayClass = Array.newInstance(baseClass, vals.size()).getClass();
             return Arrays.copyOf(vals.toArray(), vals.size(), arrayClass);
         }
     }
@@ -343,14 +337,25 @@ public class FunctionVariable {
         }
     }
 
+    public static void sum(int[] a) {
+        int sum = 0;
+        for (int i=0; i<a.length; i++) {
+            sum += i;
+        }
+        System.out.println(sum);
+    }
+
     public static void main(String[] args) {
-        List<String> arrayList = new ArrayList<>();
-        arrayList.add("a");
-        arrayList.add("b");
-        arrayList.add("c");
-        System.out.println(arrayList);
-        xyz(arrayList);
-        System.out.println(arrayList);
+        List<Object> arrayList = new ArrayList<>();
+        arrayList.add(1);
+        arrayList.add(2);
+        arrayList.add(3);
+        Class baseClass = int.class;
+        Object arrayClass = Array.newInstance(baseClass, arrayList.size());
+        System.arraycopy(arrayList.toArray(), 0, arrayClass, 0, arrayList.size());
+        System.out.println(arrayClass);
+//        System.out.println(Arrays.toString(Arrays.copyOf(arrayList.toArray(), arrayList.size(), arrayClass)));;
+
 
     }
 
