@@ -1,9 +1,6 @@
 package edu.ncsu;
 
-import edu.ncsu.codejam.Arguments;
-import edu.ncsu.codejam.ClassStore;
-import edu.ncsu.codejam.Crawler;
-import edu.ncsu.codejam.Snipper;
+import edu.ncsu.codejam.*;
 
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -27,6 +24,8 @@ public class Main {
             Arguments.extractAndStorePrimitiveArguments();
         } else if (args[0].equals("extract_fuzzed_args")) {
             Arguments.storeRandomArgs();
+        } else if (args[0].equals("execute")) {
+            Execute.main(Arrays.copyOfRange(args, 1, args.length));
         } else {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }

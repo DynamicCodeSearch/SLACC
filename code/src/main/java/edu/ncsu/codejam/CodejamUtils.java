@@ -19,7 +19,7 @@ public class CodejamUtils {
         return generatedFiles;
     }
 
-    private static List<String> listGeneratedFiles(String problemPath) {
+    public static List<String> listGeneratedFiles(String problemPath) {
         List<String> generatedFiles = new ArrayList<>();
         String[] users = Utils.listDir(problemPath);
         Arrays.sort(users);
