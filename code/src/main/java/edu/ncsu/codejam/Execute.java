@@ -1,29 +1,39 @@
 package edu.ncsu.codejam;
 
+import edu.ncsu.config.Properties;
 import edu.ncsu.executors.MethodExecutor;
-import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.store.ArgumentStore;
+import edu.ncsu.utils.Utils;
 
-import java.util.List;
 import java.util.logging.Logger;
 
 public class Execute {
     private static final Logger LOGGER = Logger.getLogger(Execute.class.getName());
 
     public static void execute() {
-        LOGGER.info("Executing codejam projects. Here we go ....");
-        List<String> javaFiles = CodejamUtils.listGeneratedFiles();
+        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+            executeProblem(problem);
+        }
+    }
+
+    public static void executeProblem(String problem) {
+        LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
+        String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
         ArgumentStore store = ArgumentStore.loadArgumentStore();
-        for (String javaFile: javaFiles) {
+        for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
             executor.process();
-            System.exit(0);
         }
-
     }
 
     public static void main(String[] args) {
-        execute();
+        if (args.length > 0) {
+            LOGGER.info(String.format("Running for %s" , args[0]));
+            executeProblem(args[0]);
+        } else {
+            LOGGER.info("Running for all");
+            execute();
+        }
     }
 
 }

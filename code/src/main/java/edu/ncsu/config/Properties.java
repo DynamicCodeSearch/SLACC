@@ -66,6 +66,11 @@ public class Properties {
      */
     public static String META_RESULTS = Utils.pathJoin(CODE_HOME, "meta_results");
 
+    /**
+     * Meta-results folder
+     */
+    public static String CODEJAM_META_RESULTS = Utils.pathJoin(META_RESULTS, "codejam");
+
 
     // ************************************************************************************** //
 

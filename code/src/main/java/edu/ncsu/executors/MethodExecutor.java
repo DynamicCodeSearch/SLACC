@@ -6,13 +6,13 @@ import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
-import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.store.ArgumentStore;
 import edu.ncsu.store.StoreUtils;
+import edu.ncsu.utils.Utils;
 
-import java.lang.reflect.Constructor;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -67,6 +67,13 @@ public class MethodExecutor {
 
     public void process() {
         JsonObject results = new JsonObject();
+        String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
+        if (Utils.fileExists(writeFile)){
+            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
+            return;
+        }
+        LOGGER.info(String.format("Processing %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
@@ -77,10 +84,12 @@ public class MethodExecutor {
             }
 
         }
+        Utils.mkdir(writeFolder);
         if (results.size() == 0) {
             LOGGER.info("None of the functions logged from " + classMethods.getClassName());
         } else {
-            StoreUtils.saveJsonObject(results, "temp.json", true);
+            LOGGER.info("Results logged to: " + writeFile);
+            StoreUtils.saveJsonObject(results, writeFile, true);
         }
         shutdown();
     }
