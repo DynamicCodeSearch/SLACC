@@ -130,6 +130,7 @@ public class DummyMethod {
         StringBuilder builder = new StringBuilder();
         for (Variable argument: arguments) {
             String format = builder.length() == 0 ? "%s %s" : ", %s %s";
+
             builder.append(String.format(format, argument.toTypeString(), argument.name));
         }
         return builder.toString();

@@ -85,7 +85,8 @@ public class Arguments {
 
     public static void main(String[] args) {
 //        extractAndStorePrimitiveArguments();
-        storeRandomArgs();
-//        generateForJavaFile("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java");
+//        storeRandomArgs();
+//        StoreUtils.deleteStore(Properties.CODEJAM_ARGUMENTS_FOLDER);
+        generateForJavaFile("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java");
     }
 }

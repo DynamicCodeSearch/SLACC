@@ -22,6 +22,10 @@ public class ClassMethods {
 
     private String sourcePath;
 
+    private String className;
+
+    private String packageName;
+
     private List<Method> methods;
 
     private Map<String, MethodDeclaration> methodBodies;
@@ -54,12 +58,13 @@ public class ClassMethods {
 
     public ClassMethods(String sourcePath) {
         this.sourcePath = sourcePath;
-        String packageName = CodejamUtils.getPackageName(sourcePath);
-        String className = CodejamUtils.getClassName(sourcePath);
+        packageName = CodejamUtils.getPackageName(sourcePath);
+        className = CodejamUtils.getClassName(sourcePath);
         Class clazz = PackageManager.findClass(packageName, className);
         methodBodies = getMethodBodies();
         methods = new ArrayList<>();
         for (Method method: clazz.getDeclaredMethods()) {
+            System.out.println(method.getName());
             if (method.getName().startsWith(Properties.GENERATED_FUNCTION_PREFIX)
                     && methodBodies.containsKey(method.getName()))
                 methods.add(method);
@@ -73,5 +78,17 @@ public class ClassMethods {
     public Function getFunction(Method method) {
         MethodDeclaration ast = getMethodBody(method.getName());
         return new Function(method, ast);
+    }
+
+    public String getSourcePath() {
+        return sourcePath;
+    }
+
+    public String getClassName() {
+        return className;
+    }
+
+    public String getPackageName() {
+        return packageName;
     }
 }

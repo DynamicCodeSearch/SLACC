@@ -96,9 +96,9 @@ public enum  Primitive {
 
     /**
      *
-     * @param primitive
-     * @param argString
-     * @return
+     * @param primitive - Primitive Enum
+     * @param argString - Value of argument
+     * @return - Argument converted to
      */
     public static Object convertToArgument(Primitive primitive, String argString) {
         switch (primitive) {
@@ -210,6 +210,15 @@ public enum  Primitive {
                 throw new RuntimeException(String.format(
                         "Currently we do not support the class %s", primitive.getName()));
         }
+    }
+
+    /**
+     * Get the boxed name of the primitive enum.
+     * @param primitive - Type of primitive
+     * @return - Boxed class name of the primitive. eg. int -> Integer
+     */
+    public static String getBoxedName(Primitive primitive) {
+        return getPrimitiveBoxedClass(primitive).getSimpleName();
     }
 
     public static boolean isBoxed(String type) {

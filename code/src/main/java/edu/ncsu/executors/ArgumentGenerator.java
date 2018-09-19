@@ -4,9 +4,7 @@ import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.*;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.logging.Logger;
 
@@ -221,12 +219,12 @@ public class ArgumentGenerator {
         for (int i=0; i<Properties.FUZZ_ARGUMENT_SIZE; i++) {
             List<Object> args = new ArrayList<>();
             for (FunctionVariable variable: function.getArguments()) {
-                List<Object> generated = generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
+                Map<String, Object> generated = generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
                 if (generated != null) {
-                    if (generated.size() > 1)
-                        args.add(generated);
+                    if ((Boolean) generated.get("isArray"))
+                        args.add(generated.get("args"));
                     else
-                        args.addAll(generated);
+                        args.addAll((List) generated.get("args"));
 
                 }
             }
@@ -238,12 +236,14 @@ public class ArgumentGenerator {
         return fuzzed;
     }
 
-    public static List<Object> generateArgumentsForFunctionVariable(FunctionVariable variable) {
+    public static Map<String, Object> generateArgumentsForFunctionVariable(FunctionVariable variable) {
         return generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
     }
 
-    private static List<Object> generateArgumentsForFunctionVariable(FunctionVariable variable, int arraySize) {
+    private static Map<String, Object> generateArgumentsForFunctionVariable(FunctionVariable variable, int arraySize) {
+        Map<String, Object> argsMap = new HashMap<>();
         List<Object> args = new ArrayList<>();
+        boolean isArray = false;
         if (arraySize == 0) {
             if (variable.getPrimitive() != null) {
                 args.add(generateRandomArgument(variable.getPrimitive()));
@@ -252,26 +252,30 @@ public class ArgumentGenerator {
                 if (constructor == null || constructor.getParameters() == null)
                     return null;
                 for (FunctionVariable param: constructor.getParameters()) {
-                    List<Object> paramArgs = generateArgumentsForFunctionVariable(param);
+                    Map<String, Object> paramArgs = generateArgumentsForFunctionVariable(param);
                     if (paramArgs != null) {
-                        args.addAll(paramArgs);
+                        if ((Boolean) paramArgs.get("isArray")) {
+                            args.add(paramArgs.get("args"));
+                        } else {
+                            args.addAll((List) paramArgs.get("args"));
+                        }
                     }
                 }
                 if (args.size() == 0)
                     return null;
             }
         } else {
+            isArray = true;
             for (int i=0; i < randInteger(2, Properties.MAX_ARRAY_SIZE); i++) {
-                List<Object> arrArgs = generateArgumentsForFunctionVariable(variable, arraySize - 1);
-                if (arrArgs == null)
+                Map<String, Object> arrArgsForFV = generateArgumentsForFunctionVariable(variable, arraySize - 1);
+                if (arrArgsForFV == null)
                     return null;
-                if (arrArgs.size() > 1)
-                    args.add(arrArgs);
-                else
-                    args.addAll(arrArgs);
+                args.add(arrArgsForFV.get("args"));
             }
         }
-        return args;
+        argsMap.put("args", args);
+        argsMap.put("isArray", isArray);
+        return argsMap;
     }
 
 }
