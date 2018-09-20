@@ -292,7 +292,13 @@ public class FunctionVariable {
             List<Object> vals = new ArrayList<>();
             for (JsonElement argVal: arrayArg.getAsJsonArray()) {
                 try {
-                    vals.add(convertToFunctionArgument(argVal.getAsJsonArray(), arraySize - 1));
+                    if (argVal.isJsonArray()) {
+                        vals.add(convertToFunctionArgument(argVal.getAsJsonArray(), arraySize - 1));
+                    } else {
+                        JsonArray argValArray = new JsonArray();
+                        argValArray.add(argVal);
+                        vals.add(convertToFunctionArgument(argValArray, arraySize - 1));
+                    }
                 } catch (Exception e) {
                     System.out.println(argVal);
                     throw new RuntimeException(e);
