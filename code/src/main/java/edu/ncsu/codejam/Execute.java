@@ -16,13 +16,30 @@ public class Execute {
         }
     }
 
+    public static void executeOnce() {
+        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+            executeProblemOnce(problem);
+        }
+    }
+
+
     public static void executeProblem(String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
         ArgumentStore store = ArgumentStore.loadArgumentStore();
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
-            executor.process();
+            executor.process(false);
+        }
+    }
+
+    public static void executeProblemOnce(String problem) {
+        LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
+        String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+        ArgumentStore store = ArgumentStore.loadArgumentStore();
+        for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
+            MethodExecutor executor = new MethodExecutor(javaFile, store);
+            executor.process(true);
         }
     }
 

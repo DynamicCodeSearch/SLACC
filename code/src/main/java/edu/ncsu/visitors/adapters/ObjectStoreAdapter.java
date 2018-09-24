@@ -75,7 +75,11 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
                         JsonArray arguments = new JsonArray();
                         for (Parameter parameter: constructorDeclaration.getParameters()) {
                             String paramName = parameter.getId().getName();
-                            arguments.add(new Variable(paramName, parameter.getType(), packageName, Variable.DEFAULT).toJson());
+                            Variable variable = new Variable(paramName, parameter.getType(), packageName, Variable.DEFAULT);
+                            if (parameter.isVarArgs()) {
+                                variable.setArrayDimensions(variable.getArrayDimensions() + 1);
+                            }
+                            arguments.add(variable.toJson());
                         }
                         JsonObject constructor = new JsonObject();
                         constructor.addProperty("scope", modifier);

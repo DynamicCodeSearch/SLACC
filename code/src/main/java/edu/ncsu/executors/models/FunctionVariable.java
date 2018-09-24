@@ -323,6 +323,14 @@ public class FunctionVariable {
         }
     }
 
+    public Class getCompleteClassInstatiation() {
+        Class baseClass = getClassInstantiation();
+        for (int i=0; i<arrayDimensions; i++) {
+            baseClass = Array.newInstance(baseClass, 0).getClass();
+        }
+        return baseClass;
+    }
+
     public java.lang.reflect.Constructor getClassConstructor() {
         if (primitive != null) {
             throw new RuntimeException(String.format("Constructor cannot be created for primitive type: %s", primitive.getName()));
@@ -331,7 +339,7 @@ public class FunctionVariable {
         List<Class> constructorClasses = new ArrayList<>();
         Constructor constructor = Constructor.getConstructor(packageName, dataType);
         for (FunctionVariable parameter: constructor.getParameters()) {
-            constructorClasses.add(parameter.getClassInstantiation());
+            constructorClasses.add(parameter.getCompleteClassInstatiation());
         }
         try {
             java.lang.reflect.Constructor classConstructor = objClass.getDeclaredConstructor(constructorClasses.toArray(new Class[0]));
@@ -342,33 +350,5 @@ public class FunctionVariable {
         }
     }
 
-    public static void xyz(Object x) {
-        if (x instanceof List) {
-            List y = ((List) x);
-            y.remove(0);
-        }
-    }
-
-    public static void sum(int[] a) {
-        int sum = 0;
-        for (int i=0; i<a.length; i++) {
-            sum += i;
-        }
-        System.out.println(sum);
-    }
-
-    public static void main(String[] args) {
-        List<Object> arrayList = new ArrayList<>();
-        arrayList.add(1);
-        arrayList.add(2);
-        arrayList.add(3);
-        Class baseClass = int.class;
-        Object arrayClass = Array.newInstance(baseClass, arrayList.size());
-        System.arraycopy(arrayList.toArray(), 0, arrayClass, 0, arrayList.size());
-        System.out.println(arrayClass);
-//        System.out.println(Arrays.toString(Arrays.copyOf(arrayList.toArray(), arrayList.size(), arrayClass)));;
-
-
-    }
 
 }
