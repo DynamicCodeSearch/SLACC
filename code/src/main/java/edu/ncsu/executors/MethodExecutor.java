@@ -65,7 +65,7 @@ public class MethodExecutor {
     }
 
 
-    public void process() {
+    public void process(boolean onlySingle) {
         JsonObject results = new JsonObject();
         String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
@@ -77,12 +77,16 @@ public class MethodExecutor {
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
-                JsonObject processResults = processFunction(function);
+                JsonObject processResults;
+                if (onlySingle) {
+                    processResults = processFunctionOnce(function);
+                } else {
+                    processResults = processFunction(function);
+                }
                 if (processResults != null) {
                     results.add(function.getName(), processResults);
                 }
             }
-
         }
         Utils.mkdir(writeFolder);
         if (results.size() == 0) {
@@ -106,6 +110,22 @@ public class MethodExecutor {
         for (Object[] executionArg: executionArgs) {
             executions.add(profileMethod(function, executionArg));
         }
+        JsonObject functionData = new JsonObject();
+        functionData.addProperty("inputKey", function.makeArgumentsKey());
+        functionData.add("outputs", executions);
+        return functionData;
+    }
+
+
+    public JsonObject processFunctionOnce(Function function) {
+        System.out.println(String.format("Function: %s", function.getName()));
+        List<Object[]> executionArgs = fetchFunctionExecutionArgs(function);
+        if (executionArgs == null || executionArgs.size() == 0) {
+            LOGGER.info(String.format("Execution args does not exist for args key: %s", function.makeArgumentsKey()));
+            return null;
+        }
+        JsonArray executions = new JsonArray();
+        executions.add(profileMethod(function, executionArgs.get(0)));
         JsonObject functionData = new JsonObject();
         functionData.addProperty("inputKey", function.makeArgumentsKey());
         functionData.add("outputs", executions);
@@ -158,6 +178,6 @@ public class MethodExecutor {
         String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java";
         ArgumentStore store = ArgumentStore.loadArgumentStore();
         MethodExecutor methodExecutor = new MethodExecutor(source, store);
-        methodExecutor.process();
+        methodExecutor.process(true);
     }
 }
