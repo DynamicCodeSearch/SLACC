@@ -13,21 +13,22 @@ import edu.ncsu.store.StoreUtils;
 import edu.ncsu.utils.Utils;
 
 import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.logging.Logger;
 
 public class MethodExecutor {
 
     private static final Logger LOGGER = Logger.getLogger(MethodExecutor.class.getName());
 
-    private ExecutorService executor;
+    private ExecutorService taskExecutor;
+
+    private ExecutorService timeExecutor;
 
     private TimeLimiter timeLimiter;
 
@@ -37,25 +38,30 @@ public class MethodExecutor {
 
 
     private void initialize() {
-        if (executor == null || executor.isShutdown())
-            executor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
+        if (timeExecutor == null || timeExecutor.isShutdown())
+            timeExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
         if (timeLimiter == null)
-            timeLimiter = new SimpleTimeLimiter(executor);
+            timeLimiter = new SimpleTimeLimiter(timeExecutor);
+        if (taskExecutor == null || taskExecutor.isShutdown())
+            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
+    }
+
+    private static void shutdownExecutor(ExecutorService executorService) {
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+            try {
+                executorService.awaitTermination(Properties.METHOD_EXECUTION_WAIT_TIME, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            executorService.shutdownNow();
+        }
     }
 
     private void shutdown() {
-        if (executor == null || executor.isShutdown()) {
-            timeLimiter = null;
-            return;
-        }
-        executor.shutdown();
-        try {
-            executor.awaitTermination(Properties.METHOD_EXECUTION_WAIT_TIME, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-        executor.shutdownNow();
+        shutdownExecutor(timeExecutor);
         timeLimiter = null;
+        shutdownExecutor(taskExecutor);
     }
 
     public MethodExecutor(String sourcePath, ArgumentStore store) {
@@ -67,6 +73,7 @@ public class MethodExecutor {
 
     public void process(boolean onlySingle) {
         JsonObject results = new JsonObject();
+        JsonArray failedFunctions = new JsonArray();
         String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         if (Utils.fileExists(writeFile)){
@@ -74,20 +81,32 @@ public class MethodExecutor {
             return;
         }
         LOGGER.info(String.format("Processing %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
+        List<Callable<JsonObject>> functionTasks = new ArrayList<>();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
-                JsonObject processResults;
-                if (onlySingle) {
-                    processResults = processFunctionOnce(function);
-                } else {
-                    processResults = processFunction(function);
-                }
-                if (processResults != null) {
-                    results.add(function.getName(), processResults);
-                }
+                functionTasks.add(makeFunctionTask(function, onlySingle));
             }
         }
+        try {
+            List<Future<JsonObject>> functionResults = taskExecutor.invokeAll(functionTasks);
+            for (Future<JsonObject> functionResult: functionResults) {
+                assert functionResult.isDone();
+                JsonObject executionResult = functionResult.get();
+                if (executionResult.has("output")) {
+                    JsonObject outputResult = executionResult.get("output").getAsJsonObject();
+                    results.add(outputResult.get("name").getAsString(), outputResult);
+                } else if (executionResult.has("error")) {
+                    JsonObject error = executionResult.get("error").getAsJsonObject();
+                    failedFunctions.add(error);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.severe(String.format("Exception while invoking all function tasks in class: %s.%s",
+                    classMethods.getPackageName(), classMethods.getClassName()));
+            e.printStackTrace();
+        }
+        results.add("errors", failedFunctions);
         Utils.mkdir(writeFolder);
         if (results.size() == 0) {
             LOGGER.info("None of the functions logged from " + classMethods.getClassName());
@@ -96,6 +115,33 @@ public class MethodExecutor {
             StoreUtils.saveJsonObject(results, writeFile, true);
         }
         shutdown();
+    }
+
+    public Callable<JsonObject> makeFunctionTask(final Function function, final boolean onlySingle) {
+
+        Callable<JsonObject> functionTask = new Callable<JsonObject>() {
+            @Override
+            public JsonObject call() throws Exception {
+                JsonObject returnVal = new JsonObject();
+                try {
+                    if (onlySingle) {
+                        returnVal.add("output", processFunctionOnce(function));;
+                    } else {
+                        returnVal.add("output", processFunction(function));;
+                    }
+                } catch (Exception e) {
+                    LOGGER.severe(String.format("Exception in function: %s", function.getName()));
+                    JsonObject failedFunction = new JsonObject();
+                    StringWriter sw = new StringWriter();
+                    e.printStackTrace(new PrintWriter(sw));
+                    failedFunction.addProperty("name", function.getName());
+                    failedFunction.addProperty("errorTrace", sw.toString());
+                    returnVal.add("error", failedFunction);
+                }
+                return returnVal;
+            }
+        };
+        return functionTask;
     }
 
 
@@ -111,6 +157,7 @@ public class MethodExecutor {
             executions.add(profileMethod(function, executionArg));
         }
         JsonObject functionData = new JsonObject();
+        functionData.addProperty("name", function.getName());
         functionData.addProperty("inputKey", function.makeArgumentsKey());
         functionData.add("outputs", executions);
         return functionData;
@@ -127,6 +174,7 @@ public class MethodExecutor {
         JsonArray executions = new JsonArray();
         executions.add(profileMethod(function, executionArgs.get(0)));
         JsonObject functionData = new JsonObject();
+        functionData.addProperty("name", function.getName());
         functionData.addProperty("inputKey", function.makeArgumentsKey());
         functionData.add("outputs", executions);
         return functionData;
