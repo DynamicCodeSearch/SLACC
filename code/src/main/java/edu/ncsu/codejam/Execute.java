@@ -5,10 +5,22 @@ import edu.ncsu.executors.MethodExecutor;
 import edu.ncsu.store.ArgumentStore;
 import edu.ncsu.utils.Utils;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.logging.Logger;
 
 public class Execute {
     private static final Logger LOGGER = Logger.getLogger(Execute.class.getName());
+
+    static {
+        System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+
+            }
+        }));
+    }
 
     public static void execute() {
         for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
