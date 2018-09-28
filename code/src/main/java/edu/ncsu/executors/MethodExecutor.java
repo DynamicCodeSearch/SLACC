@@ -105,6 +105,7 @@ public class MethodExecutor {
             return;
         }
         try {
+            int toRun = functionTasks.size();
             List<Future<JsonObject>> functionResults = taskExecutor.invokeAll(functionTasks);
             for (Future<JsonObject> functionResult: functionResults) {
                 assert functionResult.isDone();
@@ -118,6 +119,8 @@ public class MethodExecutor {
                     Utils.mkdir(writeFolder);
                     updateError(writeFile, error);
                 }
+                --toRun;
+                LOGGER.info(String.format("Functions remaining: %d/%d", toRun, totalFunctions));
             }
         } catch (Exception e) {
             LOGGER.severe(String.format("Exception while invoking all function tasks in class: %s.%s",
