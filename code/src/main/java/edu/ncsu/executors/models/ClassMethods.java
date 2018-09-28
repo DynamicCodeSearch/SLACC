@@ -64,7 +64,6 @@ public class ClassMethods {
         methodBodies = getMethodBodies();
         methods = new ArrayList<>();
         for (Method method: clazz.getDeclaredMethods()) {
-            System.out.println(method.getName());
             if (method.getName().startsWith(Properties.GENERATED_FUNCTION_PREFIX)
                     && methodBodies.containsKey(method.getName()))
                 methods.add(method);
