@@ -89,14 +89,17 @@ public class MethodExecutor {
             failedFunctions = new JsonArray();
         }
         List<Callable<JsonObject>> functionTasks = new ArrayList<>();
+        int totalFunctions = 0;
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
                 if (!results.has(function.getName()) && !errorContainsFunction(failedFunctions, function.getName())) {
                     functionTasks.add(makeFunctionTask(function, onlySingle));
                 }
+                ++totalFunctions;
             }
         }
+        LOGGER.info(String.format("Number of functions to process = %d / %d", functionTasks.size(), totalFunctions));
         if (functionTasks.isEmpty()) {
             LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
             return;
