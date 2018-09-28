@@ -3,6 +3,7 @@ package edu.ncsu.utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.google.gson.JsonArray;
 import edu.ncsu.config.Properties;
 import org.apache.commons.lang3.StringUtils;
 

@@ -52,6 +52,11 @@ public class Properties {
     public static String CODEJAM_ARGUMENTS_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "arguments");
 
     /**
+     *
+     */
+    public static String CODEJAM_FUNCTIONS_META_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "functions");
+
+    /**
      * Codejam arguments index
      */
     public static String CODEJAM_ARGUMENTS_INDEX = Utils.pathJoin(CODEJAM_ARGUMENTS_FOLDER, "index.json");

@@ -2,10 +2,12 @@ package edu.ncsu.executors.models;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
+import com.github.javaparser.ast.comments.Comment;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import edu.ncsu.executors.helpers.UserDefinedObjects;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
@@ -22,7 +24,9 @@ public class Function {
 
     private MethodDeclaration ast;
 
-    private List<Integer> lines;
+    private List<Integer> linesTouched;
+
+    private List<Integer> span;
 
     private List<FunctionVariable> arguments;
 
@@ -56,9 +60,6 @@ public class Function {
         return ast;
     }
 
-    public List<Integer> getLines() {
-        return lines;
-    }
 
     public List<FunctionVariable> getArguments() {
         return arguments;
@@ -70,6 +71,14 @@ public class Function {
 
     public boolean isFuzzable() {
         return isFuzzable;
+    }
+
+    public List<Integer> getLinesTouched() {
+        return linesTouched;
+    }
+
+    public List<Integer> getSpan() {
+        return span;
     }
 
     public boolean isValidArgs() {
@@ -108,6 +117,42 @@ public class Function {
             returnVariable = null;
             this.isFuzzable = false;
         }
+        processComments();
+    }
+
+    private void processComments() {
+        for (Comment comment: ast.getAllContainedComments()) {
+            String commentString = comment.toString().trim();
+            int colonPos = commentString.indexOf(":");
+            if (commentString.startsWith("// lines: ")) {
+                this.linesTouched = new ArrayList<>();
+                for (String lineStr: commentString.substring(colonPos + 1).trim().split(","))
+                    this.linesTouched.add(Integer.parseInt(lineStr));
+                Collections.sort(this.linesTouched);
+            } else if (commentString.startsWith("// start_end: ")) {
+                this.span = new ArrayList<>();
+                for (String lineStr: commentString.substring(colonPos + 1).trim().split(","))
+                    this.span.add(Integer.parseInt(lineStr));
+                Collections.sort(this.span);
+            }
+        }
+    }
+
+    private JsonObject getReturnMetaData() {
+        JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("isArray", returnVariable.getArrayDimensions() > 0);
+        boolean isPrimitive = returnVariable.getPrimitive() != null;
+        returnObject.addProperty("isPrimitive", isPrimitive);
+        if (isPrimitive) {
+            returnObject.addProperty("type", returnVariable.getPrimitive().getName());
+        } else {
+            returnObject.addProperty("type", returnVariable.getDataType());
+            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects().getClassObject(returnVariable.getPackageName(), returnVariable.getDataType());
+            if (classObject != null && classObject.has("variables")) {
+                returnObject.add("variables", classObject.get("variables").getAsJsonArray());
+            }
+        }
+        return returnObject;
     }
 
     public String makeArgumentsKey() {
@@ -147,7 +192,7 @@ public class Function {
     private static JsonElement formatAsJSON(Object object) {
         if (object == null)
             return null;
-        if (object != null && object.getClass().isArray()) {
+        if (object.getClass().isArray()) {
             JsonArray array = new JsonArray();
             for (Object obj: (Object []) object) {
                 array.add(formatAsJSON(obj));
@@ -190,36 +235,21 @@ public class Function {
         }
     }
 
-//    public static void main(String[] args) {
-//        Point a = new Point(2, 3);
-//        Point b = new Point(4, 5);
-//        Segment segment = new Segment(a, b);
-//        System.out.println(Function.formatAsJSON(segment));;
-//    }
+    public JsonObject getMetaData() {
+        JsonObject metadata = new JsonObject();
+        metadata.addProperty("name", this.getName());
+        metadata.addProperty("body", this.ast.toStringWithoutComments());
+        metadata.addProperty("inputKey", this.makeArgumentsKey());
+        JsonArray linesTouched = new JsonArray();
+        for (Integer line: this.linesTouched)
+            linesTouched.add(line);
+        JsonArray span = new JsonArray();
+        for (Integer line: this.span)
+            span.add(line);
+        metadata.add("linesTouched", linesTouched);
+        metadata.add("span", span);
+        metadata.add("return", getReturnMetaData());
+        return metadata;
+    }
 }
 
-//class Point {
-//    double x;
-//    private double y;
-//
-//    Point(double x, double y) {
-//        this.x = x;
-//        this.y = y;
-//    }
-//}
-//
-//
-//class Segment {
-//    private Point[] points;
-//    int x = 5;
-//    Point p1;
-//    Point p2;
-//
-//    Segment(Point p1, Point p2) {
-//        this.p1 = p1;
-//        this.p2 = p2;
-//        points = new Point[2];
-//        points[0] = p1;
-//        points[1] = p2;
-//    }
-//}
