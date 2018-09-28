@@ -8,6 +8,7 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 import cPickle as cPkl
+import json
 
 
 def read_file(file_name):
@@ -94,3 +95,25 @@ def list_dir(directory, is_absolute=True):
   :return: List of file/folder names
   """
   return [os.path.join((directory, f)) if is_absolute else f for f in os.listdir(directory)]
+
+
+def load_json(file_name):
+  """
+  Read json from file name.
+  :param file_name:
+  :return:
+  """
+  try:
+    return json.loads(read_file(file_name))
+  except ValueError, e:
+    print(e)
+    return {}
+
+
+def get_file_name(file_path):
+  """
+  Return name of the file from the path
+  :param file_path: Path of the file
+  :return: Name of the file
+  """
+  return file_path.rsplit(os.path.sep, 1)[-1].split(".", 1)[0]

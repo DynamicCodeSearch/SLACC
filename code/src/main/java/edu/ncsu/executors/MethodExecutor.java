@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.TimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.ClassMethods;
@@ -72,21 +73,33 @@ public class MethodExecutor {
 
 
     public void process(boolean onlySingle) {
-        JsonObject results = new JsonObject();
-        JsonArray failedFunctions = new JsonArray();
         String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
-        if (Utils.fileExists(writeFile)){
-            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
-            return;
-        }
         LOGGER.info(String.format("Processing %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
+        JsonObject results;
+        JsonArray failedFunctions;
+        if (Utils.fileExists(writeFile)) {
+            results = StoreUtils.getJsonObject(writeFile).getAsJsonObject();
+        } else {
+            results = new JsonObject();
+        }
+        if (results.has("errors")) {
+            failedFunctions = results.get("errors").getAsJsonArray();
+        } else {
+            failedFunctions = new JsonArray();
+        }
         List<Callable<JsonObject>> functionTasks = new ArrayList<>();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
-                functionTasks.add(makeFunctionTask(function, onlySingle));
+                if (!results.has(function.getName()) && !errorContainsFunction(failedFunctions, function.getName())) {
+                    functionTasks.add(makeFunctionTask(function, onlySingle));
+                }
             }
+        }
+        if (functionTasks.isEmpty()) {
+            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
+            return;
         }
         try {
             List<Future<JsonObject>> functionResults = taskExecutor.invokeAll(functionTasks);
@@ -95,10 +108,12 @@ public class MethodExecutor {
                 JsonObject executionResult = functionResult.get();
                 if (executionResult.has("output")) {
                     JsonObject outputResult = executionResult.get("output").getAsJsonObject();
-                    results.add(outputResult.get("name").getAsString(), outputResult);
+                    Utils.mkdir(writeFolder);
+                    updateResult(writeFile, outputResult);
                 } else if (executionResult.has("error")) {
                     JsonObject error = executionResult.get("error").getAsJsonObject();
-                    failedFunctions.add(error);
+                    Utils.mkdir(writeFolder);
+                    updateError(writeFile, error);
                 }
             }
         } catch (Exception e) {
@@ -106,15 +121,44 @@ public class MethodExecutor {
                     classMethods.getPackageName(), classMethods.getClassName()));
             e.printStackTrace();
         }
-        results.add("errors", failedFunctions);
-        Utils.mkdir(writeFolder);
-        if (results.size() == 0) {
-            LOGGER.info("None of the functions logged from " + classMethods.getClassName());
-        } else {
-            LOGGER.info("Results logged to: " + writeFile);
-            StoreUtils.saveJsonObject(results, writeFile, true);
-        }
         shutdown();
+    }
+
+    private static boolean errorContainsFunction(JsonArray errors, String functionName) {
+        for (JsonElement error: errors) {
+            if (error.getAsJsonObject().get("name").getAsString().equals(functionName))
+                return true;
+        }
+        return false;
+    }
+
+    private synchronized static void updateResult(String fileName, JsonObject result) {
+        JsonObject results;
+        if (Utils.fileExists(fileName)) {
+            results = StoreUtils.getJsonObject(fileName).getAsJsonObject();
+        } else {
+            results = new JsonObject();
+        }
+        results.add(result.get("name").getAsString(), result);
+        StoreUtils.saveJsonObject(results, fileName, true);
+    }
+
+    private synchronized static void updateError(String fileName, JsonObject error) {
+        JsonObject results;
+        if (Utils.fileExists(fileName)) {
+            results = StoreUtils.getJsonObject(fileName).getAsJsonObject();
+        } else {
+            results = new JsonObject();
+        }
+        JsonArray failedFunctions;
+        if (results.has("errors")) {
+            failedFunctions = results.get("errors").getAsJsonArray();
+        } else {
+            failedFunctions = new JsonArray();
+        }
+        failedFunctions.add(error);
+        results.add("error", failedFunctions);
+        StoreUtils.saveJsonObject(results, fileName, true);
     }
 
     public Callable<JsonObject> makeFunctionTask(final Function function, final boolean onlySingle) {
