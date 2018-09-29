@@ -41,7 +41,6 @@ public class Execute {
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
             executor.process();
-            break;
         }
     }
 
