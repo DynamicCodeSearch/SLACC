@@ -5,20 +5,20 @@ import edu.ncsu.executors.MethodExecutor;
 import edu.ncsu.store.ArgumentStore;
 import edu.ncsu.utils.Utils;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 import java.util.logging.Logger;
 
 public class Execute {
     private static final Logger LOGGER = Logger.getLogger(Execute.class.getName());
 
+    private static final boolean EXECUTE_ONLY_ONCE = false;
+
     static {
         System.setOut(new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
 
-            }
+            @Override
+            public void write(int b) throws IOException {}
+
         }));
     }
 
@@ -34,21 +34,25 @@ public class Execute {
         }
     }
 
-
     public static void executeProblem(String problem, Boolean onlySingle) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
         ArgumentStore store = ArgumentStore.loadArgumentStore();
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
-            executor.process(onlySingle);
+            executor.process();
+            break;
         }
+    }
+
+    public static void executeFunction(String filePath, String functionName) {
+        MethodExecutor.process(filePath, functionName, EXECUTE_ONLY_ONCE);
     }
 
     public static void main(String[] args) {
         if (args.length > 0) {
             LOGGER.info(String.format("Running for %s" , args[0]));
-            executeProblem(args[0], false);
+            executeProblem(args[0], EXECUTE_ONLY_ONCE);
         } else {
             LOGGER.info("Running for all");
             execute();

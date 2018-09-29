@@ -8,9 +8,7 @@ import edu.ncsu.config.Properties;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class Utils {
 
@@ -155,6 +153,57 @@ public class Utils {
             e.printStackTrace();
             return null;
         }
+    }
+
+    /**
+     * Get output stream of string buffer
+     * @param process - Instance of Runtime Process
+     * @return - Output as string
+     */
+    public static String getOutput(Process process) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            String s;
+            while ((s = reader.readLine()) != null) {
+                buffer.append(s).append("\n");
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * Get error stream of string buffer
+     * @param process - Instance of Runtime Process
+     * @return - Output as string
+     */
+    public static String getError(Process process) {
+        try {
+            StringBuffer buffer = new StringBuffer();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+            String s;
+            while ((s = reader.readLine()) != null) {
+                buffer.append(s).append("\n");
+            }
+            return buffer.toString();
+        } catch (Exception e) {
+            return e.getMessage();
+        }
+    }
+
+    /**
+     * Get environment variables
+     * @return - List of environment variables
+     */
+    public static String[] getEnvs() {
+        List<String> envs = new ArrayList<>();
+        Map<String, String> envMap = System.getenv();
+        for (String key: envMap.keySet()) {
+            envs.add(String.format("%s=%s", key, envMap.get(key)));
+        }
+        return Arrays.copyOf(envs.toArray(), envs.size(), String[].class);
     }
 
 }

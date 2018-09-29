@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name extract_fuzzed_args
+#SBATCH --job-name extract_metadata
 #SBATCH -N 1
 #SBATCH -p opteron
 # Use modules to set the software environment
