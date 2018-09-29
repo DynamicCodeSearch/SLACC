@@ -99,6 +99,11 @@ public class Properties {
     public static int FUZZ_ARGUMENT_SIZE = 256;
 //    public static int FUZZ_ARGUMENT_SIZE = 3;
 
+    /***
+     * Three seconds
+     */
+    public static int THREE_SECS = 3 * 1000;
+
     /**
      * Generated class prefix
      */

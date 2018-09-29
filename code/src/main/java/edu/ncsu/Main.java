@@ -26,6 +26,8 @@ public class Main {
             Arguments.storeRandomArgs();
         } else if (args[0].equals("execute")) {
             Execute.main(Arrays.copyOfRange(args, 1, args.length));
+        } else if (args[0].equals("execute_single")) {
+            Execute.executeFunction(args[1], args[2]);
         } else if (args[0].equals("extract_metadata")) {
             Metadata.extractMetadata();
         } else {
