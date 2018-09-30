@@ -50,7 +50,11 @@ class InputCache(O):
 
 
 class Function(O):
+  _id = 0
+
   def __init__(self, **kwargs):
+    Function._id += 1
+    self.id = Function._id
     self.name = None
     self.body = None
     self.project = None
@@ -58,12 +62,21 @@ class Function(O):
     self.package = None
     self.className = None
     self.source = None
-    self.lines = None
+    self.lines_touched = None
+    self.span = None
     self.input_key = None
+    self.return_attribute = None
     self.outputs = None
     # Meta-info
     self.useful = None
     O.__init__(self, **kwargs)
+
+  def clone(self):
+    new = Function()
+    for key in self.has().keys():
+      if key == "id": continue
+      new[key] = self[key]
+    return new
 
   def is_useful(self):
     # TODO: check usefulness of function
@@ -102,16 +115,21 @@ class Function(O):
 
 
 class Outputs(O):
-  def __init__(self, outputs_json, **kwargs):
+  def __init__(self, outputs_json=None, **kwargs):
     O.__init__(self, **kwargs)
     self.returns = []
     self.errors = []
     self.durations = []
-    for output_json in outputs_json:
-      self.returns.append(output_json["return"] if "return" in output_json else None)
-      self.errors.append(output_json["errorMessage"] if "errorMessage" in output_json else None)
-      self.durations.append(output_json["duration"] if "duration" in output_json else None)
+    if outputs_json is not None:
+      for output_json in outputs_json:
+        self.returns.append(output_json["return"] if "return" in output_json else None)
+        self.errors.append(output_json["errorMessage"] if "errorMessage" in output_json else None)
+        self.durations.append(output_json["duration"] if "duration" in output_json else None)
 
-
-load_inputs("integer,integer")
+  def clone(self):
+    new = Outputs()
+    new.returns = self.returns[:]
+    new.errors = self.errors[:]
+    new.durations = self.durations[:]
+    return new
 
