@@ -350,5 +350,32 @@ public class FunctionVariable {
         }
     }
 
+    public JsonObject getMetadata() {
+        JsonObject returnObject = new JsonObject();
+        returnObject.addProperty("isArray", this.getArrayDimensions() > 0);
+        boolean isPrimitive = this.getPrimitive() != null;
+        returnObject.addProperty("isPrimitive", isPrimitive);
+        if (isPrimitive) {
+            returnObject.addProperty("type", this.getPrimitive().getName());
+        } else {
+            returnObject.addProperty("type", this.getDataType());
+            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects().getClassObject(this.getPackageName(), this.getDataType());
+            if (classObject != null && classObject.has("variables") && classObject.get("variables").getAsJsonArray().size() > 0) {
+                JsonArray variables = new JsonArray();
+                for (JsonElement element: classObject.get("variables").getAsJsonArray()) {
+                    JsonObject variableObject = element.getAsJsonObject();
+                    JsonObject variableMetadata = FunctionVariable.fromJSON(variableObject).getMetadata();
+                    if (variableMetadata != null)
+                        variables.add(variableMetadata);
+                    else
+                        return null;
+                }
+                returnObject.add("variables", variables);
+            } else {
+                return null;
+            }
+        }
+        return returnObject;
+    }
 
 }

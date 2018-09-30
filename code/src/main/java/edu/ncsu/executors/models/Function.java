@@ -140,6 +140,7 @@ public class Function {
 
     private JsonObject getReturnMetaData() {
         JsonObject returnObject = new JsonObject();
+
         returnObject.addProperty("isArray", returnVariable.getArrayDimensions() > 0);
         boolean isPrimitive = returnVariable.getPrimitive() != null;
         returnObject.addProperty("isPrimitive", isPrimitive);
@@ -149,6 +150,7 @@ public class Function {
             returnObject.addProperty("type", returnVariable.getDataType());
             JsonObject classObject = UserDefinedObjects.getUserDefinedObjects().getClassObject(returnVariable.getPackageName(), returnVariable.getDataType());
             if (classObject != null && classObject.has("variables")) {
+
                 returnObject.add("variables", classObject.get("variables").getAsJsonArray());
             }
         }
@@ -248,7 +250,7 @@ public class Function {
             span.add(line);
         metadata.add("linesTouched", linesTouched);
         metadata.add("span", span);
-        metadata.add("return", getReturnMetaData());
+        metadata.add("return", returnVariable.getMetadata());
         return metadata;
     }
 }

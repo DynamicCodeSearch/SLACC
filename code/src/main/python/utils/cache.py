@@ -9,6 +9,10 @@ __author__ = "bigfatnoob"
 
 import cPickle as cPkl
 import json
+import logger
+
+
+LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 
 def read_file(file_name):
@@ -106,7 +110,7 @@ def load_json(file_name):
   try:
     return json.loads(read_file(file_name))
   except ValueError, e:
-    print(e)
+    LOGGER.exception(e)
     return {}
 
 
