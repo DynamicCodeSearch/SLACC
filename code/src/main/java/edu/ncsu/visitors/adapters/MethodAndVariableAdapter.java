@@ -295,7 +295,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private static void testGenerateMethods() {
-        String fName = String.format("%s/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
+//        String fName = String.format("%s/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
+        String fName = String.format("%s/Y11R5P1/aditsu/Example.java", Properties.CODEJAM_JAVA_FOLDER);
         generateMethodsForJavaFile(fName);
     }
 

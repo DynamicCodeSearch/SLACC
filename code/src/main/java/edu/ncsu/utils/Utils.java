@@ -54,6 +54,11 @@ public class Utils {
         return file.getName();
     }
 
+    public static String getFolderPath(String path) {
+        File file = new File(path);
+        return file.getParentFile().getPath();
+    }
+
     /**
      * List all files in folder with the matching extension.
      * @param folderPath Path of the folder
@@ -204,6 +209,10 @@ public class Utils {
             envs.add(String.format("%s=%s", key, envMap.get(key)));
         }
         return Arrays.copyOf(envs.toArray(), envs.size(), String[].class);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Utils.getFolderPath("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Joshik/generated_class_d6e333fe2dfc41cfa56782e918726c8b.java"));
     }
 
 }
