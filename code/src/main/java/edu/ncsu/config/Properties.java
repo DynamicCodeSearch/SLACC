@@ -129,4 +129,9 @@ public class Properties {
      */
     public final static int METHOD_EXECUTION_WAIT_TIME = 1;
 
+    /**
+     * Maximum wait time for all executions
+     */
+    public final static int ALL_METHOD_EXECUTIONS_WAIT_TIME = 5;
+
 }

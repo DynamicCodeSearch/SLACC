@@ -6,6 +6,10 @@ import edu.ncsu.store.ArgumentStore;
 import edu.ncsu.utils.Utils;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.logging.Logger;
 
 public class Execute {
@@ -24,24 +28,26 @@ public class Execute {
 
     public static void execute() {
         for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
-            executeProblem(problem, false);
+            executeProblem(problem);
         }
     }
 
     public static void executeOnce() {
         for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
-            executeProblem(problem, true);
+            executeProblem(problem);
         }
     }
 
-    public static void executeProblem(String problem, Boolean onlySingle) {
+    public static void executeProblem(String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
         ArgumentStore store = ArgumentStore.loadArgumentStore();
+        List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
-            executor.process();
+            functionTasks.addAll(executor.getFunctionTasks());
         }
+        MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
     public static void executeFunction(String filePath, String functionName) {
@@ -51,7 +57,7 @@ public class Execute {
     public static void main(String[] args) {
         if (args.length > 0) {
             LOGGER.info(String.format("Running for %s" , args[0]));
-            executeProblem(args[0], EXECUTE_ONLY_ONCE);
+            executeProblem(args[0]);
         } else {
             LOGGER.info("Running for all");
             execute();
