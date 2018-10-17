@@ -137,7 +137,9 @@ code.iml
 hs_err_pid*
 
 # Local
+IntroClassJava
 projects/src/main/java/Y*
+projects/src/main/java/IntroClassJava
 code/meta_store
 code/meta_results
 code/results

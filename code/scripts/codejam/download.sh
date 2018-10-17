@@ -7,12 +7,19 @@
 
 rm -rf ../projects/src/main/java/Y*
 
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar crawl 11 5 1
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar crawl 12 5 1
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar crawl 13 5 1
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar crawl 14 5 1
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 11 5 1
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 12 5 1
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 13 5 1
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 14 5 1
 
-echo "Finished Downloading. Building projects"
+echo "\nFinished Downloading. Building projects ..."
 
 cd ../projects
-mvn clean install
+mvn -Dhttps.protocols=TLSv1.2 clean install
+
+echo "\nCopying built jar into code ... "
+cp target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar ../code/jars
+
+echo "\nFinished Downloading. Building code ..."
+cd ../code
+mvn -Dhttps.protocols=TLSv1.2 clean install
