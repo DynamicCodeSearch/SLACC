@@ -1,20 +1,22 @@
 package edu.ncsu.utils;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
-import com.github.javaparser.ast.CompilationUnit;
-import com.google.gson.JsonArray;
 import edu.ncsu.config.Properties;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Logger;
 
 public class Utils {
 
+    private static Logger LOGGER = Logger.getLogger(Utils.class.getName());
+
     /**
      * Create a directory if it does not exist
-     * @param dirName
+     * @param dirName - Path of the directory
      */
     public static void mkdir(String dirName) {
         File dir = new File(dirName);
@@ -49,14 +51,84 @@ public class Utils {
         return file.exists();
     }
 
+    /**
+     * Get name of the file
+     * @param path - Path fo the file
+     * @return - Name of the file
+     */
     public static String getFileName(String path) {
         File file = new File(path);
         return file.getName();
     }
 
+    /***
+     * Get the path of the parent folder from the file path
+     * @param path - Path of the file
+     * @return - Path of the parent folder
+     */
     public static String getFolderPath(String path) {
         File file = new File(path);
         return file.getParentFile().getPath();
+    }
+
+    /***
+     * Return contents of the file.
+     * @param path - Path of the file.
+     * @return - Contents of the file.
+     */
+    public static String getFileContent(String path) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(path)));
+        } catch (IOException e) {
+            LOGGER.severe("Error while fetching file content: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Write contents to file
+     * @param content - Contents to be written
+     * @param path - Path fo the file
+     */
+    public static void writeFileContent(String content, String path) {
+        try {
+            File file = new File(path);
+            mkdir(getFolderPath(path));
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(IOUtils.toByteArray(content));
+            fos.flush();
+            fos.close();
+        } catch (IOException e) {
+            LOGGER.severe(String.format("Error while writing content to file: %s", path));
+            e.printStackTrace();
+        }
+    }
+
+    /***
+     *
+     * @param folderPath - Path of the folder to list files
+     * @param filter - Instance of java.io.FilenameFilter used to filter the file names
+     * @param isAbsolute - If true returns as absolute path
+     * @param checkNest - If true nests the folders
+     * @return - List of names(absolute/relative) for the files in folder
+     */
+    public static List<String> listFiles(String folderPath, FilenameFilter filter, boolean isAbsolute, boolean checkNest) {
+        File directory = new File(folderPath);
+        List<String> files = new ArrayList<>();
+        File[] contents = directory.listFiles();
+        if (contents == null)
+            return files;
+        for (File file: contents) {
+            if (file.isFile() && filter.accept(directory, file.getAbsolutePath())) {
+                if (isAbsolute)
+                    files.add(file.getAbsolutePath());
+                else
+                    files.add(file.getName());
+            } else if (checkNest && file.isDirectory()) {
+                files.addAll(listFiles(file.getAbsolutePath(), filter, isAbsolute, true));
+            }
+        }
+        return files;
     }
 
     /**

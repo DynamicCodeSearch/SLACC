@@ -5,4 +5,4 @@
 #SBATCH -p opteron
 # Use modules to set the software environment
 
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar execute_single $1 $2
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam execute_single $1 $2

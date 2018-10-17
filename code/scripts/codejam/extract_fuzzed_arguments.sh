@@ -5,4 +5,4 @@
 #SBATCH -p opteron
 # Use modules to set the software environment
 
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar extract_fuzzed_args
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam extract_fuzzed_args
