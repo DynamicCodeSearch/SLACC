@@ -35,6 +35,8 @@ public class Main {
         } else if (args[0].equals("IntroClass")) {
             if (args[1].equals("crawl")) {
                 edu.ncsu.introclass.Crawler.process();
+            } else if (args[1].equals("snip")) {
+                edu.ncsu.introclass.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
             } else {
                 LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
             }
