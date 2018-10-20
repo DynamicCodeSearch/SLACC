@@ -96,7 +96,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
     }
 
     public static void main(String[] args) {
-        ObjectStoreAdapter adapter = new ObjectStoreAdapter("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/Main.java");
+        ObjectStoreAdapter adapter = new ObjectStoreAdapter("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/Main.java");
         ObjectStore store = new ObjectStore(Properties.CODEJAM_OBJECT_STORE);
         adapter.storeClasses(store);
     }

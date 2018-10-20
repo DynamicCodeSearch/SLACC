@@ -263,7 +263,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     private String saveMethods(List<String> functions) {
         String className = Properties.GENERATED_CLASS_PREFIX + Utils.randomString();
         String packageName = VisitorHelper.getPackage(compilationUnit);
-        String writePath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
+        String writePath = Utils.pathJoin(Properties.PROJECTS_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(writePath);
         StringBuilder javaContent = new StringBuilder();
         javaContent.append("package ").append(packageName).append(";\n\n").
@@ -295,8 +295,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private static void testGenerateMethods() {
-//        String fName = String.format("%s/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
-        String fName = String.format("%s/Y11R5P1/aditsu/Example.java", Properties.CODEJAM_JAVA_FOLDER);
+//        String fName = String.format("%s/CodeJam/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
+        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Properties.CODEJAM_JAVA_FOLDER);
         generateMethodsForJavaFile(fName);
     }
 

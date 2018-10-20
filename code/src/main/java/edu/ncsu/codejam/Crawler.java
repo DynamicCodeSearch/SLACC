@@ -116,7 +116,7 @@ public class Crawler {
             File tmpFile = File.createTempFile("arc", ".zip", userDir);
             tmpFile.deleteOnExit();
             downloadFile(tmpFile, link);
-            String packageName = problemKey + "." + userName;
+            String packageName = "CodeJam" + "." + problemKey + "." + userName;
             int num_files = unpackArchive(tmpFile, userDir, packageName);
             for (String javaFileName: Utils.listFilesWithExtension(userDir.getAbsolutePath(), ".java", true, true)) {
                 if (!InMemoryJavaCompiler.compile(javaFileName, false)) {
@@ -140,7 +140,9 @@ public class Crawler {
         String problemKey = String.format("Y%dR%dP%d", year, round, problemId);
         String finalUrl = BASE_URL + year + "/solutions/" + round + "/" + problemId + "/Java";
         try {
-            Document codeJamHome = Jsoup.connect(finalUrl).validateTLSCertificates(false).get();
+            Document codeJamHome = Jsoup.connect(finalUrl)
+                    .userAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/33.0.1750.152 Safari/537.36")
+                    .validateTLSCertificates(false).get();
             int userCounter = 0;
             for (Element e: codeJamHome.select("a[href]")) {
                 String link = e.attr("abs:href");

@@ -2,6 +2,8 @@ package edu.ncsu.config;
 
 import edu.ncsu.utils.Utils;
 
+import java.util.regex.Pattern;
+
 public class Properties {
 
     // File Paths
@@ -31,10 +33,18 @@ public class Properties {
      */
     public static String PROJECTS_HOME = Utils.pathJoin(CODESEER_HOME, "projects");
 
+
+    public static String SRC_MAIN_JAVA = Utils.pathJoin("src", "main", "java");
+
+    /**
+     * Folder for projects/src/main/java
+     */
+    public static String PROJECTS_JAVA_FOLDER = Utils.pathJoin(PROJECTS_HOME, SRC_MAIN_JAVA);
+
     /**
      * Codejam projects folder
      */
-    public static String CODEJAM_JAVA_FOLDER = Utils.pathJoin(PROJECTS_HOME, "src", "main", "java");
+    public static String CODEJAM_JAVA_FOLDER = Utils.pathJoin(PROJECTS_JAVA_FOLDER, "CodeJam");
 
     /**
      * Meta-store folder
@@ -47,19 +57,9 @@ public class Properties {
     public static String CODEJAM_META_STORE = Utils.pathJoin(META_STORE, "codejam");
 
     /**
-     * Codejam arguments folder
-     */
-    public static String CODEJAM_ARGUMENTS_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "arguments");
-
-    /**
-     *
+     * Codejam functions folder
      */
     public static String CODEJAM_FUNCTIONS_META_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "functions");
-
-    /**
-     * Codejam arguments index
-     */
-    public static String CODEJAM_ARGUMENTS_INDEX = Utils.pathJoin(CODEJAM_ARGUMENTS_FOLDER, "index.json");
 
     /**
      * Class objects folder

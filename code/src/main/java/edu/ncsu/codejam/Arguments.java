@@ -22,71 +22,19 @@ public class Arguments {
     public static void extractAndStorePrimitiveArguments() {
         LOGGER.info("Extracting primitive arguments from generated classes ... ");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
-        LOGGER.info(String.format("Number of java files: %d", javaFiles.size()));
-        ConstantAdapter adapter;
-        Map<Primitive, Set<Object>> constantsMap = new HashMap<>();
-        Map<Primitive, Set<Object>> fileConstantsMap;
-        for (String javaFile: javaFiles) {
-            try {
-                adapter = new ConstantAdapter(javaFile);
-                fileConstantsMap = adapter.getConstantsMap();
-                for(Primitive primitive: fileConstantsMap.keySet()) {
-                    Set<Object> values = new HashSet<>();
-                    if (constantsMap.containsKey(primitive)) {
-                        values = constantsMap.get(primitive);
-                    }
-                    values.addAll(fileConstantsMap.get(primitive));
-                    constantsMap.put(primitive, values);
-                }
-            } catch (Exception e) {
-                LOGGER.severe(String.format("Failed to process : %s", javaFile));
-                throw e;
-            }
-        }
-        LOGGER.info("PRIOR TO SAVING !!!!");
-        for (Primitive primitive: constantsMap.keySet()) {
-            System.out.println(primitive + " : " + constantsMap.get(primitive).size());
-        }
-        ArgumentStore.savePrimitiveArguments(constantsMap);
-        constantsMap = ArgumentStore.loadPrimitiveArguments();
-        LOGGER.info("====================");
-        LOGGER.info("POST SAVING !!!!");
-        for (Primitive primitive: constantsMap.keySet()) {
-            System.out.println(primitive + " : " + constantsMap.get(primitive).size());
-        }
+        ArgumentStore.extractAndStorePrimitiveArguments(javaFiles, CodejamUtils.DATASET);
     }
 
-    public static void storeRandomArgs() {
-        StoreUtils.deleteStore(Properties.CODEJAM_ARGUMENTS_FOLDER);
-        LOGGER.info("Generating random args. Here we go ....");
+    public static void storeFuzzedArguments() {
+        LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
-        for (String javaFile: javaFiles) {
-            LOGGER.info(String.format("Running for %s", javaFile));
-            generateForJavaFile(javaFile);
-        }
-    }
-
-    private static void generateForJavaFile(String javaFile) {
-        ArgumentStore store = ArgumentStore.loadArgumentStore();
-        ClassMethods classMethods = new ClassMethods(javaFile);
-        for (Method method: classMethods.getMethods()) {
-            Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
-            if (!function.isValidArgs())
-                continue;
-            String key = function.makeArgumentsKey();
-            if (!store.fuzzedKeyExists(key)) {
-                LOGGER.info(String.format("Storing Key: %s", key));
-                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(function);
-                if (arguments != null)
-                    store.saveFuzzedArguments(key, arguments);
-            }
-        }
+        ArgumentStore.storeFuzzedArguments(javaFiles, CodejamUtils.DATASET);
+        ArgumentStore.loadArgumentStore(CodejamUtils.DATASET).deleteFuzzedArguments();
     }
 
     public static void main(String[] args) {
 //        extractAndStorePrimitiveArguments();
 //        storeRandomArgs();
-//        StoreUtils.deleteStore(Properties.CODEJAM_ARGUMENTS_FOLDER);
-        generateForJavaFile("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java");
+        ArgumentStore.generateForJavaFile("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java");
     }
 }
