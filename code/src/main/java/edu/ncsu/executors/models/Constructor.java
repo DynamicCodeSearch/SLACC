@@ -79,6 +79,6 @@ public class Constructor {
     }
 
     public static void main(String[] args) {
-        System.out.println(getConstructor("Y11R5P1.Egor", "Point"));
+        System.out.println(getConstructor("CodeJam.Y11R5P1.Egor", "Point"));
     }
 }

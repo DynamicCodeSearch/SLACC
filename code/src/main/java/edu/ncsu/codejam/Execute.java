@@ -41,7 +41,7 @@ public class Execute {
     public static void executeProblem(String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
-        ArgumentStore store = ArgumentStore.loadArgumentStore();
+        ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(javaFile, store);
@@ -51,7 +51,7 @@ public class Execute {
     }
 
     public static void executeFunction(String filePath, String functionName) {
-        MethodExecutor.process(filePath, functionName, EXECUTE_ONLY_ONCE);
+        MethodExecutor.process(filePath, functionName, CodejamUtils.DATASET, EXECUTE_ONLY_ONCE);
     }
 
     public static void main(String[] args) {

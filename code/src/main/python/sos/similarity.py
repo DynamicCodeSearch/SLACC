@@ -188,7 +188,7 @@ def similarity_for_codejam():
 
 
 def _test():
-  functions = load_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/code/meta_results/Y11R5P1/Egor/generated_class_40017a204724451689624d13b72a23fe.json", "Y11R5P1", "Egor")
+  functions = load_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/code/meta_results/CodeJam/Y11R5P1/Egor/generated_class_40017a204724451689624d13b72a23fe.json", "Y11R5P1", "Egor")
   count = 0
   for funct in functions:
     if funct.name == "func_a91e1656934842209b5dc8b5fddbe8af":

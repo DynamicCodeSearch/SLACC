@@ -5,7 +5,7 @@
 #SBATCH -p opteron
 # Use modules to set the software environment
 
-rm -rf ../projects/src/main/java/Y*
+rm -rf ../projects/src/main/java/CodeJam/Y*
 
 java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 11 5 1
 java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam crawl 12 5 1

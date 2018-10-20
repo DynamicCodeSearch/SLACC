@@ -10,6 +10,6 @@ public class IntroClassConfig   {
 
     public static String DATASET_HOME = Utils.pathJoin(HOME, "dataset");
 
-    public static String SRC_JAVA_FOLDER = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, NAME);
+    public static String SRC_JAVA_FOLDER = Utils.pathJoin(Properties.PROJECTS_JAVA_FOLDER, NAME);
 
 }

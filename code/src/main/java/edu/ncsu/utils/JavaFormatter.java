@@ -34,6 +34,6 @@ public class JavaFormatter {
     }
 
     public static void main(String[] args) {
-        formatAndSave("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor1/generated_class_1fe64b355c89496a839e13105bf2a3c8.java");
+        formatAndSave("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor1/generated_class_1fe64b355c89496a839e13105bf2a3c8.java");
     }
 }

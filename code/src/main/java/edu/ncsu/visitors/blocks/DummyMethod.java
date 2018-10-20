@@ -203,7 +203,7 @@ public class DummyMethod {
                 append("public class ").append(className).append(" {\n").
                 append(functionAsString).append("}");
         try {
-            return InMemoryJavaCompiler.compile(className, packageName, Properties.CODEJAM_JAVA_FOLDER,
+            return InMemoryJavaCompiler.compile(className, packageName, Properties.PROJECTS_JAVA_FOLDER,
                     javaContent.toString());
         } catch (Exception | Error e) {
             return false;

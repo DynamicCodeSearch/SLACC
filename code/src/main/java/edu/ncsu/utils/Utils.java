@@ -159,6 +159,27 @@ public class Utils {
         return files;
     }
 
+    /**
+     * List generated files in folder
+     * @param folderPath - Path of the folder
+     * @return - List of paths of generated files.
+     */
+    public static List<String> listGeneratedFiles(String folderPath) {
+        List<String> generatedFiles = new ArrayList<>();
+        for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
+            String fileName = Utils.getFileName(javaFile);
+            if (fileName.startsWith(Properties.GENERATED_CLASS_PREFIX)) {
+                generatedFiles.add(javaFile);
+            }
+        }
+        return generatedFiles;
+    }
+
+    /**
+     * List non generated files in folder
+     * @param folderPath - Path fo the folder
+     * @return - List of paths of non generated files
+     */
     public static List<String> listNonGeneratedJavaFiles(String folderPath) {
         File directory = new File(folderPath);
         List<String> files = new ArrayList<>();
@@ -283,8 +304,38 @@ public class Utils {
         return Arrays.copyOf(envs.toArray(), envs.size(), String[].class);
     }
 
+    /**
+     * Get package of class file
+     * @param javaFilePath - Path of the java file
+     * @return - Package of class
+     */
+    public static String getPackageName(String javaFilePath) {
+        try {
+            String packageRelativePath = javaFilePath.split(Properties.SRC_MAIN_JAVA)[1].substring(1);
+            int separatorIndex = packageRelativePath.lastIndexOf(File.separator);
+            if (separatorIndex == -1) {
+                return "default";
+            } else {
+                return packageRelativePath.substring(0, separatorIndex).replaceAll(File.separator, ".");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get name of the class from the path of the file.
+     * @param javaFilePath - Path of the file
+     * @return - Name of the class
+     */
+    public static String getClassName(String javaFilePath) {
+        String classPath = javaFilePath.split("\\.java")[0].trim();
+        int separatorIndex = classPath.lastIndexOf(File.separator);
+        return classPath.substring(separatorIndex + 1);
+    }
+
     public static void main(String[] args) {
-        System.out.println(Utils.getFolderPath("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Joshik/generated_class_d6e333fe2dfc41cfa56782e918726c8b.java"));
+//        System.out.println(Utils.getFolderPath("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Joshik/generated_class_d6e333fe2dfc41cfa56782e918726c8b.java"));
     }
 
 }

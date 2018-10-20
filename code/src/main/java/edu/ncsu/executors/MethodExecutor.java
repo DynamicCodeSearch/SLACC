@@ -6,6 +6,7 @@ import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
@@ -192,8 +193,8 @@ public class MethodExecutor {
     }
 
 
-    public static void process(String filePath, String functionName, boolean onlySingle) {
-        ArgumentStore store = ArgumentStore.loadArgumentStore();
+    public static void process(String filePath, String functionName, String dataset, boolean onlySingle) {
+        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
         MethodExecutor executor =  new MethodExecutor(filePath, store);
         ClassMethods classMethods = executor.classMethods;
         LOGGER.info(String.format("Processing function %s.%s.%s ... ", classMethods.getPackageName(), classMethods.getClassName(), functionName));
@@ -408,8 +409,8 @@ public class MethodExecutor {
 
 
     public static void main(String[] args) {
-        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Y11R5P1/Egor/generated_class_mini.java";
-        ArgumentStore store = ArgumentStore.loadArgumentStore();
+        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java";
+        ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
         MethodExecutor methodExecutor = new MethodExecutor(source, store);
         methodExecutor.process();
     }

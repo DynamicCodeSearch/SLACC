@@ -6,9 +6,9 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.helpers.PackageManager;
+import edu.ncsu.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,8 +58,8 @@ public class ClassMethods {
 
     public ClassMethods(String sourcePath) {
         this.sourcePath = sourcePath;
-        packageName = CodejamUtils.getPackageName(sourcePath);
-        className = CodejamUtils.getClassName(sourcePath);
+        packageName = Utils.getPackageName(sourcePath);
+        className = Utils.getClassName(sourcePath);
         Class clazz = PackageManager.findClass(packageName, className);
         methodBodies = getMethodBodies();
         methods = new ArrayList<>();
