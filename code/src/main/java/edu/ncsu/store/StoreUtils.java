@@ -1,6 +1,7 @@
 package edu.ncsu.store;
 
 import com.google.gson.*;
+import edu.ncsu.utils.Utils;
 
 import java.io.*;
 
@@ -47,6 +48,7 @@ public class StoreUtils {
     public static void saveObject(Object object, String filePath) {
         GsonBuilder builder = new GsonBuilder().serializeSpecialFloatingPointValues();
         Gson gson = builder.create();
+        Utils.mkdir(Utils.getFolderPath(filePath));
         try(Writer writer = new FileWriter(filePath)) {
             writer.write(gson.toJson(object));
         } catch (IOException e) {

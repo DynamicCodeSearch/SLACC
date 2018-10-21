@@ -1,5 +1,8 @@
 package edu.ncsu.utils;
 
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseException;
+import com.github.javaparser.ast.CompilationUnit;
 import edu.ncsu.config.Properties;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -332,6 +335,30 @@ public class Utils {
         String classPath = javaFilePath.split("\\.java")[0].trim();
         int separatorIndex = classPath.lastIndexOf(File.separator);
         return classPath.substring(separatorIndex + 1);
+    }
+
+    /**
+     * Return the compilation unit of the java source file
+     * @param javaFilePath - path of java source file
+     * @return - AST Compilation unit
+     */
+    public static CompilationUnit getCompilationUnit(String javaFilePath) {
+        File srcFile = new File(javaFilePath);
+        try {
+            return JavaParser.parse(srcFile);
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    /***
+     * Return the package as the folder in file system
+     * @param packageName - Name of the package.
+     * @return - Package as folder name
+     */
+    public static String packageToFolder(String packageName) {
+        return packageName.replaceAll("\\.", File.separator);
     }
 
     public static void main(String[] args) {

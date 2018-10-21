@@ -47,6 +47,11 @@ public class Properties {
     public static String CODEJAM_JAVA_FOLDER = Utils.pathJoin(PROJECTS_JAVA_FOLDER, "CodeJam");
 
     /**
+     * Introclass projects folder
+     */
+    public static String INTROCLASS_JAVA_FOLDER = Utils.pathJoin(PROJECTS_JAVA_FOLDER, "IntroClassJava");
+
+    /**
      * Meta-store folder
      */
     public static String META_STORE = Utils.pathJoin(CODE_HOME, "meta_store");

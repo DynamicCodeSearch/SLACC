@@ -31,4 +31,11 @@ public class PackageManager {
 
     }
 
+    public static void main(String[] args) {
+        List<Class> classes = PackageManager.findClasses("IntroClassJava");
+        for (Class clazz: classes) {
+            System.out.println(String.format("%s.%s", clazz.getPackage(), clazz.getName()));
+        }
+    }
+
 }
