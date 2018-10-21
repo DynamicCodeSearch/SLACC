@@ -38,14 +38,7 @@ public class ClassMethods {
         if (methodBodies != null)
             return methodBodies;
         methodBodies = new HashMap<>();
-        File srcFile = new File(sourcePath);
-        CompilationUnit compilationUnit;
-        try {
-            compilationUnit = JavaParser.parse(srcFile);
-        } catch (ParseException | IOException e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+        CompilationUnit compilationUnit = Utils.getCompilationUnit(sourcePath);
         TypeDeclaration classObject = compilationUnit.getTypes().get(0);
         for (BodyDeclaration member: classObject.getMembers()) {
             if (member instanceof MethodDeclaration) {

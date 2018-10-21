@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-sbatch scripts/intro_class/snip.sh checksum
-sbatch scripts/intro_class/snip.sh digits
-sbatch scripts/intro_class/snip.sh grade
-sbatch scripts/intro_class/snip.sh median
-sbatch scripts/intro_class/snip.sh smallest
-sbatch scripts/intro_class/snip.sh syllables
+sbatch scripts/introclass/snip.sh checksum
+sbatch scripts/introclass/snip.sh digits
+sbatch scripts/introclass/snip.sh grade
+sbatch scripts/introclass/snip.sh median
+sbatch scripts/introclass/snip.sh smallest
+sbatch scripts/introclass/snip.sh syllables

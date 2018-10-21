@@ -8,12 +8,12 @@ import java.util.List;
 
 public class IntroClassUtils {
 
-    public static String DATASET = "codejam";
+    public static String DATASET = "introclass";
 
     public static List<String> listGeneratedFiles() {
         List<String> generatedFiles = new ArrayList<>();
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
-            String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+        for (String problem: Utils.listDir(Properties.INTROCLASS_JAVA_FOLDER)) {
+            String problemDir = Utils.pathJoin(Properties.INTROCLASS_JAVA_FOLDER, problem);
             generatedFiles.addAll(Utils.listGeneratedFiles(problemDir));
         }
         return generatedFiles;
