@@ -1,11 +1,13 @@
-package edu.ncsu.codejam;
+package edu.ncsu.introclass;
 
 import edu.ncsu.executors.MethodExecutor;
 
-import java.io.*;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.logging.Logger;
 
 public class Execute {
+
     private static final Logger LOGGER = Logger.getLogger(Execute.class.getName());
 
     private static final boolean EXECUTE_ONLY_ONCE = false;
@@ -18,17 +20,18 @@ public class Execute {
     }
 
     public static void executeFunction(String filePath, String functionName) {
-        MethodExecutor.process(filePath, functionName, CodejamUtils.DATASET, EXECUTE_ONLY_ONCE);
+        MethodExecutor.process(filePath, functionName, IntroClassUtils.DATASET, EXECUTE_ONLY_ONCE);
     }
 
     public static void main(String[] args) {
         if (args.length > 0) {
             LOGGER.info(String.format("Running for %s" , args[0]));
-            MethodExecutor.executeProblem(CodejamUtils.DATASET, args[0]);
+            MethodExecutor.executeProblem(IntroClassUtils.DATASET, args[0]);
         } else {
             LOGGER.info("Running for all");
-            MethodExecutor.executeDataset(CodejamUtils.DATASET);
+            MethodExecutor.executeDataset(IntroClassUtils.DATASET);
         }
     }
+
 
 }

@@ -49,6 +49,7 @@ public class Main {
                     break;
                 case "store_objects":
                     edu.ncsu.introclass.ClassStorage.main(args);
+                    break;
                 case "snip":
                     edu.ncsu.introclass.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
                     break;
@@ -60,6 +61,12 @@ public class Main {
                     break;
                 case "dead_code":
                     edu.ncsu.introclass.Clean.eliminateDeadCode();
+                    break;
+                case "execute":
+                    edu.ncsu.introclass.Execute.main(Arrays.copyOfRange(args, 2, args.length));
+                    break;
+                case "execute_single":
+                    edu.ncsu.introclass.Execute.executeFunction(args[2], args[3]);
                     break;
                 default:
                     LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));

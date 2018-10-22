@@ -73,6 +73,10 @@ public class Properties {
      */
     public static String META_RESULTS = Utils.pathJoin(CODE_HOME, "meta_results");
 
+    public static String META_RESULTS_SLOC = Utils.pathJoin(META_RESULTS, "sloc");
+
+    public static String META_RESULTS_FUNCTIONS = Utils.pathJoin(META_RESULTS, "functions");
+
 
     // ************************************************************************************** //
 

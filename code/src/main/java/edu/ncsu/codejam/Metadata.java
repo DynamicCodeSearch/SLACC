@@ -14,7 +14,7 @@ public class Metadata {
         for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
             String problemPath = Utils.pathJoin(Properties.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
-            for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
+            for(String javaFile: Utils.listGeneratedFiles(problemPath)) {
                 MetadataExtractor extractor = new MetadataExtractor(CodejamUtils.DATASET, javaFile);
                 extractor.extract();
             }
