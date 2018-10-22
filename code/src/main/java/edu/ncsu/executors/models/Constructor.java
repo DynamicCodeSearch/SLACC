@@ -2,6 +2,7 @@ package edu.ncsu.executors.models;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.executors.helpers.UserDefinedObjects;
 import edu.ncsu.visitors.blocks.Variable;
 import org.apache.commons.lang3.StringUtils;
@@ -40,8 +41,8 @@ public class Constructor {
         this.className = className;
     }
 
-    public static Constructor getConstructor(String packageName, String className) {
-        UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects();
+    public static Constructor getConstructor(String dataset, String packageName, String className) {
+        UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects(dataset);
         JsonObject classObject = udo.getClassObject(packageName, className);
         if (udo.canBeFuzzed(classObject)) {
             Constructor constructor = new Constructor(packageName, className);
@@ -79,6 +80,6 @@ public class Constructor {
     }
 
     public static void main(String[] args) {
-        System.out.println(getConstructor("CodeJam.Y11R5P1.Egor", "Point"));
+        System.out.println(getConstructor(CodejamUtils.DATASET, "CodeJam.Y11R5P1.Egor", "Point"));
     }
 }

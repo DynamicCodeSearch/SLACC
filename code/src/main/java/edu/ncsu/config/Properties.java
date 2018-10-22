@@ -1,5 +1,7 @@
 package edu.ncsu.config;
 
+import edu.ncsu.codejam.CodejamUtils;
+import edu.ncsu.introclass.IntroClassUtils;
 import edu.ncsu.utils.Utils;
 
 import java.util.regex.Pattern;
@@ -67,19 +69,9 @@ public class Properties {
     public static String CODEJAM_FUNCTIONS_META_FOLDER = Utils.pathJoin(CODEJAM_META_STORE, "functions");
 
     /**
-     * Class objects folder
-     */
-    public static String CODEJAM_OBJECT_STORE = Utils.pathJoin(CODEJAM_META_STORE, "classes.json");
-
-    /**
      * Meta-results folder
      */
     public static String META_RESULTS = Utils.pathJoin(CODE_HOME, "meta_results");
-
-    /**
-     * Meta-results folder
-     */
-    public static String CODEJAM_META_RESULTS = Utils.pathJoin(META_RESULTS, "codejam");
 
 
     // ************************************************************************************** //
@@ -138,5 +130,21 @@ public class Properties {
      * Maximum wait time for all executions
      */
     public final static int ALL_METHOD_EXECUTIONS_WAIT_TIME = 5;
+
+    // ************************************************************************************** //
+
+    // Some property based functions
+
+    public static String getObjectStore(String dataset) {
+        return Utils.pathJoin(META_STORE, dataset, "classes.json");
+    }
+
+    public static String getDatasetSourceFolder(String dataset) {
+        if (dataset.equals(CodejamUtils.DATASET))
+            return CODEJAM_JAVA_FOLDER;
+        else if (dataset.equals(IntroClassUtils.DATASET))
+            return INTROCLASS_JAVA_FOLDER;
+        throw new RuntimeException(String.format("Illegal dataset: %s", dataset));
+    }
 
 }

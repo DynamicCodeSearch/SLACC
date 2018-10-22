@@ -215,15 +215,15 @@ public class ArgumentStore {
      */
     public static void generateForJavaFile(String javaFile, String dataset) {
         ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
-        ClassMethods classMethods = new ClassMethods(javaFile);
+        ClassMethods classMethods = new ClassMethods(dataset, javaFile);
         for (Method method: classMethods.getMethods()) {
-            Function function = new Function(method, classMethods.getMethodBodies().get(method.getName()));
+            Function function = new Function(dataset, method, classMethods.getMethodBodies().get(method.getName()));
             if (!function.isValidArgs())
                 continue;
             String key = function.makeArgumentsKey();
             if (!store.fuzzedKeyExists(key)) {
                 LOGGER.info(String.format("Storing Key: %s", key));
-                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(function);
+                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(dataset, function);
                 if (arguments != null)
                     store.saveFuzzedArguments(key, arguments);
             }

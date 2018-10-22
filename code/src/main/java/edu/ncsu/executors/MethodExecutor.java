@@ -32,6 +32,8 @@ public class MethodExecutor {
 
     private static ExecutorService taskExecutor;
 
+    private String dataset;
+
     private ExecutorService timeExecutor;
 
     private TimeLimiter timeLimiter;
@@ -72,9 +74,10 @@ public class MethodExecutor {
         shutdownExecutor(taskExecutor);
     }
 
-    public MethodExecutor(String sourcePath, ArgumentStore store) {
+    public MethodExecutor(String dataset, String sourcePath, ArgumentStore store) {
         this.store = store;
-        this.classMethods = new ClassMethods(sourcePath);
+        this.dataset = dataset;
+        this.classMethods = new ClassMethods(this.dataset, sourcePath);
         initialize();
     }
 
@@ -195,7 +198,7 @@ public class MethodExecutor {
 
     public static void process(String filePath, String functionName, String dataset, boolean onlySingle) {
         ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
-        MethodExecutor executor =  new MethodExecutor(filePath, store);
+        MethodExecutor executor =  new MethodExecutor(dataset, filePath, store);
         ClassMethods classMethods = executor.classMethods;
         LOGGER.info(String.format("Processing function %s.%s.%s ... ", classMethods.getPackageName(), classMethods.getClassName(), functionName));
         Function function = null;
@@ -411,7 +414,7 @@ public class MethodExecutor {
     public static void main(String[] args) {
         String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java";
         ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
-        MethodExecutor methodExecutor = new MethodExecutor(source, store);
+        MethodExecutor methodExecutor = new MethodExecutor(CodejamUtils.DATASET, source, store);
         methodExecutor.process();
     }
 }

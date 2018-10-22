@@ -1,10 +1,9 @@
-package edu.ncsu.codejam;
+package edu.ncsu.store;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
-import edu.ncsu.store.ObjectStore;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.ObjectStoreAdapter;
 import edu.ncsu.visitors.blocks.Type;
@@ -16,22 +15,30 @@ public class ClassStore {
 
     private static final Logger LOGGER = Logger.getLogger(ClassStore.class.getName());
 
-    private static final ObjectStore objectStore = new ObjectStore(Properties.CODEJAM_OBJECT_STORE);
+    private String dataset;
 
-    private static void storeClasses() {
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
-            String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+    private ObjectStore objectStore;
+
+    public ClassStore(String dataset) {
+        this.dataset = dataset;
+        this.objectStore = new ObjectStore(Properties.getObjectStore(dataset));
+    }
+
+    private void storeClasses() {
+        String sourceFolder = Properties.getDatasetSourceFolder(this.dataset);
+        for (String problem: Utils.listDir(sourceFolder)) {
+            String problemDir = Utils.pathJoin(sourceFolder, problem);
             for (String user: Utils.listDir(problemDir)) {
                 String userDir = Utils.pathJoin(problemDir, user);
                 for (String javaFile: Utils.listNonGeneratedJavaFiles(userDir)) {
                     LOGGER.info(String.format("Processing: %s", javaFile));
-                    new ObjectStoreAdapter(javaFile).storeClasses(objectStore);
+                    new ObjectStoreAdapter(javaFile).storeClasses(this.objectStore);
                 }
             }
         }
     }
 
-    private static void markClasses() {
+    private void markClasses() {
         LOGGER.info("Marking the saved JSON as valid/invalid");
         JsonObject store = objectStore.getStore();
         for (String packageName: store.keySet()) {
@@ -43,7 +50,7 @@ public class ClassStore {
         objectStore.saveStore(store);
     }
 
-    private static JsonObject getClassJSON(JsonObject store, String packageName, String className) {
+    private JsonObject getClassJSON(JsonObject store, String packageName, String className) {
         JsonObject packageObject = store.getAsJsonObject(packageName);
         JsonObject classObject = packageObject.getAsJsonObject(className);
         if (classObject == null) {
@@ -118,7 +125,7 @@ public class ClassStore {
         return classObject;
     }
 
-    private static boolean isValidType(JsonObject store, String packageName, String type) {
+    private boolean isValidType(JsonObject store, String packageName, String type) {
         JsonObject typeObject = getClassJSON(store, packageName, type);
         boolean isValid = true;
         if (typeObject != null) {
@@ -133,10 +140,11 @@ public class ClassStore {
         return isValid;
     }
 
-    public static void main(String[] args) {
-        objectStore.deleteStore();
-        storeClasses();
-        markClasses();
+    public static void store(String dataset) {
+        ClassStore classStore = new ClassStore(dataset);
+        classStore.objectStore.deleteStore();
+        classStore.storeClasses();
+        classStore.markClasses();
     }
 
 }

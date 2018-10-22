@@ -17,9 +17,10 @@ public class CodejamUtils {
 
     public static List<String> listGeneratedFiles() {
         List<String> generatedFiles = new ArrayList<>();
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+        String sourceJavaFolder = Properties.getDatasetSourceFolder(DATASET);
+        for (String problem: Utils.listDir(sourceJavaFolder)) {
             if (CODEJAM_PROBLEM_PATTERN.matcher(problem).matches()) {
-                String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+                String problemDir = Utils.pathJoin(sourceJavaFolder, problem);
                 generatedFiles.addAll(Utils.listGeneratedFiles(problemDir));
             }
         }

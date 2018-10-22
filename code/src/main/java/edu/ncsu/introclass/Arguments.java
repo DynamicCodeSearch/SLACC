@@ -19,7 +19,6 @@ public class Arguments {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         List<String> javaFiles = IntroClassUtils.listGeneratedFiles();
         ArgumentStore.storeFuzzedArguments(javaFiles, IntroClassUtils.DATASET);
-        ArgumentStore.loadArgumentStore(IntroClassUtils.DATASET).deleteFuzzedArguments();
     }
 
 }

@@ -29,12 +29,12 @@ public class Arguments {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
         ArgumentStore.storeFuzzedArguments(javaFiles, CodejamUtils.DATASET);
-        ArgumentStore.loadArgumentStore(CodejamUtils.DATASET).deleteFuzzedArguments();
     }
 
     public static void main(String[] args) {
 //        extractAndStorePrimitiveArguments();
 //        storeRandomArgs();
-        ArgumentStore.generateForJavaFile("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java");
+//        ArgumentStore.generateForJavaFile("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java");
+        storeFuzzedArguments();
     }
 }
