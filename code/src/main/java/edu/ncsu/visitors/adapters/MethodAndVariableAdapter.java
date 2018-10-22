@@ -204,7 +204,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private void saveMetaData(int numFunctions) {
         String packageName = compilationUnit.getPackage().getPackageName();
-        String metaFolder = Utils.pathJoin(Properties.META_RESULTS, packageName.replaceAll("\\.", File.separator));
+        String metaFolder = Utils.pathJoin(Properties.META_RESULTS_SLOC, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(metaFolder);
         File file = new File(Utils.pathJoin(metaFolder, "sloc.json"));
         Set<Integer> sloc = commentAdapter.getSourceCodeLines();

@@ -6,7 +6,6 @@ import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
@@ -83,7 +82,7 @@ public class MethodExecutor {
 
 
     public void process() {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
         if (functionTasks.isEmpty()) {
@@ -130,7 +129,7 @@ public class MethodExecutor {
      * @return
      */
     public List<Callable<Map<String, String>>> getFunctionTasks() {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         LOGGER.info(String.format("Fetching function tasks for %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
         JsonObject results;
@@ -160,7 +159,7 @@ public class MethodExecutor {
         }
         LOGGER.info(String.format("Number of functions to process = %d / %d", functionTasks.size(), totalFunctions));
         for (int i=0; i<validFunctions.size(); i++)
-            functionTasks.add(makeFunctionTask(classMethods.getSourcePath(), validFunctions.get(i).getName(), i , validFunctions.size()));
+            functionTasks.add(makeFunctionTask(this.dataset, classMethods.getSourcePath(), validFunctions.get(i).getName(), i , validFunctions.size()));
         return functionTasks;
     }
 
@@ -260,15 +259,16 @@ public class MethodExecutor {
         }
     }
 
-    private static Callable<Map<String, String>> makeFunctionTask(final String sourcePath, final String functionName,
-                                                           final int taskNumber, final int totalTasks) {
+    private static Callable<Map<String, String>> makeFunctionTask(final String dataset, final String sourcePath,
+                                                                  final String functionName, final int taskNumber,
+                                                                  final int totalTasks) {
         return new Callable<Map<String, String>>() {
             @Override
             public Map<String, String> call() {
                 Map<String, String> retMap = new HashMap<>();
                 retMap.put("name", functionName);
                 try {
-                    executeAsBash(sourcePath, functionName, taskNumber, totalTasks);
+                    executeAsBash(dataset, sourcePath, functionName, taskNumber, totalTasks);
                     retMap.put("status", METHOD_EXECUTED);
                 } catch (Exception e) {
                     retMap.put("status", e.getMessage());
@@ -278,11 +278,11 @@ public class MethodExecutor {
         };
     }
 
-    private static void executeAsBash(String sourcePath, String functionName, int taskNumber, int totalTasks) {
+    private static void executeAsBash(String dataset, String sourcePath, String functionName, int taskNumber, int totalTasks) {
         try {
             LOGGER.info(String.format("Submitted %s. Doing: %d / %d", functionName, taskNumber + 1, totalTasks));
-            String command = String.format("sh scripts/codejam/execute_single_function.sh %s %s",
-                    sourcePath, functionName);
+            String command = String.format("sh scripts/%s/execute_single_function.sh %s %s",
+                    dataset, sourcePath, functionName);
             Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Properties.CODE_HOME));
             process.waitFor();
             LOGGER.info(String.format("Output: %s\nError: %s\n", Utils.getOutput(process), Utils.getError(process)));
@@ -293,9 +293,10 @@ public class MethodExecutor {
     }
 
     private void storeFunction(Function function, boolean onlySingle) {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JsonObject executionResult = executeFunction(function, onlySingle);
+        System.out.println(executionResult);
         if (executionResult.has("output")) {
             JsonObject outputResult = executionResult.get("output").getAsJsonObject();
             Utils.mkdir(writeFolder);
@@ -410,11 +411,35 @@ public class MethodExecutor {
         return functionArgs;
     }
 
+    // *******************************************************************************
+    // Static executor method that executes dataset, problem, function etc
 
-    public static void main(String[] args) {
-        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java";
-        ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
-        MethodExecutor methodExecutor = new MethodExecutor(CodejamUtils.DATASET, source, store);
-        methodExecutor.process();
+    /**
+     * Execute a dataset
+     * @param dataset - Dataset to execute
+     */
+    public static void executeDataset(String dataset) {
+        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(dataset))) {
+            MethodExecutor.executeProblem(dataset, problem);
+        }
     }
+
+    public static void executeProblem(String dataset, String problem) {
+        LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
+        String problemPath = Utils.pathJoin(Properties.getDatasetSourceFolder(dataset), problem);
+        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
+        List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
+        for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
+            MethodExecutor executor = new MethodExecutor(dataset, javaFile, store);
+            functionTasks.addAll(executor.getFunctionTasks());
+        }
+        MethodExecutor.executeFunctionTasks(functionTasks);
+    }
+
+//    public static void main(String[] args) {
+//        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java";
+//        ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
+//        MethodExecutor methodExecutor = new MethodExecutor(CodejamUtils.DATASET, source, store);
+//        methodExecutor.process();
+//    }
 }

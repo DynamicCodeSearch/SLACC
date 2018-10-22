@@ -27,15 +27,4 @@ public class CodejamUtils {
         return generatedFiles;
     }
 
-    public static List<String> listGeneratedFiles(String problemPath) {
-        List<String> generatedFiles = new ArrayList<>();
-        String[] users = Utils.listDir(problemPath);
-        Arrays.sort(users);
-        for (String user: users) {
-            String userDir = Utils.pathJoin(problemPath, user);
-            generatedFiles.addAll(Utils.listGeneratedFiles(userDir));
-        }
-        return generatedFiles;
-    }
-
 }
