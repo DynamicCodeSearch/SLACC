@@ -4,6 +4,8 @@ import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
 import edu.ncsu.store.ObjectStore;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public class UserDefinedObjects {
@@ -16,24 +18,24 @@ public class UserDefinedObjects {
     private JsonObject objectsJSON;
 
     /**
-     * Singleton instance of UserDefinedObjects
+     * Map of UserDefinedObjects
      */
-    private static UserDefinedObjects userDefinedObjects;
+    private static Map<String, UserDefinedObjects> userDefinedObjectsMap = new HashMap<>();
 
     /**
      * Initialize UserDefinedObjects
      */
-    private UserDefinedObjects() {
-        this.objectsJSON = new ObjectStore(Properties.CODEJAM_OBJECT_STORE).getStore();
+    private UserDefinedObjects(String dataset) {
+        this.objectsJSON = new ObjectStore(Properties.getObjectStore(dataset)).getStore();
     }
 
     /**
      * @return - Create singleton instance of UserDefinedObjects
      */
-    public static UserDefinedObjects getUserDefinedObjects() {
-        if (userDefinedObjects == null)
-            userDefinedObjects = new UserDefinedObjects();
-        return userDefinedObjects;
+    public static UserDefinedObjects getUserDefinedObjects(String dataset) {
+        if (!userDefinedObjectsMap.containsKey(dataset))
+            userDefinedObjectsMap.put(dataset, new UserDefinedObjects(dataset));
+        return userDefinedObjectsMap.get(dataset);
     }
 
     /**

@@ -10,8 +10,6 @@ import edu.ncsu.config.Properties;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.utils.Utils;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 public class ClassMethods {
+
+    private String dataset;
 
     private String sourcePath;
 
@@ -49,7 +49,8 @@ public class ClassMethods {
         return methodBodies;
     }
 
-    public ClassMethods(String sourcePath) {
+    public ClassMethods(String dataset, String sourcePath) {
+        this.dataset = dataset;
         this.sourcePath = sourcePath;
         packageName = Utils.getPackageName(sourcePath);
         className = Utils.getClassName(sourcePath);
@@ -69,7 +70,7 @@ public class ClassMethods {
 
     public Function getFunction(Method method) {
         MethodDeclaration ast = getMethodBody(method.getName());
-        return new Function(method, ast);
+        return new Function(this.dataset, method, ast);
     }
 
     public String getSourcePath() {

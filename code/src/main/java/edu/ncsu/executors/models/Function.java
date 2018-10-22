@@ -20,6 +20,8 @@ import java.util.List;
 
 public class Function {
 
+    private String dataset;
+
     private Method method;
 
     private MethodDeclaration ast;
@@ -96,21 +98,22 @@ public class Function {
         return expandedArgs;
     }
 
-    public Function(Method method, MethodDeclaration ast) {
+    public Function(String dataset, Method method, MethodDeclaration ast) {
+        this.dataset = dataset;
         this.method = method;
         this.method.setAccessible(true);
         this.ast = ast;
         arguments = new ArrayList<>();
         for (Parameter parameter: ast.getParameters()) {
             FunctionVariable variable = FunctionVariable.getFunctionVariable(
-                    parameter.getType(), getPackageName());
+                    this.dataset, parameter.getType(), getPackageName());
             variable.setName(parameter.getId().getName());
             if (!variable.isFuzzable())
                 this.isFuzzable = false;
             arguments.add(variable);
         }
         try {
-            returnVariable = FunctionVariable.getFunctionVariable(ast.getType(), getPackageName());
+            returnVariable = FunctionVariable.getFunctionVariable(this.dataset, ast.getType(), getPackageName());
             if (!returnVariable.isFuzzable())
                 this.isFuzzable = false;
         } catch (RuntimeException e) {
@@ -148,7 +151,7 @@ public class Function {
             returnObject.addProperty("type", returnVariable.getPrimitive().getName());
         } else {
             returnObject.addProperty("type", returnVariable.getDataType());
-            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects().getClassObject(returnVariable.getPackageName(), returnVariable.getDataType());
+            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects(this.dataset).getClassObject(returnVariable.getPackageName(), returnVariable.getDataType());
             if (classObject != null && classObject.has("variables")) {
 
                 returnObject.add("variables", classObject.get("variables").getAsJsonArray());

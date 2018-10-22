@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Properties;
 import edu.ncsu.utils.JavaFormatter;
 import edu.ncsu.utils.Utils;
@@ -296,7 +297,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private static void testGenerateMethods() {
 //        String fName = String.format("%s/CodeJam/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
-        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Properties.CODEJAM_JAVA_FOLDER);
+        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Properties.getDatasetSourceFolder(CodejamUtils.DATASET));
         generateMethodsForJavaFile(fName);
     }
 

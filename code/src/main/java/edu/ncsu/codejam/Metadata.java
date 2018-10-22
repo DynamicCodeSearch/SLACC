@@ -11,11 +11,11 @@ public class Metadata {
     private static final Logger LOGGER = Logger.getLogger(Metadata.class.getName());
 
     public static void extractMetadata() {
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
-            String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+            String problemPath = Utils.pathJoin(Properties.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
             for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
-                MetadataExtractor extractor = new MetadataExtractor(javaFile);
+                MetadataExtractor extractor = new MetadataExtractor(CodejamUtils.DATASET, javaFile);
                 extractor.extract();
             }
         }

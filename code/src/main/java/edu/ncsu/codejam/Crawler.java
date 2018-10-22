@@ -100,7 +100,7 @@ public class Crawler {
 
     public static int crawlLink(String link, String problemKey) {
         try {
-            String codeRepo = Properties.CODEJAM_JAVA_FOLDER;
+            String codeRepo = Properties.getDatasetSourceFolder(CodejamUtils.DATASET);
             File problemDir = new File(codeRepo + "/" + problemKey);
             if (!problemDir.exists()) {
                 problemDir.mkdirs();

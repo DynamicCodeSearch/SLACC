@@ -10,6 +10,7 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Properties;
 import edu.ncsu.store.ObjectStore;
 import edu.ncsu.visitors.blocks.Variable;
@@ -97,7 +98,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
 
     public static void main(String[] args) {
         ObjectStoreAdapter adapter = new ObjectStoreAdapter("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/Main.java");
-        ObjectStore store = new ObjectStore(Properties.CODEJAM_OBJECT_STORE);
+        ObjectStore store = new ObjectStore(Properties.getObjectStore(CodejamUtils.DATASET));
         adapter.storeClasses(store);
     }
 }

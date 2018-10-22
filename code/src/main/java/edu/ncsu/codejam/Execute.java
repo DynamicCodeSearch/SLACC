@@ -27,24 +27,24 @@ public class Execute {
     }
 
     public static void execute() {
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             executeProblem(problem);
         }
     }
 
     public static void executeOnce() {
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             executeProblem(problem);
         }
     }
 
     public static void executeProblem(String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
-        String problemPath = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+        String problemPath = Utils.pathJoin(Properties.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
         ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for(String javaFile: CodejamUtils.listGeneratedFiles(problemPath)) {
-            MethodExecutor executor = new MethodExecutor(javaFile, store);
+            MethodExecutor executor = new MethodExecutor(CodejamUtils.DATASET, javaFile, store);
             functionTasks.addAll(executor.getFunctionTasks());
         }
         MethodExecutor.executeFunctionTasks(functionTasks);

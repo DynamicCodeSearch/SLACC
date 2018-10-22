@@ -12,7 +12,7 @@ public class Snipper {
     private static Logger LOGGER = Logger.getLogger(Snipper.class.getName());
 
     private static void snipProblem(String problem) {
-        String problemDir = Utils.pathJoin(Properties.CODEJAM_JAVA_FOLDER, problem);
+        String problemDir = Utils.pathJoin(Properties.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
         String[] users = Utils.listDir(problemDir);
         Arrays.sort(users);
         for (String user: users) {
@@ -26,7 +26,7 @@ public class Snipper {
     }
 
     private static void snipAll() {
-        for (String problem: Utils.listDir(Properties.CODEJAM_JAVA_FOLDER)) {
+        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             snipProblem(problem);
         }
     }

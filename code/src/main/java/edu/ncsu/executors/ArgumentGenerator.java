@@ -205,7 +205,7 @@ public class ArgumentGenerator {
     // *********************************************************************************** //
     // Objects and Functions
 
-    public static List<Object> generateArgumentsForFunction(Function function) {
+    public static List<Object> generateArgumentsForFunction(String dataset, Function function) {
         if (!function.isValidArgs()) {
             LOGGER.info(String.format("%s does not contain valid arguments", function.getName()));
             return null;
@@ -219,7 +219,7 @@ public class ArgumentGenerator {
         for (int i=0; i<Properties.FUZZ_ARGUMENT_SIZE; i++) {
             List<Object> args = new ArrayList<>();
             for (FunctionVariable variable: function.getArguments()) {
-                Map<String, Object> generated = generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
+                Map<String, Object> generated = generateArgumentsForFunctionVariable(dataset, variable, variable.getArrayDimensions());
                 if (generated != null) {
                     if ((Boolean) generated.get("isArray"))
                         args.add(generated.get("args"));
@@ -236,11 +236,11 @@ public class ArgumentGenerator {
         return fuzzed;
     }
 
-    public static Map<String, Object> generateArgumentsForFunctionVariable(FunctionVariable variable) {
-        return generateArgumentsForFunctionVariable(variable, variable.getArrayDimensions());
+    public static Map<String, Object> generateArgumentsForFunctionVariable(String dataset, FunctionVariable variable) {
+        return generateArgumentsForFunctionVariable(dataset, variable, variable.getArrayDimensions());
     }
 
-    private static Map<String, Object> generateArgumentsForFunctionVariable(FunctionVariable variable, int arraySize) {
+    private static Map<String, Object> generateArgumentsForFunctionVariable(String dataset, FunctionVariable variable, int arraySize) {
         Map<String, Object> argsMap = new HashMap<>();
         List<Object> args = new ArrayList<>();
         boolean isArray = false;
@@ -248,11 +248,11 @@ public class ArgumentGenerator {
             if (variable.getPrimitive() != null) {
                 args.add(generateRandomArgument(variable.getPrimitive()));
             } else {
-                Constructor constructor = Constructor.getConstructor(variable.getPackageName(), variable.getDataType());
+                Constructor constructor = Constructor.getConstructor(dataset, variable.getPackageName(), variable.getDataType());
                 if (constructor == null || constructor.getParameters() == null)
                     return null;
                 for (FunctionVariable param: constructor.getParameters()) {
-                    Map<String, Object> paramArgs = generateArgumentsForFunctionVariable(param);
+                    Map<String, Object> paramArgs = generateArgumentsForFunctionVariable(dataset, param);
                     if (paramArgs != null) {
                         if ((Boolean) paramArgs.get("isArray")) {
                             args.add(paramArgs.get("args"));
@@ -267,7 +267,7 @@ public class ArgumentGenerator {
         } else {
             isArray = true;
             for (int i=0; i < randInteger(2, Properties.MAX_ARRAY_SIZE); i++) {
-                Map<String, Object> arrArgsForFV = generateArgumentsForFunctionVariable(variable, arraySize - 1);
+                Map<String, Object> arrArgsForFV = generateArgumentsForFunctionVariable(dataset, variable, arraySize - 1);
                 if (arrArgsForFV == null)
                     return null;
                 args.add(arrArgsForFV.get("args"));

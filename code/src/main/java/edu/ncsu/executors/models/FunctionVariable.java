@@ -24,6 +24,8 @@ public class FunctionVariable {
 
     private static final Logger LOGGER = Logger.getLogger(FunctionVariable.class.getName());
 
+    private String dataset;
+
     private String name;
 
     private Primitive primitive;
@@ -36,13 +38,13 @@ public class FunctionVariable {
 
     private boolean isFuzzable = true;
 
-    public static FunctionVariable getFunctionVariable(Type type, String packageName) {
+    public static FunctionVariable getFunctionVariable(String dataset, Type type, String packageName) {
         if (type instanceof PrimitiveType) {
-            return new FunctionVariable((PrimitiveType) type);
+            return new FunctionVariable(dataset, (PrimitiveType) type);
         } else if (type instanceof ClassOrInterfaceType) {
-            return new FunctionVariable((ClassOrInterfaceType) type, packageName);
+            return new FunctionVariable(dataset, (ClassOrInterfaceType) type, packageName);
         } else if (type instanceof ReferenceType) {
-            return new FunctionVariable((ReferenceType) type, packageName);
+            return new FunctionVariable(dataset, (ReferenceType) type, packageName);
         }
         throw new RuntimeException("Invalid type " + type.getClass().getName());
     }
@@ -63,11 +65,13 @@ public class FunctionVariable {
 
     private FunctionVariable(){}
 
-    public FunctionVariable(PrimitiveType type) {
+    public FunctionVariable(String dataset, PrimitiveType type) {
+        this.dataset = dataset;
         this.primitive = Primitive.getPrimitive(type.toStringWithoutComments());
     }
 
     private void copy(FunctionVariable functionVariable) {
+        this.dataset = functionVariable.dataset;
         this.name = functionVariable.name;
         this.primitive = functionVariable.primitive;
         this.dataType = functionVariable.dataType;
@@ -76,12 +80,13 @@ public class FunctionVariable {
         this.isFuzzable = functionVariable.isFuzzable;
     }
 
-    public FunctionVariable(ClassOrInterfaceType type, String packageName) {
+    public FunctionVariable(String dataset, ClassOrInterfaceType type, String packageName) {
+        this.dataset = dataset;
         setType(type.getName(), packageName);
     }
 
     public void setType(String type, String packageName) {
-        UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects();
+        UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects(this.dataset);
         if (packageName != null && udo.canBeFuzzed(udo.getClassObject(packageName, type))) {
             this.dataType = type;
             this.packageName = packageName;
@@ -104,11 +109,11 @@ public class FunctionVariable {
         this.isFuzzable = false;
     }
 
-    public FunctionVariable(ReferenceType type, String packageName) {
+    public FunctionVariable(String dataset, ReferenceType type, String packageName) {
         if (type.getType() instanceof PrimitiveType) {
-            copy(new FunctionVariable((PrimitiveType) type.getType()));
+            copy(new FunctionVariable(dataset, (PrimitiveType) type.getType()));
         } else if (type.getType() instanceof ClassOrInterfaceType) {
-            copy(new FunctionVariable((ClassOrInterfaceType) type.getType(), packageName));
+            copy(new FunctionVariable(dataset, (ClassOrInterfaceType) type.getType(), packageName));
         }
         this.arrayDimensions = type.getArrayCount();
     }
@@ -122,17 +127,6 @@ public class FunctionVariable {
             }
         }
         return null;
-    }
-
-
-
-    public FunctionVariable(String dataType) {
-        this.dataType = dataType;
-    }
-
-
-    public FunctionVariable(Primitive primitive) {
-        this.primitive = primitive;
     }
 
     public String getName() {
@@ -212,7 +206,7 @@ public class FunctionVariable {
         if (primitive != null) {
             key = primitive.getName();
         } else {
-            Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
             if (constructor == null || constructor.getParameters() == null)
                 return null;
             List<String> paramKeys = new ArrayList<>();
@@ -238,7 +232,7 @@ public class FunctionVariable {
         if (primitive != null) {
             paramKeys.add(primitive.getName());
         } else {
-            Constructor constructor = Constructor.getConstructor(packageName, dataType);
+            Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
             if (constructor == null || constructor.getParameters() == null)
                 return null;
             for (FunctionVariable parameter: constructor.getParameters()) {
@@ -267,7 +261,7 @@ public class FunctionVariable {
                 arg.remove(0);
                 return Primitive.convertToArgument(primitive, argVal.toString());
             } else {
-                Constructor constructor = Constructor.getConstructor(packageName, dataType);
+                Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
                 List<Object> argVals = new ArrayList<>();
                 if (constructor != null && constructor.getParameters() != null && constructor.getParameters().size() > 0) {
                     for (int i=0; i<constructor.getParameters().size(); i++) {
@@ -337,7 +331,7 @@ public class FunctionVariable {
         }
         Class objClass = getClassInstantiation();
         List<Class> constructorClasses = new ArrayList<>();
-        Constructor constructor = Constructor.getConstructor(packageName, dataType);
+        Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
         for (FunctionVariable parameter: constructor.getParameters()) {
             constructorClasses.add(parameter.getCompleteClassInstatiation());
         }
@@ -359,7 +353,7 @@ public class FunctionVariable {
             returnObject.addProperty("type", this.getPrimitive().getName());
         } else {
             returnObject.addProperty("type", this.getDataType());
-            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects().getClassObject(this.getPackageName(), this.getDataType());
+            JsonObject classObject = UserDefinedObjects.getUserDefinedObjects(this.dataset).getClassObject(this.getPackageName(), this.getDataType());
             if (classObject != null && classObject.has("variables") && classObject.get("variables").getAsJsonArray().size() > 0) {
                 JsonArray variables = new JsonArray();
                 for (JsonElement element: classObject.get("variables").getAsJsonArray()) {

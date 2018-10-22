@@ -18,7 +18,7 @@ public class Main {
                     edu.ncsu.codejam.Crawler.main(Arrays.copyOfRange(args, 2, args.length));
                     break;
                 case "store_objects":
-                    edu.ncsu.codejam.ClassStore.main(args);
+                    edu.ncsu.codejam.ClassStorage.main(args);
                     break;
                 case "snip":
                     edu.ncsu.codejam.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
@@ -47,6 +47,8 @@ public class Main {
                 case "crawl":
                     edu.ncsu.introclass.Crawler.process();
                     break;
+                case "store_objects":
+                    edu.ncsu.introclass.ClassStorage.main(args);
                 case "snip":
                     edu.ncsu.introclass.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
                     break;

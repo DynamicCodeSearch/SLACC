@@ -18,8 +18,8 @@ public class MetadataExtractor {
 
     private ClassMethods classMethods;
 
-    public MetadataExtractor(String filePath) {
-        classMethods = new ClassMethods(filePath);
+    public MetadataExtractor(String dataset, String filePath) {
+        classMethods = new ClassMethods(dataset, filePath);
     }
 
     public void extract() {
