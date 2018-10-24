@@ -73,6 +73,10 @@ public class ClassMethods {
         return new Function(this.dataset, method, ast);
     }
 
+    public String getDataset() {
+        return dataset;
+    }
+
     public String getSourcePath() {
         return sourcePath;
     }

@@ -1,6 +1,5 @@
 package edu.ncsu.executors;
 
-import com.github.javaparser.ast.body.MethodDeclaration;
 import com.google.gson.JsonObject;
 import edu.ncsu.config.Properties;
 import edu.ncsu.executors.models.ClassMethods;
@@ -22,6 +21,16 @@ public class MetadataExtractor {
         classMethods = new ClassMethods(dataset, filePath);
     }
 
+    public void saveMetadata(JsonObject metadata) {
+        LOGGER.info("Writing metadata ... ");
+        String writeFolder = Utils.pathJoin(Properties.META_STORE, this.classMethods.getDataset(), "functions",
+                classMethods.getPackageName().replaceAll("\\.", File.separator));
+        Utils.mkdir(writeFolder);
+        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
+        StoreUtils.saveJsonObject(metadata, writeFile, true);
+
+    }
+
     public void extract() {
         LOGGER.info(String.format("Extracting metadata for class: %s.%s",
                 classMethods.getPackageName(), classMethods.getClassName()));
@@ -30,13 +39,19 @@ public class MetadataExtractor {
             Function function = classMethods.getFunction(method);
             metadata.add(function.getName(), function.getMetaData());
         }
-        LOGGER.info("Writing ... ");
-        String writeFolder = Utils.pathJoin(Properties.CODEJAM_FUNCTIONS_META_FOLDER,
-                classMethods.getPackageName().replaceAll("\\.", File.separator));
-        Utils.mkdir(writeFolder);
-        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
-        StoreUtils.saveJsonObject(metadata, writeFile, true);
+        saveMetadata(metadata);
     }
 
+    public static void extractForDataset(String dataset) {
+        String sourceFolder = Properties.getDatasetSourceFolder(dataset);
+        for (String problem: Utils.listDir(sourceFolder)) {
+            LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
+            String problemPath = Utils.pathJoin(sourceFolder, problem);
+            for(String javaFile: Utils.listGeneratedFiles(problemPath)) {
+                MetadataExtractor extractor = new MetadataExtractor(dataset, javaFile);
+                extractor.extract();
+            }
+        }
+    }
 
 }
