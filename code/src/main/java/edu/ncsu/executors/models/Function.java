@@ -245,14 +245,18 @@ public class Function {
         metadata.addProperty("name", this.getName());
         metadata.addProperty("body", this.ast.toStringWithoutComments());
         metadata.addProperty("inputKey", this.makeArgumentsKey());
-        JsonArray linesTouched = new JsonArray();
-        for (Integer line: this.linesTouched)
-            linesTouched.add(line);
-        JsonArray span = new JsonArray();
-        for (Integer line: this.span)
-            span.add(line);
-        metadata.add("linesTouched", linesTouched);
-        metadata.add("span", span);
+        if (this.linesTouched != null && this.linesTouched.size() > 0) {
+            JsonArray linesTouched = new JsonArray();
+            for (Integer line: this.linesTouched)
+                linesTouched.add(line);
+            metadata.add("linesTouched", linesTouched);
+        }
+        if (this.span != null) {
+            JsonArray span = new JsonArray();
+            for (Integer line: this.span)
+                span.add(line);
+            metadata.add("span", span);
+        }
         metadata.add("return", returnVariable.getMetadata());
         return metadata;
     }

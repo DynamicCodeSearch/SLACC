@@ -36,7 +36,7 @@ public class Main {
                     edu.ncsu.codejam.Execute.executeFunction(args[2], args[3]);
                     break;
                 case "extract_metadata":
-                    edu.ncsu.codejam.Metadata.extractMetadata();
+                    edu.ncsu.codejam.Metadata.main(args);
                     break;
                 default:
                     LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
@@ -67,6 +67,9 @@ public class Main {
                     break;
                 case "execute_single":
                     edu.ncsu.introclass.Execute.executeFunction(args[2], args[3]);
+                    break;
+                case "extract_metadata":
+                    edu.ncsu.introclass.Metadata.main(args);
                     break;
                 default:
                     LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
