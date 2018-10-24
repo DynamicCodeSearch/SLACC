@@ -4,8 +4,11 @@ import com.google.gson.*;
 import edu.ncsu.utils.Utils;
 
 import java.io.*;
+import java.util.logging.Logger;
 
 public class StoreUtils {
+
+    private static Logger LOGGER = Logger.getLogger(StoreUtils.class.getName());
 
     public static JsonElement getJsonElement(String filePath) {
         JsonParser parser = new JsonParser();
@@ -17,19 +20,27 @@ public class StoreUtils {
             } else {
                 jsonElement = new JsonObject();
             }
-
-        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            LOGGER.info(String.format("Error accessing: %s", filePath));
             throw new RuntimeException(e);
         }
         return jsonElement;
     }
 
     public static JsonObject getJsonObject(String filePath) {
-        return getJsonElement(filePath).getAsJsonObject();
+        try {
+            return getJsonElement(filePath).getAsJsonObject();
+        } catch (RuntimeException e) {
+            return new JsonObject();
+        }
     }
 
     public static JsonArray getJsonArray(String filePath) {
-        return getJsonElement(filePath).getAsJsonArray();
+        try {
+            return getJsonElement(filePath).getAsJsonArray();
+        } catch (RuntimeException e) {
+            return new JsonArray();
+        }
     }
 
     public static void saveJsonObject(JsonElement jsonElement, String filePath, boolean pretty) {
