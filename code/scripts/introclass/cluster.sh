@@ -6,4 +6,4 @@
 # Use modules to set the software environment
 
 cd src/main/python
-python sos/similarity.py codejam
+python sos/similarity.py introclass

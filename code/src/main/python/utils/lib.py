@@ -6,6 +6,8 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
+import properties
+
 
 class O(object):
   def __init__(self, **d):
@@ -72,3 +74,40 @@ def is_int(string):
     return True
   except ValueError:
     return False
+
+
+def get_dataset_functions_results_folder(dataset):
+  return properties.FUNCTIONS_RESULTS_FOLDER % dataset
+
+
+def get_dataset_meta_results_folder(dataset):
+  return properties.FUNCTIONS_META_FOLDER % dataset
+
+
+def get_dataset_arg_index(dataset):
+  return properties.ARGUMENTS_INDEX_JSON % dataset
+
+
+def get_dataset_args_folder(dataset):
+  return properties.ARGUMENTS_FOLDER % dataset
+
+
+def get_clusters_folder(dataset):
+  return properties.CLUSTERS_FOLDER % dataset
+
+
+def list_files(folder, check_nest=False, is_absolute=False):
+  files = []
+  for f in os.listdir(folder):
+    child = os.path.join(folder, f)
+    if os.path.isdir(child) and check_nest:
+      child_files = list_files(child, check_nest=True, is_absolute=is_absolute)
+      if child_files:
+        files += child_files
+    elif not os.path.isdir(child):
+      if is_absolute:
+        files.append(child)
+      else:
+        files.append(f)
+  return files
+
