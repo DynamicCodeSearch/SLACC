@@ -65,8 +65,6 @@ public class Properties {
 
     public static String META_RESULTS_SLOC = Utils.pathJoin(META_RESULTS, "sloc");
 
-    public static String META_RESULTS_FUNCTIONS = Utils.pathJoin(META_RESULTS, "functions");
-
 
     // ************************************************************************************** //
 
@@ -131,6 +129,10 @@ public class Properties {
 
     public static String getObjectStore(String dataset) {
         return Utils.pathJoin(META_STORE, dataset, "classes.json");
+    }
+
+    public static String getMetaResultsFunctionsFolder(String dataset) {
+        return Utils.pathJoin(META_RESULTS, dataset, "functions");
     }
 
     public static String getDatasetSourceFolder(String dataset) {
