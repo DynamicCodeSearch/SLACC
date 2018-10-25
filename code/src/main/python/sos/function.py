@@ -8,15 +8,15 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 from utils.lib import O
-from utils import cache
+from utils import cache, lib
 import properties
 
 
-def load_inputs(args_key):
-  args_index = cache.load_json(properties.ARGUMENTS_INDEX_JSON)
+def load_inputs(dataset, args_key):
+  args_index = cache.load_json(lib.get_dataset_arg_index(dataset))
   if args_key not in args_index:
     return None
-  arg_files_name = os.path.join(properties.ARGUMENTS_FOLDER, "%s.json" % args_index[args_key])
+  arg_files_name = os.path.join(lib.get_dataset_args_folder(dataset), "%s.json" % args_index[args_key])
   arguments = cache.load_json(arg_files_name)
   assert len(arguments) == properties.FUZZ_ARGUMENT_SIZE
   return arguments
@@ -32,10 +32,10 @@ class InputCache(O):
   _cache = {}
 
   @staticmethod
-  def load(key):
+  def load(dataset, key):
     if key in InputCache._cache:
       return InputCache._cache[key]
-    arguments = load_inputs(key)
+    arguments = load_inputs(dataset, key)
     if arguments is None:
       return None
     if is_array(arguments):
@@ -57,8 +57,7 @@ class Function(O):
     self.id = Function._id
     self.name = None
     self.body = None
-    self.project = None
-    self.user = None
+    self.dataset = None
     self.package = None
     self.className = None
     self.source = None
@@ -82,7 +81,7 @@ class Function(O):
     # TODO: check usefulness of function
     if self.useful is not None:
       return self.useful
-    inputs = InputCache.load(self.input_key)
+    inputs = InputCache.load(self.dataset, self.input_key)
     if inputs is None:
       self.useful = False
       return self.useful

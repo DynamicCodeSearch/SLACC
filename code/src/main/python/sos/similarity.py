@@ -13,36 +13,36 @@ import numpy as np
 import re
 
 from function import Function, Outputs
-from utils import cache, logger
+from utils import cache, logger, lib
 from utils.lib import O
 from utils.stat import Stat
 
-import properties
-
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
-CLUSTERS_PKL_FILE = os.path.join(properties.CLUSTERS_FOLDER, "codejam.pkl")
-CLUSTERS_TXT_FILE = os.path.join(properties.CLUSTERS_FOLDER, "codejam.txt")
 
+def load_functions_for_class(class_json_file, dataset):
 
-def load_functions(class_json_file, project, user):
+  def get_package(json_file):
+    return json_file.split("%sfunctions%s" %
+                           (os.path.sep, os.path.sep))[-1].rsplit(os.path.sep, 1)[0].replace(os.path.sep, ".")
+
   class_json = cache.load_json(class_json_file)
   class_name = cache.get_file_name(class_json_file)
-  package = "%s.%s" % (project, user)
+  package = get_package(class_json_file)
   functions = []
   function_pattern = re.compile(r'^func_')
-  class_metadata = load_class_metadata(package, class_name)
+  class_metadata = load_class_metadata(dataset, package, class_name)
   for function_name, details in class_json.items():
     if not function_pattern.match(function_name):
       continue
     function_metadata = class_metadata[function_name]
     return_meta_data = function_metadata["return"]
     outputs = Outputs(details["outputs"])
-    funct = Function(name=function_name, project=project, user=user,
+    funct = Function(name=function_name, dataset=dataset,
                      class_name=class_name, package=package,
                      input_key=details["inputKey"], outputs=outputs,
-                     lines_touched=function_metadata["linesTouched"],
-                     span=function_metadata["span"], body=function_metadata["body"])
+                     lines_touched=function_metadata.get("linesTouched", None),
+                     span=function_metadata.get("span", None), body=function_metadata["body"])
     if is_object_return(return_meta_data):
       for attribute, returns in get_return_vals(outputs.returns).items():
         clone = funct.clone()
@@ -102,25 +102,19 @@ def get_return_vals(returns):
   return ret_vals_dict
 
 
-def load_class_metadata(package, class_name):
-  metadata_file = os.path.join(properties.FUNCTIONS_META_FOLDER, package.replace(".", os.path.sep),
+def load_class_metadata(dataset, package, class_name):
+  metadata_file = os.path.join(lib.get_dataset_meta_results_folder(dataset), package.replace(".", os.path.sep),
                                "%s.json" % class_name)
   return cache.load_json(metadata_file)
 
 
-def load_functions_for_codejam():
+def load_functions(dataset):
   functions = []
-  project_pattern = re.compile(r'^Y\d+R\d+P\d+$')
-  for project in os.listdir(properties.META_RESULTS_FOLDER):
-    if not project_pattern.match(project): continue
-    project_folder = os.path.join(properties.META_RESULTS_FOLDER, project)
-    for user in os.listdir(project_folder):
-      LOGGER.info("Reading %s.%s ... " % (project, user))
-      user_folder = os.path.join(project_folder, user)
-      assert os.path.isdir(user_folder)
-      for json_file in os.listdir(user_folder):
-        if not json_file.endswith(".json"): continue
-        functions += load_functions("%s/%s" % (user_folder, json_file), project, user)
+  results_folder = lib.get_dataset_functions_results_folder(dataset)
+  for json_file in lib.list_files(results_folder, check_nest=True, is_absolute=True):
+    if not json_file.endswith(".json"):
+      continue
+    functions += load_functions_for_class(json_file, dataset)
   valid_functions = [func for func in functions if func.is_useful()]
   LOGGER.info("Valid Functions : %d / %d" % (len(valid_functions), len(functions)))
   return valid_functions
@@ -174,10 +168,12 @@ class Clusterer(O):
     return clusters
 
 
-def similarity_for_codejam():
-  functions = load_functions_for_codejam()
-  clusters = Clusterer(functions).cluster(CLUSTERS_TXT_FILE)
-  cache.save_pickle(CLUSTERS_PKL_FILE, clusters)
+def similarity_for_dataset(dataset):
+  functions = load_functions(dataset)
+  clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "codejam.txt")
+  clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "codejam.pkl")
+  clusters = Clusterer(functions).cluster(clusters_txt_file)
+  cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
   sizes = [len(cluster_funcs) for label, cluster_funcs in clusters.items() if label != -1]
   LOGGER.info("## Cluster sizes")
@@ -185,6 +181,14 @@ def similarity_for_codejam():
   LOGGER.info("### Number of functions clustered: %d" % sum(sizes))
   LOGGER.info("### Number of functions not clustered: %d" % (len(functions) - sum(sizes)))
   Stat(sizes).report()
+
+
+def similarity_for_introclass():
+  similarity_for_dataset("introclass")
+
+
+def similarity_for_codejam():
+  similarity_for_dataset("codejam")
 
 
 def _test():
@@ -197,6 +201,13 @@ def _test():
 
 
 if __name__ == "__main__":
-  similarity_for_codejam()
-
-
+  args = sys.argv
+  if len(args) < 2:
+    print("Provide a dataset")
+    exit(0)
+  if args[1] == "codejam":
+    similarity_for_codejam()
+  elif args[1] == "introclass":
+    similarity_for_introclass()
+  else:
+    print("Invalid dataset : %s" % args[1])
