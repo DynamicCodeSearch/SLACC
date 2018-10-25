@@ -82,7 +82,8 @@ public class MethodExecutor {
 
 
     public void process() {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+                classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
         if (functionTasks.isEmpty()) {
@@ -129,7 +130,8 @@ public class MethodExecutor {
      * @return
      */
     public List<Callable<Map<String, String>>> getFunctionTasks() {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+                classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         LOGGER.info(String.format("Fetching function tasks for %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
         JsonObject results;
@@ -293,10 +295,10 @@ public class MethodExecutor {
     }
 
     private void storeFunction(Function function, boolean onlySingle) {
-        String writeFolder = Utils.pathJoin(Properties.META_RESULTS_FUNCTIONS, classMethods.getPackageName().replaceAll("\\.", File.separator));
+        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+                classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JsonObject executionResult = executeFunction(function, onlySingle);
-        System.out.println(executionResult);
         if (executionResult.has("output")) {
             JsonObject outputResult = executionResult.get("output").getAsJsonObject();
             Utils.mkdir(writeFolder);
