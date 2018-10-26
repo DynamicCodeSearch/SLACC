@@ -43,7 +43,7 @@ public class MethodExecutor {
 
     static {
         if (taskExecutor == null || taskExecutor.isShutdown())
-            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
+            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS * 4);
     }
 
     private void initialize() {
@@ -438,10 +438,11 @@ public class MethodExecutor {
         MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
-//    public static void main(String[] args) {
-//        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java";
-//        ArgumentStore store = ArgumentStore.loadArgumentStore(CodejamUtils.DATASET);
-//        MethodExecutor methodExecutor = new MethodExecutor(CodejamUtils.DATASET, source, store);
+    public static void main(String[] args) {
+//        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/smallest/smallest_c868b30a_000/generated_class_44dcbccdc0964592ab3a44f1eff79f26.java";
+//        ArgumentStore store = ArgumentStore.loadArgumentStore("introclass");
+//        MethodExecutor methodExecutor = new MethodExecutor("introclass", source, store);
 //        methodExecutor.process();
-//    }
+        executeProblem("introclass", "digits");
+    }
 }

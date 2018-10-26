@@ -111,7 +111,7 @@ public class Properties {
     /**
      * Number of threads for execution
      */
-    public static int NUM_THREADS = 4;
+    public static int NUM_THREADS = 1;
 
     /**
      * Maximum wait time for execution
