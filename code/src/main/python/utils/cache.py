@@ -110,7 +110,8 @@ def load_json(file_name):
   try:
     return json.loads(read_file(file_name))
   except ValueError, e:
-    LOGGER.exception(e)
+    # LOGGER.exception(e)
+    # print(file_name)
     return {}
 
 

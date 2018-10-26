@@ -27,6 +27,8 @@ def load_functions_for_class(class_json_file, dataset):
                            (os.path.sep, os.path.sep))[-1].rsplit(os.path.sep, 1)[0].replace(os.path.sep, ".")
 
   class_json = cache.load_json(class_json_file)
+  if not class_json:
+    print(class_json_file)
   class_name = cache.get_file_name(class_json_file)
   package = get_package(class_json_file)
   functions = []
@@ -170,17 +172,20 @@ class Clusterer(O):
 
 def similarity_for_dataset(dataset):
   functions = load_functions(dataset)
-  clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "codejam.txt")
-  clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "codejam.pkl")
+  clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.txt")
+  clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.pkl")
+  clusters_report_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.md")
   clusters = Clusterer(functions).cluster(clusters_txt_file)
   cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
   sizes = [len(cluster_funcs) for label, cluster_funcs in clusters.items() if label != -1]
-  LOGGER.info("## Cluster sizes")
-  LOGGER.info("### Number of clusters: %d" % n_clusters)
-  LOGGER.info("### Number of functions clustered: %d" % sum(sizes))
-  LOGGER.info("### Number of functions not clustered: %d" % (len(functions) - sum(sizes)))
-  Stat(sizes).report()
+  meta_data = "## Cluster sizes\n"
+  meta_data += "* Number of clusters: %d\n" % n_clusters
+  meta_data += "* Number of functions clustered: %d\n" % sum(sizes)
+  meta_data += "* Number of functions not clustered: %d\n\n" % (len(functions) - sum(sizes))
+  meta_data += "## REPORT\n"
+  meta_data += Stat(sizes).report()
+  cache.write_file(clusters_report_file, meta_data)
 
 
 def similarity_for_introclass():
