@@ -43,7 +43,7 @@ public class MethodExecutor {
 
     static {
         if (taskExecutor == null || taskExecutor.isShutdown())
-            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS * 4);
+            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
     }
 
     private void initialize() {
