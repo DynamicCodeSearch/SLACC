@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import sys
 import os
 
@@ -10,6 +9,7 @@ __author__ = "bigfatnoob"
 import cPickle as cPkl
 import json
 import logger
+import shutil
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -79,11 +79,29 @@ def file_exists(file_name):
   return os.path.exists(file_name)
 
 
+def delete_file(path):
+  """
+  Delete a file
+  :param path: Path of the file
+  """
+  if file_exists(path):
+    os.remove(path)
+
+
+def delete_folder(path):
+  """
+  Delete a folder
+  :param path:  Path of folder
+  """
+  if file_exists(path):
+    shutil.rmtree(path)
+
+
 def mkdir(directory):
   """
   Create Directory if it does not exist
   """
-  if not os.path.exists(directory):
+  if not file_exists(directory):
     try:
       os.makedirs(directory)
     except OSError as e:
@@ -110,7 +128,8 @@ def load_json(file_name):
   try:
     return json.loads(read_file(file_name))
   except ValueError, e:
-    # LOGGER.exception(e)
+    LOGGER.info("ERROR while processing file: %s", file_name)
+    LOGGER.exception(e, exc_info=True)
     # print(file_name)
     return {}
 
@@ -122,3 +141,27 @@ def get_file_name(file_path):
   :return: Name of the file
   """
   return file_path.rsplit(os.path.sep, 1)[-1].split(".", 1)[0]
+
+
+def mk_package(path):
+  """
+  Make the folder in the path a python package
+  :param path: Path of the folder
+  """
+  if not file_exists(path):
+    try:
+      os.makedirs(path)
+      init_path = os.path.join(path, "__init__.py")
+      write_file(init_path, "")
+    except OSError as e:
+      if e.errno != os.errno.EEXIST:
+        raise
+
+
+def is_valid_python_file(path):
+  try:
+    with open(path, 'r') as f:
+      compile(f.read(), path, 'exec')
+      return True
+  except Exception as e:
+    return False

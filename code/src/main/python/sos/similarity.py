@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import sys
 import os
 
@@ -27,8 +26,6 @@ def load_functions_for_class(class_json_file, dataset):
                            (os.path.sep, os.path.sep))[-1].rsplit(os.path.sep, 1)[0].replace(os.path.sep, ".")
 
   class_json = cache.load_json(class_json_file)
-  if not class_json:
-    print(class_json_file)
   class_name = cache.get_file_name(class_json_file)
   package = get_package(class_json_file)
   functions = []
@@ -165,7 +162,6 @@ class Clusterer(O):
       if file_name is not None: file_contents.append(cluster_str)
       for func in func_cluster:
         if file_name is not None: file_contents.append(func.body)
-      # print(file_contents)
       cache.write_file(file_name, "\n".join(file_contents))
     return clusters
 
@@ -202,17 +198,17 @@ def _test():
   for funct in functions:
     if funct.name == "func_a91e1656934842209b5dc8b5fddbe8af":
       count += 1
-  print(count)
+  print count
 
 
 if __name__ == "__main__":
   args = sys.argv
   if len(args) < 2:
-    print("Provide a dataset")
+    print "Provide a dataset"
     exit(0)
   if args[1] == "codejam":
     similarity_for_codejam()
   elif args[1] == "introclass":
     similarity_for_introclass()
   else:
-    print("Invalid dataset : %s" % args[1])
+    print "Invalid dataset : %s" % args[1]
