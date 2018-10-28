@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import sys
 import os
 
@@ -26,11 +25,12 @@ FUNCTIONS_RESULTS_FOLDER = os.path.join(META_RESULTS_FOLDER, "%s", "functions")
 CLUSTERS_FOLDER = os.path.join(META_RESULTS_FOLDER, "%s", "clusters")
 
 
+PYTHON_PROJECTS_HOME = os.path.join(PROJECTS_HOME, "src", "main", "python")
+
 """
 Constants
 """
 FUZZ_ARGUMENT_SIZE = 256
-
-
+SUCCESS_CODE = 200
 CODE_JAM = "codejam"
 INTRO_CLASS_JAVA = "introclass"

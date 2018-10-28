@@ -1,4 +1,3 @@
-from __future__ import print_function, division
 import sys
 import os
 sys.path.append(os.path.abspath("."))
@@ -77,26 +76,59 @@ def is_int(string):
 
 
 def get_dataset_functions_results_folder(dataset):
+  """
+  Return the path of folder containing the function results for the dataset
+  :param dataset: Name of dataset
+  :return: Path
+  """
   return properties.FUNCTIONS_RESULTS_FOLDER % dataset
 
 
 def get_dataset_meta_results_folder(dataset):
+  """
+  Return the path of folder containing the function meta data for the dataset
+  :param dataset: Name of dataset
+  :return: Path
+  """
   return properties.FUNCTIONS_META_FOLDER % dataset
 
 
 def get_dataset_arg_index(dataset):
+  """
+  Return the path of index json containing the arguments for the dataset
+  :param dataset: Name of dataset
+  :return: Path
+  """
   return properties.ARGUMENTS_INDEX_JSON % dataset
 
 
 def get_dataset_args_folder(dataset):
+  """
+  Return the path of folder containing the arguments for the dataset
+  :param dataset: Name of dataset
+  :return: Path
+  """
   return properties.ARGUMENTS_FOLDER % dataset
 
 
 def get_clusters_folder(dataset):
+  """
+  Return the path of folder containing the clusters for the dataset
+  :param dataset: Name of dataset
+  :return: Path
+  """
   return properties.CLUSTERS_FOLDER % dataset
 
 
-def list_files(folder, check_nest=False, is_absolute=False):
+def list_files(folder, check_nest=False, is_absolute=False, ignores=None):
+  """
+  List files in the folder
+  :param folder: Path of the folder
+  :param check_nest: If true walks through nested folders
+  :param is_absolute: If true returns absolute path else return relative path
+  :param ignores: List of file names to ignore
+  :return: List of files
+  """
   files = []
   for f in os.listdir(folder):
     child = os.path.join(folder, f)
@@ -105,9 +137,10 @@ def list_files(folder, check_nest=False, is_absolute=False):
       if child_files:
         files += child_files
     elif not os.path.isdir(child):
+      if ignores and f in ignores:
+        continue
       if is_absolute:
         files.append(child)
       else:
         files.append(f)
   return files
-
