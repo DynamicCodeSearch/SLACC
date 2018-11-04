@@ -31,6 +31,7 @@ public class Main {
                     break;
                 case "dead_code":
                     edu.ncsu.codejam.Clean.eliminateDeadCode();
+                    break;
                 case "execute":
                     edu.ncsu.codejam.Execute.main(Arrays.copyOfRange(args, 2, args.length));
                     break;
