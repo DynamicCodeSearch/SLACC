@@ -202,6 +202,25 @@ public class ArgumentGenerator {
         }
     }
 
+    private static Object generateRandomArgumentForFamily(Primitive argumentType) {
+        String family = argumentType.getFamily();
+        switch (family) {
+            case Primitive.Family.INT_FAMILY:
+                return randShort();
+            case Primitive.Family.FLOAT_FAMILY:
+                return randFloat();
+            case Primitive.Family.BOOLEAN_FAMILY:
+                return randBoolean();
+            case Primitive.Family.CHAR_FAMILY:
+                return randCharacter();
+            case Primitive.Family.STRING_FAMILY:
+                return randString();
+            default:
+                throw new RuntimeException(String.format(
+                        "Currently we do not support the class %s", argumentType.getName()));
+        }
+    }
+
     // *********************************************************************************** //
     // Objects and Functions
 
@@ -246,7 +265,9 @@ public class ArgumentGenerator {
         boolean isArray = false;
         if (arraySize == 0) {
             if (variable.getPrimitive() != null) {
-                args.add(generateRandomArgument(variable.getPrimitive()));
+                 args.add(generateRandomArgument(variable.getPrimitive()));
+                // TODO: Uncomment line above and line below to consider for each argument type rather family
+//                args.add(generateRandomArgumentForFamily(variable.getPrimitive()));
             } else {
                 Constructor constructor = Constructor.getConstructor(dataset, variable.getPackageName(), variable.getDataType());
                 if (constructor == null || constructor.getParameters() == null)

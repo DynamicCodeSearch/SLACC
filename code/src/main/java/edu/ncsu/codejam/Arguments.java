@@ -32,9 +32,9 @@ public class Arguments {
     }
 
     public static void main(String[] args) {
-//        extractAndStorePrimitiveArguments();
+        extractAndStorePrimitiveArguments();
 //        storeRandomArgs();
 //        ArgumentStore.generateForJavaFile("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_mini.java");
-        storeFuzzedArguments();
+//        storeFuzzedArguments();
     }
 }

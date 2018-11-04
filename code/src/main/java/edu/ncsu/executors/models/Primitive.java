@@ -7,15 +7,24 @@ import java.util.*;
 
 public enum  Primitive {
 
-    SHORT("short", "short", "Short", "java.lang.Short"),
-    INTEGER("integer", "int", "Integer", "java.lang.Integer"),
-    LONG("long", "long", "Long", "java.lang.Long"),
-    CHARACTER("character", "char", "Character", "java.lang.Character"),
-    FLOAT("float", "float", "Float", "java.lang.Float"),
-    DOUBLE("double", "double", "Double", "java.lang.Double"),
-    BOOLEAN("boolean", "boolean", "Boolean", "java.lang.Boolean"),
-    BYTE("byte", "byte", "Byte", "java.lang.Byte"),
-    STRING("string", "String", "java.lang.String");
+    SHORT("short", Family.INT_FAMILY, "short", "Short", "java.lang.Short"),
+    INTEGER("integer", Family.INT_FAMILY, "int", "Integer", "java.lang.Integer"),
+    LONG("long", Family.INT_FAMILY, "long", "Long", "java.lang.Long"),
+    CHARACTER("character", Family.CHAR_FAMILY, "char", "Character", "java.lang.Character"),
+    FLOAT("float", Family.FLOAT_FAMILY, "float", "Float", "java.lang.Float"),
+    DOUBLE("double", Family.FLOAT_FAMILY, "double", "Double", "java.lang.Double"),
+    BOOLEAN("boolean", Family.BOOLEAN_FAMILY, "boolean", "Boolean", "java.lang.Boolean"),
+    BYTE("byte", Family.BYTE_FAMILY, "byte", "Byte", "java.lang.Byte"),
+    STRING("string", Family.STRING_FAMILY, "String", "java.lang.String");
+
+    public class Family {
+        public static final String INT_FAMILY = "int";
+        public static final String CHAR_FAMILY = "char";
+        public static final String FLOAT_FAMILY = "float";
+        public static final String BOOLEAN_FAMILY = "boolean";
+        public static final String BYTE_FAMILY = "byte";
+        public static final String STRING_FAMILY = "string";
+    }
 
     /**
      * Mapping types to Primitive Enum.
@@ -31,6 +40,11 @@ public enum  Primitive {
      * Name of enum
      */
     private String name;
+
+    /***
+     * General family of primitive datatype
+     */
+    private String family;
 
     /**
      * List of types corresponding to the primitive.
@@ -51,6 +65,13 @@ public enum  Primitive {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * @return - Family of the Primitive
+     */
+    public String getFamily() {
+        return family;
     }
 
     /**
@@ -89,8 +110,9 @@ public enum  Primitive {
      * @param name - Name of the Primitive Enum
      * @param types - variable args of all the types
      */
-    Primitive(String name, String... types) {
+    Primitive(String name, String family, String... types) {
         this.name = name;
+        this.family = family;
         this.types = new ArrayList<>(Arrays.asList(types));
     }
 
@@ -224,4 +246,8 @@ public enum  Primitive {
     public static boolean isBoxed(String type) {
         return Character.isUpperCase(type.charAt(0));
     }
+}
+
+class Family {
+
 }

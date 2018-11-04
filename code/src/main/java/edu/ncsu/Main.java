@@ -29,6 +29,8 @@ public class Main {
                 case "extract_fuzzed_args":
                     edu.ncsu.codejam.Arguments.storeFuzzedArguments();
                     break;
+                case "dead_code":
+                    edu.ncsu.codejam.Clean.eliminateDeadCode();
                 case "execute":
                     edu.ncsu.codejam.Execute.main(Arrays.copyOfRange(args, 2, args.length));
                     break;
