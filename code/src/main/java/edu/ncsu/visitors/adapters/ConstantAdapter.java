@@ -91,23 +91,20 @@ public class ConstantAdapter extends VoidVisitorAdapter{
     @Override
     public void visit(CharLiteralExpr c, Object arg) {
         char value = c.getValue().charAt(0);
-        Set<Object> values = new HashSet<Object>(Arrays.asList(value, value + 1, value - 1));
-        addPrimitive(Primitive.CHARACTER, values);
+        Set<Object> charValues = new HashSet<Object>(Arrays.asList(value, value + 1, value - 1));
+        addPrimitive(Primitive.CHARACTER, charValues);
+        addPrimitive(Primitive.STRING, charValues);
     }
 
     @Override
     public void visit(StringLiteralExpr n, Object arg) {
         Primitive primitive = Primitive.STRING;
         Set<Object> strings = new HashSet<>();
-        if (constantsMap.containsKey(primitive)) {
-            strings = constantsMap.get(primitive);
-        }
         strings.add(n.getValue());
-        constantsMap.put(primitive, strings);
+        addPrimitive(primitive, strings);
     }
 
     public Map<Primitive, Set<Object>> getConstantsMap() {
         return constantsMap;
     }
-
 }
