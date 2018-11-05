@@ -8,7 +8,7 @@ public class Main {
 
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
-    public static void main(String[] args) {
+    public static void main2(String[] args) {
         if (args.length < 2) {
             LOGGER.log(Level.SEVERE, String.format("Size of arguments is less than 2. Arguments = %s",
                     Arrays.toString(args)));
@@ -82,5 +82,9 @@ public class Main {
             LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }
         System.exit(0);
+    }
+
+    public static void main(String[] args) {
+        edu.ncsu.database.MongoDriver.main(args);
     }
 }
