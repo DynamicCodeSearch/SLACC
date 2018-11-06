@@ -69,6 +69,8 @@ public class Settings {
 
     public static String META_RESULTS_SLOC = Utils.pathJoin(META_RESULTS, "sloc");
 
+    public static String CONFIG_FILE_PATH = Utils.pathJoin(CODE_HOME, "src", "main", "resources", "config.properties");
+
 
     // ************************************************************************************** //
 
@@ -159,11 +161,11 @@ public class Settings {
 
     public static String getProperty(String property) {
         Properties properties = new Properties();
-        InputStream stream = null;
+        InputStream stream;
         try {
-            stream = new FileInputStream("config.properties");
+            stream = new FileInputStream(CONFIG_FILE_PATH);
             properties.load(stream);
-            return properties.getProperty("store");
+            return properties.getProperty(property);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

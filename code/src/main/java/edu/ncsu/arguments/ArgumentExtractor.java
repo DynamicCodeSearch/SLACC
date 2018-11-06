@@ -7,6 +7,7 @@ import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.store.IArgumentStore;
 import edu.ncsu.visitors.adapters.ConstantAdapter;
 
+import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
@@ -15,7 +16,7 @@ public class ArgumentExtractor {
 
     private final static Logger LOGGER = Logger.getLogger(ArgumentExtractor.class.getName());
 
-    private final static String STORAGE = Settings.getProperty("store");
+    private final static String STORAGE = "mongo";//Settings.getProperty("store");
 
     private String dataset;
 
@@ -113,5 +114,4 @@ public class ArgumentExtractor {
         }
         System.out.println("Count = " + count);
     }
-
 }
