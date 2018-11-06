@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,14 +13,13 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.InMemoryJavaCompiler;
 import edu.ncsu.utils.Utils;
 import org.apache.commons.io.IOUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-
-import edu.ncsu.config.Properties;
 
 
 public class Crawler {
@@ -100,7 +97,7 @@ public class Crawler {
 
     public static int crawlLink(String link, String problemKey) {
         try {
-            String codeRepo = Properties.getDatasetSourceFolder(CodejamUtils.DATASET);
+            String codeRepo = Settings.getDatasetSourceFolder(CodejamUtils.DATASET);
             File problemDir = new File(codeRepo + "/" + problemKey);
             if (!problemDir.exists()) {
                 problemDir.mkdirs();

@@ -1,6 +1,6 @@
-package edu.ncsu.executors;
+package edu.ncsu.arguments;
 
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -235,7 +235,7 @@ public class ArgumentGenerator {
             return null;
         }
         List<Object> fuzzed = new ArrayList<>();
-        for (int i=0; i<Properties.FUZZ_ARGUMENT_SIZE; i++) {
+        for (int i = 0; i< Settings.FUZZ_ARGUMENT_SIZE; i++) {
             List<Object> args = new ArrayList<>();
             for (FunctionVariable variable: function.getArguments()) {
                 Map<String, Object> generated = generateArgumentsForFunctionVariable(dataset, variable, variable.getArrayDimensions());
@@ -265,9 +265,9 @@ public class ArgumentGenerator {
         boolean isArray = false;
         if (arraySize == 0) {
             if (variable.getPrimitive() != null) {
-                 args.add(generateRandomArgument(variable.getPrimitive()));
+//                 args.add(generateRandomArgument(variable.getPrimitive()));
                 // TODO: Uncomment line above and line below to consider for each argument type rather family
-//                args.add(generateRandomArgumentForFamily(variable.getPrimitive()));
+                args.add(generateRandomArgumentForFamily(variable.getPrimitive()));
             } else {
                 Constructor constructor = Constructor.getConstructor(dataset, variable.getPackageName(), variable.getDataType());
                 if (constructor == null || constructor.getParameters() == null)
@@ -287,7 +287,7 @@ public class ArgumentGenerator {
             }
         } else {
             isArray = true;
-            for (int i=0; i < randInteger(2, Properties.MAX_ARRAY_SIZE); i++) {
+            for (int i = 0; i < randInteger(2, Settings.MAX_ARRAY_SIZE); i++) {
                 Map<String, Object> arrArgsForFV = generateArgumentsForFunctionVariable(dataset, variable, arraySize - 1);
                 if (arrArgsForFV == null)
                     return null;

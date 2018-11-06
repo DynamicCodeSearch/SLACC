@@ -3,7 +3,7 @@ package edu.ncsu.utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -171,7 +171,7 @@ public class Utils {
         List<String> generatedFiles = new ArrayList<>();
         for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
             String fileName = Utils.getFileName(javaFile);
-            if (fileName.startsWith(Properties.GENERATED_CLASS_PREFIX)) {
+            if (fileName.startsWith(Settings.GENERATED_CLASS_PREFIX)) {
                 generatedFiles.add(javaFile);
             }
         }
@@ -190,7 +190,7 @@ public class Utils {
         if (contents == null)
             return files;
         for (File file : contents) {
-            if (file.isFile() && !file.getName().startsWith(Properties.GENERATED_CLASS_PREFIX) && file.getName().endsWith(".java")) {
+            if (file.isFile() && !file.getName().startsWith(Settings.GENERATED_CLASS_PREFIX) && file.getName().endsWith(".java")) {
                 files.add(file.getAbsolutePath());
             } else if (file.isDirectory()) {
                 files.addAll(listNonGeneratedJavaFiles(file.getAbsolutePath()));
@@ -314,7 +314,7 @@ public class Utils {
      */
     public static String getPackageName(String javaFilePath) {
         try {
-            String packageRelativePath = javaFilePath.split(Properties.SRC_MAIN_JAVA)[1].substring(1);
+            String packageRelativePath = javaFilePath.split(Settings.SRC_MAIN_JAVA)[1].substring(1);
             int separatorIndex = packageRelativePath.lastIndexOf(File.separator);
             if (separatorIndex == -1) {
                 return "default";

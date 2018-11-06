@@ -1,7 +1,7 @@
 package edu.ncsu.introclass;
 
 import edu.ncsu.config.IntroClassConfig;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.MethodAndVariableAdapter;
 
@@ -15,7 +15,7 @@ public class Snipper {
         String problemDir = Utils.pathJoin(IntroClassConfig.SRC_JAVA_FOLDER, problem);
         for (String javaFile: Utils.listFilesWithExtension(problemDir, ".java", true, true)) {
             String fileName = Utils.getFileName(javaFile);
-            if (!fileName.startsWith(Properties.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Properties.TEMPORARY_CLASS_PREFIX)) {
+            if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX)) {
                 MethodAndVariableAdapter.generateMethodsForJavaFile(javaFile);
             }
         }

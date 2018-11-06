@@ -2,8 +2,8 @@ package edu.ncsu.visitors.blocks;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.stmt.Statement;
+import edu.ncsu.config.Settings;
 import edu.ncsu.visitors.helpers.StatementHelper;
-import edu.ncsu.config.Properties;
 
 import java.util.*;
 
@@ -311,7 +311,7 @@ public class MethodBlock {
         List<List<StatementBlock>> retList = new ArrayList<>();
         List<StatementBlock> statementGroup = new ArrayList<>();
         if (statementBlocks == null
-//                || statementBlocks.size() < Properties.MIN_STATEMENT_SIZE
+//                || statementBlocks.size() < Settings.MIN_STATEMENT_SIZE
                 || statementBlocks.isEmpty())
             return retList;
 //        StatementBlock lastStatement = statementBlocks.get(statementBlocks.size()-1);
@@ -335,7 +335,7 @@ public class MethodBlock {
                 retList.addAll(getStatementGroups(((GroupedStatementBlock) statementBlock).getStatementBlocks()));
             }
         }
-        if (statementGroup.size() >= Properties.MIN_STATEMENT_SIZE) {
+        if (statementGroup.size() >= Settings.MIN_STATEMENT_SIZE) {
             retList.add(statementGroup);
         }
         return retList;
@@ -347,7 +347,7 @@ public class MethodBlock {
      */
     private List<List<StatementBlock>> getCombinations(List<StatementBlock> statementGroup) {
         List<List<StatementBlock>> combinations = new ArrayList<>();
-        for (int step_size = Properties.MIN_STATEMENT_SIZE; step_size < statementGroup.size(); step_size++) {
+        for (int step_size = Settings.MIN_STATEMENT_SIZE; step_size < statementGroup.size(); step_size++) {
             for (int counter=0; counter <= statementGroup.size()-step_size; counter++) {
                 List<StatementBlock> combination = statementGroup.subList(counter, counter + step_size);
                 combinations.add(combination);

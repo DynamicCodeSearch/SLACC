@@ -4,9 +4,13 @@ import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.introclass.IntroClassUtils;
 import edu.ncsu.utils.Utils;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
-public class Properties {
+public class Settings {
 
     // File Paths
 
@@ -123,6 +127,16 @@ public class Properties {
      */
     public final static int ALL_METHOD_EXECUTIONS_WAIT_TIME = 5;
 
+    /**
+     * Mongo storage
+     */
+    public final static String MONGO_STORAGE = "mongo";
+
+    /**
+     * Json Storage
+     */
+    public final static String JSON_STORAGE = "json";
+
     // ************************************************************************************** //
 
     // Some property based functions
@@ -141,6 +155,18 @@ public class Properties {
         else if (dataset.equals(IntroClassUtils.DATASET))
             return INTROCLASS_JAVA_FOLDER;
         throw new RuntimeException(String.format("Illegal dataset: %s", dataset));
+    }
+
+    public static String getProperty(String property) {
+        Properties properties = new Properties();
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream("config.properties");
+            properties.load(stream);
+            return properties.getProperty("store");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

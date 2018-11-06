@@ -2,6 +2,7 @@ package edu.ncsu.store;
 
 import com.google.gson.*;
 import edu.ncsu.utils.Utils;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.util.logging.Logger;
@@ -69,7 +70,12 @@ public class StoreUtils {
 
     public static void deleteStore(String storePath) {
         File storeFile = new File(storePath);
-        storeFile.delete();
+        try {
+            FileUtils.deleteDirectory(storeFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
 }

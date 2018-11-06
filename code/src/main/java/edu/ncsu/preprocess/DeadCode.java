@@ -1,7 +1,7 @@
 package edu.ncsu.preprocess;
 
 import com.github.javaparser.ast.CompilationUnit;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.utils.Utils;
 
@@ -23,15 +23,15 @@ public class DeadCode {
 
     public static void clean(String packageName, String className) {
         String classPath = Utils.pathJoin(Utils.packageToFolder(packageName), String.format("%s.java", className));
-        String sourcePath = Utils.pathJoin(Properties.CODE_HOME, EXTRACTED, classPath);
-        String targetPath = Utils.pathJoin(Properties.PROJECTS_JAVA_FOLDER, classPath);
+        String sourcePath = Utils.pathJoin(Settings.CODE_HOME, EXTRACTED, classPath);
+        String targetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, classPath);
         transfer(sourcePath, targetPath);
     }
 
     public static void clean(String dataset) {
         List<Class> classes = PackageManager.findClasses(dataset);
         for (Class clazz: classes) {
-            if (clazz.getSimpleName().startsWith(Properties.GENERATED_CLASS_PREFIX)) {
+            if (clazz.getSimpleName().startsWith(Settings.GENERATED_CLASS_PREFIX)) {
                 clean(clazz.getPackage().getName(), clazz.getSimpleName());
                 LOGGER.info(String.format("Cleaning %s.%s ... ", clazz.getPackage(), clazz.getSimpleName()));
             }

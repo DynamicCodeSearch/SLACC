@@ -4,7 +4,7 @@ import java.util.*;
 
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.google.common.base.Joiner;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.InMemoryJavaCompiler;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.helpers.VisitorHelper;
@@ -196,14 +196,14 @@ public class DummyMethod {
      * @return True if valid function
      */
     private boolean isValidFunction(String functionAsString) {
-        String className = Properties.TEMPORARY_CLASS_PREFIX + Utils.randomString();
+        String className = Settings.TEMPORARY_CLASS_PREFIX + Utils.randomString();
         StringBuilder javaContent = new StringBuilder();
         javaContent.append("package ").append(packageName).append(";\n\n").
                 append(Imports.defaultImports()).
                 append("public class ").append(className).append(" {\n").
                 append(functionAsString).append("}");
         try {
-            return InMemoryJavaCompiler.compile(className, packageName, Properties.PROJECTS_JAVA_FOLDER,
+            return InMemoryJavaCompiler.compile(className, packageName, Settings.PROJECTS_JAVA_FOLDER,
                     javaContent.toString());
         } catch (Exception | Error e) {
             return false;

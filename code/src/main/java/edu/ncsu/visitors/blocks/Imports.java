@@ -81,7 +81,7 @@ public class Imports {
             sb.append("import java.util.NavigableSet;").append("\n");
             sb.append("import java.util.Objects;").append("\n");
             sb.append("import java.util.PriorityQueue;").append("\n");
-            sb.append("import java.util.Properties;").append("\n");
+            sb.append("import java.util.Settings;").append("\n");
             sb.append("import java.util.Queue;").append("\n");
             sb.append("import java.util.Random;").append("\n");
             sb.append("import java.util.Set;").append("\n");

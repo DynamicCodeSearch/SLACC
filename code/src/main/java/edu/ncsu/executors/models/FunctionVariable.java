@@ -204,7 +204,8 @@ public class FunctionVariable {
     public String makeKey() {
         String key;
         if (primitive != null) {
-            key = primitive.getName();
+//            key = primitive.getName();
+            key = primitive.getFamily();
         } else {
             Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
             if (constructor == null || constructor.getParameters() == null)
@@ -227,28 +228,28 @@ public class FunctionVariable {
         return key;
     }
 
-    public List<String> expandArgs() {
-        List<String> paramKeys = new ArrayList<>();
-        if (primitive != null) {
-            paramKeys.add(primitive.getName());
-        } else {
-            Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
-            if (constructor == null || constructor.getParameters() == null)
-                return null;
-            for (FunctionVariable parameter: constructor.getParameters()) {
-                List<String> expandedParams = parameter.expandArgs();
-                if (expandedParams != null) {
-                    paramKeys.addAll(expandedParams);
-                }
-            }
-            if (paramKeys.size() == 0)
-                return null;
-        }
-        if (arrayDimensions > 0) {
-            return Collections.singletonList("(" + StringUtils.join(paramKeys, ",") + ")@"+arrayDimensions);
-        }
-        return paramKeys;
-    }
+//    public List<String> expandArgs() {
+//        List<String> paramKeys = new ArrayList<>();
+//        if (primitive != null) {
+//            paramKeys.add(primitive.getName());
+//        } else {
+//            Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
+//            if (constructor == null || constructor.getParameters() == null)
+//                return null;
+//            for (FunctionVariable parameter: constructor.getParameters()) {
+//                List<String> expandedParams = parameter.expandArgs();
+//                if (expandedParams != null) {
+//                    paramKeys.addAll(expandedParams);
+//                }
+//            }
+//            if (paramKeys.size() == 0)
+//                return null;
+//        }
+//        if (arrayDimensions > 0) {
+//            return Collections.singletonList("(" + StringUtils.join(paramKeys, ",") + ")@"+arrayDimensions);
+//        }
+//        return paramKeys;
+//    }
 
     public Object convertToFunctionArgument(JsonArray arg) {
         return convertToFunctionArgument(arg, arrayDimensions);

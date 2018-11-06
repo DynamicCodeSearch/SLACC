@@ -1,6 +1,6 @@
 package edu.ncsu.codejam;
 
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.MethodAndVariableAdapter;
 
@@ -12,21 +12,21 @@ public class Snipper {
     private static Logger LOGGER = Logger.getLogger(Snipper.class.getName());
 
     private static void snipProblem(String problem) {
-        String problemDir = Utils.pathJoin(Properties.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
+        String problemDir = Utils.pathJoin(Settings.getDatasetSourceFolder(CodejamUtils.DATASET), problem);
         String[] users = Utils.listDir(problemDir);
         Arrays.sort(users);
         for (String user: users) {
             String userDir = Utils.pathJoin(problemDir, user);
             for (String javaFile: Utils.listFilesWithExtension(userDir, ".java", true, true)) {
                 String fileName = Utils.getFileName(javaFile);
-                if (!fileName.startsWith(Properties.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Properties.TEMPORARY_CLASS_PREFIX))
+                if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX))
                     MethodAndVariableAdapter.generateMethodsForJavaFile(javaFile);
             }
         }
     }
 
     private static void snipAll() {
-        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(CodejamUtils.DATASET))) {
+        for (String problem: Utils.listDir(Settings.getDatasetSourceFolder(CodejamUtils.DATASET))) {
             snipProblem(problem);
         }
     }

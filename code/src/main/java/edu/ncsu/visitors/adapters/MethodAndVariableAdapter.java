@@ -11,7 +11,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import edu.ncsu.codejam.CodejamUtils;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.JavaFormatter;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.helpers.StatementHelper;
@@ -204,7 +204,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private void saveMetaData(int numFunctions) {
         String packageName = compilationUnit.getPackage().getPackageName();
-        String metaFolder = Utils.pathJoin(Properties.META_RESULTS_SLOC, packageName.replaceAll("\\.", File.separator));
+        String metaFolder = Utils.pathJoin(Settings.META_RESULTS_SLOC, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(metaFolder);
         File file = new File(Utils.pathJoin(metaFolder, "sloc.json"));
         Set<Integer> sloc = commentAdapter.getSourceCodeLines();
@@ -262,9 +262,9 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private String saveMethods(List<String> functions) {
-        String className = Properties.GENERATED_CLASS_PREFIX + Utils.randomString();
+        String className = Settings.GENERATED_CLASS_PREFIX + Utils.randomString();
         String packageName = VisitorHelper.getPackage(compilationUnit);
-        String writePath = Utils.pathJoin(Properties.PROJECTS_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
+        String writePath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(writePath);
         StringBuilder javaContent = new StringBuilder();
         javaContent.append("package ").append(packageName).append(";\n\n").
@@ -296,8 +296,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private static void testGenerateMethods() {
-//        String fName = String.format("%s/CodeJam/Y11R5P1/Egor/Main.java", Properties.CODEJAM_JAVA_FOLDER);
-        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Properties.getDatasetSourceFolder(CodejamUtils.DATASET));
+//        String fName = String.format("%s/CodeJam/Y11R5P1/Egor/Main.java", Settings.CODEJAM_JAVA_FOLDER);
+        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
         generateMethodsForJavaFile(fName);
     }
 

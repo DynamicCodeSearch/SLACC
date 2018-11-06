@@ -1,12 +1,10 @@
 package edu.ncsu.executors.models;
 
-import com.github.javaparser.JavaParser;
-import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.body.BodyDeclaration;
 import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.TypeDeclaration;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.utils.Utils;
 
@@ -58,7 +56,7 @@ public class ClassMethods {
         methodBodies = getMethodBodies();
         methods = new ArrayList<>();
         for (Method method: clazz.getDeclaredMethods()) {
-            if (method.getName().startsWith(Properties.GENERATED_FUNCTION_PREFIX)
+            if (method.getName().startsWith(Settings.GENERATED_FUNCTION_PREFIX)
                     && methodBodies.containsKey(method.getName()))
                 methods.add(method);
         }
