@@ -1,21 +1,18 @@
-package edu.ncsu.store;
+package edu.ncsu.store.json;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import edu.ncsu.config.Properties;
-import edu.ncsu.executors.ArgumentGenerator;
-import edu.ncsu.executors.models.ClassMethods;
-import edu.ncsu.executors.models.Function;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.Primitive;
+import edu.ncsu.store.IArgumentStore;
+import edu.ncsu.store.StoreUtils;
 import edu.ncsu.utils.Utils;
-import edu.ncsu.visitors.adapters.ConstantAdapter;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class ArgumentStore {
+public class ArgumentStore implements IArgumentStore {
 
     private static final Logger LOGGER = Logger.getLogger(ArgumentStore.class.getName());
 
@@ -27,7 +24,7 @@ public class ArgumentStore {
         this.dataset = dataset;
     }
 
-    public static ArgumentStore loadArgumentStore(String dataset) {
+    public static ArgumentStore loadStore(String dataset) {
         if (!storeMap.containsKey(dataset)) {
             storeMap.put(dataset, new ArgumentStore(dataset));
         }
@@ -39,7 +36,7 @@ public class ArgumentStore {
      * @return - File path
      */
     private String getPrimitiveArgStorePath() {
-        return Utils.pathJoin(Properties.META_STORE, dataset, "primitive_arguments.json");
+        return Utils.pathJoin(Settings.META_STORE, dataset, "primitive_arguments.json");
     }
 
     /**
@@ -47,7 +44,7 @@ public class ArgumentStore {
      * @return - Folder path
      */
     private String getArgumentsFolder() {
-        return Utils.pathJoin(Properties.META_STORE, dataset, "arguments");
+        return Utils.pathJoin(Settings.META_STORE, dataset, "arguments");
     }
 
 
@@ -164,83 +161,4 @@ public class ArgumentStore {
         StoreUtils.deleteStore(getArgumentsFolder());
     }
 
-    // STATIC GENERAL METHODS
-    // *****************************************
-
-    /**
-     * Extract and store primitive arguments for a dataset.
-     * @param javaFiles - List of paths fo java files.
-     * @param dataset - Name of the dataset.
-     */
-    public static void extractAndStorePrimitiveArguments(List<String> javaFiles, String dataset) {
-        LOGGER.info(String.format("Number of java files: %d", javaFiles.size()));
-        ConstantAdapter adapter;
-        Map<Primitive, Set<Object>> constantsMap = new HashMap<>();
-        Map<Primitive, Set<Object>> fileConstantsMap;
-        for (String javaFile: javaFiles) {
-            try {
-                adapter = new ConstantAdapter(javaFile);
-                fileConstantsMap = adapter.getConstantsMap();
-                for(Primitive primitive: fileConstantsMap.keySet()) {
-                    Set<Object> values = new HashSet<>();
-                    if (constantsMap.containsKey(primitive)) {
-                        values = constantsMap.get(primitive);
-                    }
-                    values.addAll(fileConstantsMap.get(primitive));
-                    constantsMap.put(primitive, values);
-                }
-            } catch (Exception e) {
-                LOGGER.severe(String.format("Failed to process : %s", javaFile));
-                throw e;
-            }
-        }
-        LOGGER.info("PRIOR TO SAVING !!!!");
-        for (Primitive primitive: constantsMap.keySet()) {
-            System.out.println(primitive + " : " + constantsMap.get(primitive).size());
-        }
-        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
-        store.savePrimitiveArguments(constantsMap);
-        constantsMap = store.loadPrimitiveArguments();
-        LOGGER.info("====================");
-        LOGGER.info("POST SAVING !!!!");
-        for (Primitive primitive: constantsMap.keySet()) {
-            System.out.println(primitive + " : " + constantsMap.get(primitive).size());
-        }
-    }
-
-    /**
-     * Generate arguments and save for the java file.
-     * @param dataset - Name of the dataset.
-     * @param javaFile - Path of the java file.
-     */
-    public static void generateForJavaFile(String javaFile, String dataset) {
-        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
-        ClassMethods classMethods = new ClassMethods(dataset, javaFile);
-        for (Method method: classMethods.getMethods()) {
-            Function function = new Function(dataset, method, classMethods.getMethodBodies().get(method.getName()));
-            if (!function.isValidArgs())
-                continue;
-            String key = function.makeArgumentsKey();
-            if (!store.fuzzedKeyExists(key)) {
-                LOGGER.info(String.format("Storing Key: %s", key));
-                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(dataset, function);
-                if (arguments != null)
-                    store.saveFuzzedArguments(key, arguments);
-            }
-        }
-    }
-
-    /**
-     * Store fuzzed arguments for list of java files and dataset
-     * @param javaFiles - List of path of java files
-     * @param dataset - Name of dataset
-     */
-    public static void storeFuzzedArguments(List<String> javaFiles, String dataset) {
-        ArgumentStore.loadArgumentStore(dataset).deleteFuzzedArguments();
-        LOGGER.info("Generating random args. Here we go ....");
-        for (String javaFile: javaFiles) {
-            LOGGER.info(String.format("Running for %s", javaFile));
-            generateForJavaFile(javaFile, dataset);
-        }
-    }
 }

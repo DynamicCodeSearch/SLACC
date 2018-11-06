@@ -91,12 +91,12 @@ public class Function {
         return true;
     }
 
-    public List<String> getExpandedArgs() {
-        List<String> expandedArgs = new ArrayList<>();
-        for (FunctionVariable argument: arguments)
-            expandedArgs.addAll(argument.expandArgs());
-        return expandedArgs;
-    }
+//    public List<String> getExpandedArgs() {
+//        List<String> expandedArgs = new ArrayList<>();
+//        for (FunctionVariable argument: arguments)
+//            expandedArgs.addAll(argument.expandArgs());
+//        return expandedArgs;
+//    }
 
     public Function(String dataset, Method method, MethodDeclaration ast) {
         this.dataset = dataset;

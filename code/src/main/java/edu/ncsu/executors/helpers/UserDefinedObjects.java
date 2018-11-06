@@ -1,8 +1,8 @@
 package edu.ncsu.executors.helpers;
 
 import com.google.gson.JsonObject;
-import edu.ncsu.config.Properties;
-import edu.ncsu.store.ObjectStore;
+import edu.ncsu.config.Settings;
+import edu.ncsu.store.json.ClassStore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +26,7 @@ public class UserDefinedObjects {
      * Initialize UserDefinedObjects
      */
     private UserDefinedObjects(String dataset) {
-        this.objectsJSON = new ObjectStore(Properties.getObjectStore(dataset)).getStore();
+        this.objectsJSON = new ClassStore(dataset).getStore();
     }
 
     /**

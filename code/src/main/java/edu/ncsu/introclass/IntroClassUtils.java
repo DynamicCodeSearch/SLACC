@@ -1,6 +1,6 @@
 package edu.ncsu.introclass;
 
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.utils.Utils;
 
 import java.util.ArrayList;
@@ -12,8 +12,8 @@ public class IntroClassUtils {
 
     public static List<String> listGeneratedFiles() {
         List<String> generatedFiles = new ArrayList<>();
-        for (String problem: Utils.listDir(Properties.INTROCLASS_JAVA_FOLDER)) {
-            String problemDir = Utils.pathJoin(Properties.INTROCLASS_JAVA_FOLDER, problem);
+        for (String problem: Utils.listDir(Settings.INTROCLASS_JAVA_FOLDER)) {
+            String problemDir = Utils.pathJoin(Settings.INTROCLASS_JAVA_FOLDER, problem);
             generatedFiles.addAll(Utils.listGeneratedFiles(problemDir));
         }
         return generatedFiles;

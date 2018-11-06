@@ -1,9 +1,10 @@
-package edu.ncsu.store;
+package edu.ncsu.arguments;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
+import edu.ncsu.store.json.ClassStore;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.adapters.ObjectStoreAdapter;
 import edu.ncsu.visitors.blocks.Type;
@@ -11,28 +12,28 @@ import edu.ncsu.visitors.blocks.Variable;
 
 import java.util.logging.Logger;
 
-public class ClassStore {
+public class ClassArgumentsExtractor {
 
-    private static final Logger LOGGER = Logger.getLogger(ClassStore.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ClassArgumentsExtractor.class.getName());
 
     private String dataset;
 
-    private ObjectStore objectStore;
+    private ClassStore classStore;
 
-    public ClassStore(String dataset) {
+    public ClassArgumentsExtractor(String dataset) {
         this.dataset = dataset;
-        this.objectStore = new ObjectStore(Properties.getObjectStore(dataset));
+        this.classStore = new ClassStore(dataset);
     }
 
     private void storeClasses() {
-        String sourceFolder = Properties.getDatasetSourceFolder(this.dataset);
+        String sourceFolder = Settings.getDatasetSourceFolder(this.dataset);
         for (String problem: Utils.listDir(sourceFolder)) {
             String problemDir = Utils.pathJoin(sourceFolder, problem);
             for (String user: Utils.listDir(problemDir)) {
                 String userDir = Utils.pathJoin(problemDir, user);
                 for (String javaFile: Utils.listNonGeneratedJavaFiles(userDir)) {
                     LOGGER.info(String.format("Processing: %s", javaFile));
-                    new ObjectStoreAdapter(javaFile).storeClasses(this.objectStore);
+                    new ObjectStoreAdapter(javaFile).storeClasses(this.classStore);
                 }
             }
         }
@@ -40,14 +41,14 @@ public class ClassStore {
 
     private void markClasses() {
         LOGGER.info("Marking the saved JSON as valid/invalid");
-        JsonObject store = objectStore.getStore();
+        JsonObject store = classStore.getStore();
         for (String packageName: store.keySet()) {
             JsonObject packageObject = store.getAsJsonObject(packageName);
             for (String className: packageObject.keySet()) {
                 getClassJSON(store, packageName, className);
             }
         }
-        objectStore.saveStore(store);
+        classStore.saveStore(store);
     }
 
     private JsonObject getClassJSON(JsonObject store, String packageName, String className) {
@@ -141,10 +142,10 @@ public class ClassStore {
     }
 
     public static void store(String dataset) {
-        ClassStore classStore = new ClassStore(dataset);
-        classStore.objectStore.deleteStore();
-        classStore.storeClasses();
-        classStore.markClasses();
+        ClassArgumentsExtractor classArgumentsExtractor = new ClassArgumentsExtractor(dataset);
+        classArgumentsExtractor.classStore.deleteStore();
+        classArgumentsExtractor.storeClasses();
+        classArgumentsExtractor.markClasses();
     }
 
 }

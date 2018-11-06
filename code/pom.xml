@@ -52,6 +52,11 @@
             <version>4.12</version>
         </dependency>
         <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver</artifactId>
+            <version>3.2.2</version>
+        </dependency>
+        <dependency>
             <groupId>edu.ncsu.codeseer</groupId>
             <artifactId>projects</artifactId>
             <version>1.0-SNAPSHOT</version>

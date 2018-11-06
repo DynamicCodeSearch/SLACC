@@ -1,22 +1,24 @@
-package edu.ncsu.store;
+package edu.ncsu.store.json;
 
 import com.google.gson.*;
+import edu.ncsu.config.Settings;
+import edu.ncsu.store.StoreUtils;
 
 import java.io.*;
 import java.util.logging.Logger;
 
-public class ObjectStore {
+public class ClassStore {
 
-    private final static Logger LOGGER = Logger.getLogger(ObjectStore.class.getName());
+    private final static Logger LOGGER = Logger.getLogger(ClassStore.class.getName());
 
     private String storePath;
 
     /**
      * Create instance of object store
-     * @param storePath - Path of json object store
+     * @param dataset - Name of the dataset
      */
-    public ObjectStore(String storePath) {
-        this.storePath = storePath;
+    public ClassStore(String dataset) {
+        this.storePath = Settings.getObjectStore(dataset);
         File storeFile = new File(storePath);
         if (!storeFile.getParentFile().exists())
             storeFile.getParentFile().mkdirs();

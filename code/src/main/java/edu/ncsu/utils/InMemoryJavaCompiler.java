@@ -1,6 +1,6 @@
 package edu.ncsu.utils;
 
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 
 import javax.tools.*;
 import java.io.*;
@@ -13,7 +13,7 @@ public class InMemoryJavaCompiler {
 
     private final static JavaCompiler COMPILER = ToolProvider.getSystemJavaCompiler();
 
-    private final static String CLASSPATH = System.getProperty("java.class.path") + File.pathSeparator + Utils.pathJoin(Properties.PROJECTS_HOME, "target", "classes");
+    private final static String CLASSPATH = System.getProperty("java.class.path") + File.pathSeparator + Utils.pathJoin(Settings.PROJECTS_HOME, "target", "classes");
 
     private final static List<String> COMPILER_OPTIONS = Arrays.asList("-nowarn", "-classpath",CLASSPATH);
 

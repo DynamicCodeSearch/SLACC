@@ -10,9 +10,7 @@ import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import edu.ncsu.codejam.CodejamUtils;
-import edu.ncsu.config.Properties;
-import edu.ncsu.store.ObjectStore;
+import edu.ncsu.store.json.ClassStore;
 import edu.ncsu.visitors.blocks.Variable;
 import edu.ncsu.visitors.helpers.VisitorHelper;
 
@@ -43,7 +41,7 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
         return imports;
     }
 
-    public void storeClasses(ObjectStore store) {
+    public void storeClasses(ClassStore store) {
         String packageName = VisitorHelper.getPackage(compilationUnit);
         JsonArray imports = new JsonArray();
         for (String imp0rt : getImports())
@@ -96,9 +94,9 @@ public class ObjectStoreAdapter extends VoidVisitorAdapter {
         }
     }
 
-    public static void main(String[] args) {
-        ObjectStoreAdapter adapter = new ObjectStoreAdapter("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/Main.java");
-        ObjectStore store = new ObjectStore(Properties.getObjectStore(CodejamUtils.DATASET));
-        adapter.storeClasses(store);
-    }
+//    public static void main(String[] args) {
+//        ObjectStoreAdapter adapter = new ObjectStoreAdapter("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/Main.java");
+//        ClassStore store = new ClassStore(Settings.getObjectStore(CodejamUtils.DATASET));
+//        adapter.storeClasses(store);
+//    }
 }

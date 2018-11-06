@@ -6,10 +6,10 @@ import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import edu.ncsu.config.Properties;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
-import edu.ncsu.store.ArgumentStore;
+import edu.ncsu.store.json.ArgumentStore;
 import edu.ncsu.store.StoreUtils;
 import edu.ncsu.utils.Utils;
 
@@ -43,12 +43,12 @@ public class MethodExecutor {
 
     static {
         if (taskExecutor == null || taskExecutor.isShutdown())
-            taskExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
+            taskExecutor = Executors.newFixedThreadPool(Settings.NUM_THREADS);
     }
 
     private void initialize() {
         if (timeExecutor == null || timeExecutor.isShutdown())
-            timeExecutor = Executors.newFixedThreadPool(Properties.NUM_THREADS);
+            timeExecutor = Executors.newFixedThreadPool(Settings.NUM_THREADS);
         if (timeLimiter == null)
             timeLimiter = new SimpleTimeLimiter(timeExecutor);
     }
@@ -57,7 +57,7 @@ public class MethodExecutor {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdown();
             try {
-                executorService.awaitTermination(Properties.METHOD_EXECUTION_WAIT_TIME, TimeUnit.SECONDS);
+                executorService.awaitTermination(Settings.METHOD_EXECUTION_WAIT_TIME, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -82,7 +82,7 @@ public class MethodExecutor {
 
 
     public void process() {
-        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
                 classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
@@ -95,7 +95,7 @@ public class MethodExecutor {
         try {
             int toRun = functionTasks.size();
             LOGGER.info("Invoking All!");
-            long timeToWait = 2 * functionTasks.size() * Properties.ALL_METHOD_EXECUTIONS_WAIT_TIME * Properties.METHOD_EXECUTION_WAIT_TIME;
+            long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
             LOGGER.info(String.format("Time to wait = %d", timeToWait));
             List<Future<Map<String, String>>> functionResults = taskExecutor.invokeAll(functionTasks, timeToWait, TimeUnit.SECONDS);
             LOGGER.info("Invoked All!");
@@ -130,7 +130,7 @@ public class MethodExecutor {
      * @return
      */
     public List<Callable<Map<String, String>>> getFunctionTasks() {
-        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
                 classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         LOGGER.info(String.format("Fetching function tasks for %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
@@ -172,7 +172,7 @@ public class MethodExecutor {
     public static void executeFunctionTasks(List<Callable<Map<String, String>>> functionTasks) {
         if (functionTasks == null || functionTasks.size() == 0)
             return;
-        long timeToWait = 2 * functionTasks.size() * Properties.ALL_METHOD_EXECUTIONS_WAIT_TIME * Properties.METHOD_EXECUTION_WAIT_TIME;
+        long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
         LOGGER.info(String.format("Time to wait = %d", timeToWait));
         try {
             List<Future<Map<String, String>>> functionResults = taskExecutor.invokeAll(functionTasks, timeToWait, TimeUnit.SECONDS);
@@ -198,7 +198,7 @@ public class MethodExecutor {
 
 
     public static void process(String filePath, String functionName, String dataset, boolean onlySingle) {
-        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
+        ArgumentStore store = ArgumentStore.loadStore(dataset);
         MethodExecutor executor =  new MethodExecutor(dataset, filePath, store);
         ClassMethods classMethods = executor.classMethods;
         LOGGER.info(String.format("Processing function %s.%s.%s ... ", classMethods.getPackageName(), classMethods.getClassName(), functionName));
@@ -285,7 +285,7 @@ public class MethodExecutor {
             LOGGER.info(String.format("Submitted %s. Doing: %d / %d", functionName, taskNumber + 1, totalTasks));
             String command = String.format("sh scripts/%s/execute_single_function.sh %s %s",
                     dataset, sourcePath, functionName);
-            Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Properties.CODE_HOME));
+            Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Settings.CODE_HOME));
             process.waitFor();
             LOGGER.info(String.format("Output: %s\nError: %s\n", Utils.getOutput(process), Utils.getError(process)));
             process.destroy();
@@ -295,7 +295,7 @@ public class MethodExecutor {
     }
 
     private void storeFunction(Function function, boolean onlySingle) {
-        String writeFolder = Utils.pathJoin(Properties.getMetaResultsFunctionsFolder(this.dataset),
+        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
                 classMethods.getPackageName().replaceAll("\\.", File.separator));
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JsonObject executionResult = executeFunction(function, onlySingle);
@@ -389,14 +389,14 @@ public class MethodExecutor {
         };
         Object returnVariable = null;
         String errorMessage = null;
-        long duration = Properties.METHOD_EXECUTION_WAIT_TIME * 1000;
+        long duration = Settings.METHOD_EXECUTION_WAIT_TIME * 1000;
         try {
             long startTime = System.currentTimeMillis();
-            returnVariable = timeLimiter.callWithTimeout(methodCall, Properties.METHOD_EXECUTION_WAIT_TIME,
+            returnVariable = timeLimiter.callWithTimeout(methodCall, Settings.METHOD_EXECUTION_WAIT_TIME,
                     TimeUnit.SECONDS, true);
             duration = System.currentTimeMillis() - startTime;
         } catch (UncheckedTimeoutException e) {
-            errorMessage = String.format("Method timed out after %d seconds", Properties.METHOD_EXECUTION_WAIT_TIME);
+            errorMessage = String.format("Method timed out after %d seconds", Settings.METHOD_EXECUTION_WAIT_TIME);
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
@@ -421,15 +421,15 @@ public class MethodExecutor {
      * @param dataset - Dataset to execute
      */
     public static void executeDataset(String dataset) {
-        for (String problem: Utils.listDir(Properties.getDatasetSourceFolder(dataset))) {
+        for (String problem: Utils.listDir(Settings.getDatasetSourceFolder(dataset))) {
             MethodExecutor.executeProblem(dataset, problem);
         }
     }
 
     public static void executeProblem(String dataset, String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
-        String problemPath = Utils.pathJoin(Properties.getDatasetSourceFolder(dataset), problem);
-        ArgumentStore store = ArgumentStore.loadArgumentStore(dataset);
+        String problemPath = Utils.pathJoin(Settings.getDatasetSourceFolder(dataset), problem);
+        ArgumentStore store = ArgumentStore.loadStore(dataset);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile, store);
@@ -440,7 +440,7 @@ public class MethodExecutor {
 
     public static void main(String[] args) {
 //        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/smallest/smallest_c868b30a_000/generated_class_44dcbccdc0964592ab3a44f1eff79f26.java";
-//        ArgumentStore store = ArgumentStore.loadArgumentStore("introclass");
+//        ArgumentStore store = ArgumentStore.loadStore("introclass");
 //        MethodExecutor methodExecutor = new MethodExecutor("introclass", source, store);
 //        methodExecutor.process();
         executeProblem("introclass", "digits");
