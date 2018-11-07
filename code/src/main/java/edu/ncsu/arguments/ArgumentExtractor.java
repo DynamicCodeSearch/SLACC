@@ -1,13 +1,12 @@
 package edu.ncsu.arguments;
 
-import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
+import edu.ncsu.store.BaseStorage;
 import edu.ncsu.store.IArgumentStore;
 import edu.ncsu.visitors.adapters.ConstantAdapter;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.logging.Logger;
@@ -16,13 +15,9 @@ public class ArgumentExtractor {
 
     private final static Logger LOGGER = Logger.getLogger(ArgumentExtractor.class.getName());
 
-    private final static String STORAGE = "mongo";//Settings.getProperty("store");
-
     private String dataset;
 
     private IArgumentStore store;
-
-    private int count = 0;
 
     /***
      * Initialize Argument Extractor
@@ -30,13 +25,7 @@ public class ArgumentExtractor {
      */
     public ArgumentExtractor(String dataset) {
         this.dataset = dataset;
-        if (STORAGE.equals(Settings.MONGO_STORAGE)) {
-            this.store = edu.ncsu.store.mongo.ArgumentStore.loadStore(this.dataset);
-        } else if (STORAGE.equals(Settings.JSON_STORAGE)) {
-            this.store = edu.ncsu.store.json.ArgumentStore.loadStore(this.dataset);
-        } else {
-            throw new RuntimeException(String.format("Unknown store: %s", STORAGE));
-        }
+        this.store = BaseStorage.loadArgumentStore(dataset);
     }
 
     /**
@@ -94,7 +83,6 @@ public class ArgumentExtractor {
                 List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function);
                 if (arguments != null) {
                     this.store.saveFuzzedArguments(key, arguments);
-                    this.count += 1;
                 }
 
             }
@@ -112,6 +100,5 @@ public class ArgumentExtractor {
             LOGGER.info(String.format("Running for %s", javaFile));
             generateForJavaFile(javaFile);
         }
-        System.out.println("Count = " + count);
     }
 }

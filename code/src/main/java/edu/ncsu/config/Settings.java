@@ -135,7 +135,7 @@ public class Settings {
     public final static String MONGO_STORAGE = "mongo";
 
     /**
-     * Json Storage
+     * Json storage
      */
     public final static String JSON_STORAGE = "json";
 
@@ -169,6 +169,24 @@ public class Settings {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String getScriptsFolder(String dataset) {
+        if (dataset.equals(CodejamUtils.DATASET))
+            return Utils.pathJoin("scripts", "codejam_java");
+        else if (dataset.equals(IntroClassUtils.DATASET))
+            return Utils.pathJoin("scripts", "introclass");
+        throw new RuntimeException(String.format("Illegal dataset: %s", dataset));
+    }
+
+    public static int getNumThreads() {
+        String storage = getProperty("store");
+        if (storage.equals(MONGO_STORAGE)) {
+            return 4 * NUM_THREADS;
+        } else if (storage.equals(JSON_STORAGE)) {
+            return NUM_THREADS;
+        }
+        throw new RuntimeException(String.format("Unknown store: %s", storage));
     }
 
 }
