@@ -4,10 +4,10 @@ import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
-import edu.ncsu.store.StoreUtils;
+import edu.ncsu.store.BaseStorage;
+import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.Utils;
 
-import java.io.File;
 import java.lang.reflect.Method;
 import java.util.logging.Logger;
 
@@ -17,18 +17,11 @@ public class MetadataExtractor {
 
     private ClassMethods classMethods;
 
+    private IMetadataStore metadataStore;
+
     public MetadataExtractor(String dataset, String filePath) {
         classMethods = new ClassMethods(dataset, filePath);
-    }
-
-    public void saveMetadata(JsonObject metadata) {
-        LOGGER.info("Writing metadata ... ");
-        String writeFolder = Utils.pathJoin(Settings.META_STORE, this.classMethods.getDataset(), "functions",
-                classMethods.getPackageName().replaceAll("\\.", File.separator));
-        Utils.mkdir(writeFolder);
-        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
-        StoreUtils.saveJsonObject(metadata, writeFile, true);
-
+        metadataStore = BaseStorage.loadMetadataStore();
     }
 
     public void extract() {
@@ -39,7 +32,7 @@ public class MetadataExtractor {
             Function function = classMethods.getFunction(method);
             metadata.add(function.getName(), function.getMetaData());
         }
-        saveMetadata(metadata);
+        this.metadataStore.saveClassFunctionsMetadata(metadata, classMethods);
     }
 
     public static void extractForDataset(String dataset) {

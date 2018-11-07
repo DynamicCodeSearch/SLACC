@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.Primitive;
 import edu.ncsu.store.IArgumentStore;
-import edu.ncsu.store.StoreUtils;
 import edu.ncsu.utils.Utils;
 
 import java.io.*;
@@ -93,7 +92,7 @@ public class ArgumentStore implements IArgumentStore {
         Map<String, Set<Object>> gsonFriendlyArguments = new HashMap<>();
         for (Primitive primitive: primitiveArguments.keySet())
             gsonFriendlyArguments.put(primitive.getName(), primitiveArguments.get(primitive));
-        StoreUtils.saveObject(gsonFriendlyArguments, getPrimitiveArgStorePath());
+        JSONDriver.saveObject(gsonFriendlyArguments, getPrimitiveArgStorePath());
     }
 
     // FUZZED ARGUMENTS
@@ -118,7 +117,7 @@ public class ArgumentStore implements IArgumentStore {
         String indexKey = Utils.randomString();
         saveArgumentIndex(key, indexKey);
         String argsFile = Utils.pathJoin(getArgumentsFolder(), String.format("%s.json", indexKey));
-        StoreUtils.saveObject(arguments, argsFile);
+        JSONDriver.saveObject(arguments, argsFile);
     }
 
     /**
@@ -129,7 +128,7 @@ public class ArgumentStore implements IArgumentStore {
     private void saveArgumentIndex(String argKey, String indexKey) {
         JsonObject jsonObject = loadFuzzedArgumentIndices();
         jsonObject.addProperty(argKey, indexKey);
-        StoreUtils.saveJsonObject(jsonObject, getArgumentsIndexPath(), true);
+        JSONDriver.saveJsonObject(jsonObject, getArgumentsIndexPath(), true);
     }
 
     /**
@@ -137,7 +136,7 @@ public class ArgumentStore implements IArgumentStore {
      * @return - Get a json object for codejam arguments.
      */
     private JsonObject loadFuzzedArgumentIndices() {
-        return StoreUtils.getJsonObject(getArgumentsIndexPath());
+        return JSONDriver.getJsonObject(getArgumentsIndexPath());
     }
 
     /**
@@ -151,14 +150,14 @@ public class ArgumentStore implements IArgumentStore {
             return null;
         String indexKey = index.get(key).getAsString();
         String filePath = Utils.pathJoin(getArgumentsFolder(), String.format("%s.json", indexKey));
-        return StoreUtils.getJsonArray(filePath);
+        return JSONDriver.getJsonArray(filePath);
     }
 
     /**
      * Delete fuzzed arguments
      */
     public void deleteFuzzedArguments() {
-        StoreUtils.deleteStore(getArgumentsFolder());
+        JSONDriver.deleteStore(getArgumentsFolder());
     }
 
 }

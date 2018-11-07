@@ -2,7 +2,6 @@ package edu.ncsu.store.json;
 
 import com.google.gson.*;
 import edu.ncsu.config.Settings;
-import edu.ncsu.store.StoreUtils;
 
 import java.io.*;
 import java.util.logging.Logger;
@@ -28,7 +27,7 @@ public class ClassStore {
      * @return - JSONObject of the store file.
      */
     public synchronized JsonObject getStore() {
-        return StoreUtils.getJsonObject(storePath);
+        return JSONDriver.getJsonObject(storePath);
     }
 
     /**
@@ -36,7 +35,7 @@ public class ClassStore {
      * @param jsonObject - JSONObject to update file.
      */
     public synchronized void saveStore(JsonObject jsonObject) {
-        StoreUtils.saveJsonObject(jsonObject, storePath, true);
+        JSONDriver.saveJsonObject(jsonObject, storePath, true);
     }
 
     /**
@@ -44,7 +43,7 @@ public class ClassStore {
      * @return - Status of delete
      */
     public synchronized void deleteStore() {
-        StoreUtils.deleteStore(storePath);
+        JSONDriver.deleteStore(storePath);
     }
 
     /***

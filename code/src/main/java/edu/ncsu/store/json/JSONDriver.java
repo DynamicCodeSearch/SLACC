@@ -1,4 +1,4 @@
-package edu.ncsu.store;
+package edu.ncsu.store.json;
 
 import com.google.gson.*;
 import edu.ncsu.utils.Utils;
@@ -7,9 +7,9 @@ import org.apache.commons.io.FileUtils;
 import java.io.*;
 import java.util.logging.Logger;
 
-public class StoreUtils {
+public class JSONDriver {
 
-    private static Logger LOGGER = Logger.getLogger(StoreUtils.class.getName());
+    private static Logger LOGGER = Logger.getLogger(JSONDriver.class.getName());
 
     public static JsonElement getJsonElement(String filePath) {
         JsonParser parser = new JsonParser();
