@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.store.IFunctionStore;
-import edu.ncsu.store.StoreUtils;
 import edu.ncsu.utils.Utils;
 
 import java.io.File;
@@ -37,7 +36,7 @@ public class FunctionStore implements IFunctionStore {
     private static JsonObject getContent(String storeFile) {
         JsonObject results;
         if (Utils.fileExists(storeFile)) {
-            results = StoreUtils.getJsonObject(storeFile).getAsJsonObject();
+            results = JSONDriver.getJsonObject(storeFile).getAsJsonObject();
         } else {
             results = new JsonObject();
         }
@@ -51,7 +50,7 @@ public class FunctionStore implements IFunctionStore {
         String writeFile = getStoreFile(packageName, className);
         JsonObject results = getContent(writeFile);
         results.add(result.get("name").getAsString(), result);
-        StoreUtils.saveJsonObject(results, writeFile, true);
+        JSONDriver.saveJsonObject(results, writeFile, true);
     }
 
     @Override
@@ -69,7 +68,7 @@ public class FunctionStore implements IFunctionStore {
         if (!errorContainsFunction(failedFunctions, result.get("name").getAsString())) {
             failedFunctions.add(result);
             results.add("error", failedFunctions);
-            StoreUtils.saveJsonObject(results, writeFile, true);
+            JSONDriver.saveJsonObject(results, writeFile, true);
         }
     }
 

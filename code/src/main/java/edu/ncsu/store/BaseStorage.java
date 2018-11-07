@@ -28,4 +28,15 @@ public class BaseStorage {
         }
     }
 
+    public static IMetadataStore loadMetadataStore() {
+        switch (STORAGE) {
+            case Settings.MONGO_STORAGE:
+                return new edu.ncsu.store.mongo.MetadataStore();
+            case Settings.JSON_STORAGE:
+                return new edu.ncsu.store.json.MetadataStore();
+            default:
+                throw new RuntimeException(String.format("Unknown store: %s", STORAGE));
+        }
+    }
+
 }
