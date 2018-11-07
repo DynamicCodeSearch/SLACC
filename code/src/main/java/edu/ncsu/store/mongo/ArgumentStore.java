@@ -30,6 +30,13 @@ public class ArgumentStore implements IArgumentStore {
         return new ArgumentStore(dataset);
     }
 
+    private MongoCollection<Document> getFuzzedCollection() {
+        return MongoDriver.getCollection(this.dataset, FUZZED_ARGS_COLLECTION);
+    }
+
+    private MongoCollection<Document> getPrimitiveCollection() {
+        return MongoDriver.getCollection(this.dataset, PRIMITIVE_ARGS_COLLECTION);
+    }
 
     @Override
     public void savePrimitiveArguments(Map<Primitive, Set<Object>> primitiveArguments) {
@@ -44,7 +51,7 @@ public class ArgumentStore implements IArgumentStore {
         if (documents.size() == 0)
             return;
         MongoDriver.dropCollection(this.dataset, PRIMITIVE_ARGS_COLLECTION);
-        MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, PRIMITIVE_ARGS_COLLECTION);
+        MongoCollection<Document> collection = getPrimitiveCollection();
         if (!MongoDriver.collectionExists(collection))
             MongoDriver.createIndexForCollection(collection, "type", "family");
         collection.insertMany(documents);
@@ -54,7 +61,7 @@ public class ArgumentStore implements IArgumentStore {
     public Map<Primitive, Set<Object>> loadPrimitiveArguments() {
         LOGGER.info("Loading Primitive Arguments from MongoDB ... ");
         Map<Primitive, Set<Object>> primitiveArguments = new HashMap<>();
-        MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, PRIMITIVE_ARGS_COLLECTION);
+        MongoCollection<Document> collection = getPrimitiveCollection();
         for (Document document: collection.find()) {
             Primitive primitive = Primitive.getPrimitiveByName(document.getString("type"));
             Set<Object> args = new HashSet<Object>((List) document.get("args"));
@@ -67,7 +74,7 @@ public class ArgumentStore implements IArgumentStore {
     public void saveFuzzedArguments(String key, Object arguments) {
         Document document = new Document("key", key)
                 .append("args", arguments);
-        MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, FUZZED_ARGS_COLLECTION);
+        MongoCollection<Document> collection = getFuzzedCollection();
         if (!MongoDriver.collectionExists(collection))
             MongoDriver.createIndexForCollection(collection, "key");
         collection.insertOne(document);
@@ -75,18 +82,20 @@ public class ArgumentStore implements IArgumentStore {
 
 
     private Document getFuzzed(String key) {
-        MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, FUZZED_ARGS_COLLECTION);
+        MongoCollection<Document> collection = getFuzzedCollection();
         return collection.find(Filters.eq("key", key)).first();
     }
 
     @Override
     public boolean fuzzedKeyExists(String key) {
-        return getFuzzed(key) != null;
+        MongoCollection<Document> collection = getFuzzedCollection();
+        return MongoDriver.containsDocument(collection, "key", key);
     }
 
     @Override
     public JsonArray loadFuzzedArguments(String key) {
-        Document document = getFuzzed(key);
+        MongoCollection<Document> collection = getFuzzedCollection();;
+        Document document = MongoDriver.getDocument(collection, "key", key);
         if (document == null)
             return null;
         return new Gson().fromJson(JSON.serialize(document.get("args")), JsonArray.class);

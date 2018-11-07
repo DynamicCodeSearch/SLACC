@@ -3,6 +3,7 @@ package edu.ncsu.store.mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import edu.ncsu.utils.Utils;
@@ -95,9 +96,21 @@ public class MongoDriver {
         getDatasetDB(dataset).getCollection(collectionName).drop();
     }
 
+    public static Document getDocument(MongoCollection collection, String key, Object value) {
+        return (Document) collection.find(Filters.eq(key, value)).first();
+    }
+
+    public static boolean containsDocument(MongoCollection collection, String key, Object value) {
+        return getDocument(collection, key, value) != null;
+    }
+
+    public static void deleteDocument(MongoCollection collection, String key, Object value) {
+        collection.deleteOne(Filters.eq(key, value));
+    }
+
 
     public static void main(String[] args) {
-        LOGGER.info(String.format("HostName of MongoD Server: %s", new MongoDriver().getClient().getAddress().getHost()));
+        LOGGER.info(String.format("HostName of MongoD Server: %s", MongoDriver.getClient().getAddress().getHost()));
     }
 
 }

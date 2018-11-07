@@ -4,13 +4,14 @@ import com.google.common.util.concurrent.SimpleTimeLimiter;
 import com.google.common.util.concurrent.TimeLimiter;
 import com.google.common.util.concurrent.UncheckedTimeoutException;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
-import edu.ncsu.store.json.ArgumentStore;
-import edu.ncsu.store.StoreUtils;
+import edu.ncsu.store.BaseStorage;
+import edu.ncsu.store.IArgumentStore;
+import edu.ncsu.store.IFunctionStore;
 import edu.ncsu.utils.Utils;
 
 import java.io.*;
@@ -39,16 +40,19 @@ public class MethodExecutor {
 
     private ClassMethods classMethods;
 
-    private ArgumentStore store;
+    private IArgumentStore argumentStore;
+
+    private IFunctionStore functionStore;
+
 
     static {
         if (taskExecutor == null || taskExecutor.isShutdown())
-            taskExecutor = Executors.newFixedThreadPool(Settings.NUM_THREADS);
+            taskExecutor = Executors.newFixedThreadPool(Settings.getNumThreads());
     }
 
     private void initialize() {
         if (timeExecutor == null || timeExecutor.isShutdown())
-            timeExecutor = Executors.newFixedThreadPool(Settings.NUM_THREADS);
+            timeExecutor = Executors.newFixedThreadPool(Settings.getNumThreads());
         if (timeLimiter == null)
             timeLimiter = new SimpleTimeLimiter(timeExecutor);
     }
@@ -73,87 +77,71 @@ public class MethodExecutor {
         shutdownExecutor(taskExecutor);
     }
 
-    public MethodExecutor(String dataset, String sourcePath, ArgumentStore store) {
-        this.store = store;
+    public MethodExecutor(String dataset, String sourcePath) {
+        this.argumentStore = BaseStorage.loadArgumentStore(dataset);
+        this.functionStore = BaseStorage.loadFunctionStore(dataset);
         this.dataset = dataset;
         this.classMethods = new ClassMethods(this.dataset, sourcePath);
         initialize();
     }
 
-
-    public void process() {
-        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
-                classMethods.getPackageName().replaceAll("\\.", File.separator));
-        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
-        List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
-        if (functionTasks.isEmpty()) {
-            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
-            shutdown();
-            return;
-        }
-        int totalFunctions = functionTasks.size();
-        try {
-            int toRun = functionTasks.size();
-            LOGGER.info("Invoking All!");
-            long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
-            LOGGER.info(String.format("Time to wait = %d", timeToWait));
-            List<Future<Map<String, String>>> functionResults = taskExecutor.invokeAll(functionTasks, timeToWait, TimeUnit.SECONDS);
-            LOGGER.info("Invoked All!");
-            for (Future<Map<String, String>> functionResult: functionResults) {
-//                assert functionResult.isDone();
-                Map<String, String> executionResult = functionResult.get();
-                LOGGER.info("Fetched execution results");
-                if (!executionResult.get("status").equals(METHOD_EXECUTED)) {
-                    Utils.mkdir(writeFolder);
-                    LOGGER.severe(String.format("Exception occurred while processing function: %s", executionResult.get("name")));
-                    JsonObject failedFunction = new JsonObject();
-                    failedFunction.addProperty("name", executionResult.get("name"));
-                    failedFunction.addProperty("errorTrace", executionResult.get("status"));
-                    updateError(writeFile, failedFunction);
-                }
-                LOGGER.info(String.format("Functions remaining: %d/%d", toRun, totalFunctions));
-                --toRun;
-            }
-            LOGGER.info("Completed invocation");
-        } catch (Exception e) {
-            LOGGER.severe(String.format("Exception while invoking all function tasks in class: %s.%s",
-                    classMethods.getPackageName(), classMethods.getClassName()));
-            e.printStackTrace();
-        }
-        LOGGER.info(String.format("Shutting Down Class: %s.%s", classMethods.getPackageName(), classMethods.getClassName()));
-        shutdown();
-        return;
-    }
+//    public void process() {
+//        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
+//                classMethods.getPackageName().replaceAll("\\.", File.separator));
+//        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
+//        List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
+//        if (functionTasks.isEmpty()) {
+//            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
+//            shutdown();
+//            return;
+//        }
+//        int totalFunctions = functionTasks.size();
+//        try {
+//            int toRun = functionTasks.size();
+//            LOGGER.info("Invoking All!");
+//            long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
+//            LOGGER.info(String.format("Time to wait = %d", timeToWait));
+//            List<Future<Map<String, String>>> functionResults = taskExecutor.invokeAll(functionTasks, timeToWait, TimeUnit.SECONDS);
+//            LOGGER.info("Invoked All!");
+//            for (Future<Map<String, String>> functionResult: functionResults) {
+////                assert functionResult.isDone();
+//                Map<String, String> executionResult = functionResult.get();
+//                LOGGER.info("Fetched execution results");
+//                if (!executionResult.get("status").equals(METHOD_EXECUTED)) {
+//                    Utils.mkdir(writeFolder);
+//                    LOGGER.severe(String.format("Exception occurred while processing function: %s", executionResult.get("name")));
+//                    JsonObject failedFunction = new JsonObject();
+//                    failedFunction.addProperty("name", executionResult.get("name"));
+//                    failedFunction.addProperty("errorTrace", executionResult.get("status"));
+//                    updateError(writeFile, failedFunction);
+//                }
+//                LOGGER.info(String.format("Functions remaining: %d/%d", toRun, totalFunctions));
+//                --toRun;
+//            }
+//            LOGGER.info("Completed invocation");
+//        } catch (Exception e) {
+//            LOGGER.severe(String.format("Exception while invoking all function tasks in class: %s.%s",
+//                    classMethods.getPackageName(), classMethods.getClassName()));
+//            e.printStackTrace();
+//        }
+//        LOGGER.info(String.format("Shutting Down Class: %s.%s", classMethods.getPackageName(), classMethods.getClassName()));
+//        shutdown();
+//        return;
+//    }
 
     /**
      * Retrieve function tasks for the Method Executor
      * @return
      */
     public List<Callable<Map<String, String>>> getFunctionTasks() {
-        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
-                classMethods.getPackageName().replaceAll("\\.", File.separator));
-        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         LOGGER.info(String.format("Fetching function tasks for %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
-        JsonObject results;
-        JsonArray failedFunctions;
-        if (Utils.fileExists(writeFile)) {
-            results = StoreUtils.getJsonObject(writeFile).getAsJsonObject();
-        } else {
-            results = new JsonObject();
-        }
-        if (results.has("errors")) {
-            failedFunctions = results.get("errors").getAsJsonArray();
-        } else {
-            failedFunctions = new JsonArray();
-        }
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         int totalFunctions = 0;
         List<Function> validFunctions = new ArrayList<>();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
             if (function.isFuzzable() && function.makeArgumentsKey() != null) {
-                if (!results.has(function.getName()) && !errorContainsFunction(failedFunctions, function.getName())) {
-//                    functionTasks.add(makeFunctionTask(function, functionTasks.size()));
+                if (!this.functionStore.isStored(function)) {
                     validFunctions.add(function);
                 }
                 ++totalFunctions;
@@ -198,8 +186,7 @@ public class MethodExecutor {
 
 
     public static void process(String filePath, String functionName, String dataset, boolean onlySingle) {
-        ArgumentStore store = ArgumentStore.loadStore(dataset);
-        MethodExecutor executor =  new MethodExecutor(dataset, filePath, store);
+        MethodExecutor executor =  new MethodExecutor(dataset, filePath);
         ClassMethods classMethods = executor.classMethods;
         LOGGER.info(String.format("Processing function %s.%s.%s ... ", classMethods.getPackageName(), classMethods.getClassName(), functionName));
         Function function = null;
@@ -221,45 +208,6 @@ public class MethodExecutor {
         executor.shutdown();
     }
 
-
-    private static boolean errorContainsFunction(JsonArray errors, String functionName) {
-        for (JsonElement error: errors) {
-            if (error.getAsJsonObject().get("name").getAsString().equals(functionName))
-                return true;
-        }
-        return false;
-    }
-
-    private synchronized static void updateResult(String fileName, JsonObject result) {
-        JsonObject results;
-        if (Utils.fileExists(fileName)) {
-            results = StoreUtils.getJsonObject(fileName).getAsJsonObject();
-        } else {
-            results = new JsonObject();
-        }
-        results.add(result.get("name").getAsString(), result);
-        StoreUtils.saveJsonObject(results, fileName, true);
-    }
-
-    private synchronized static void updateError(String fileName, JsonObject error) {
-        JsonObject results;
-        if (Utils.fileExists(fileName)) {
-            results = StoreUtils.getJsonObject(fileName).getAsJsonObject();
-        } else {
-            results = new JsonObject();
-        }
-        JsonArray failedFunctions;
-        if (results.has("errors")) {
-            failedFunctions = results.get("errors").getAsJsonArray();
-        } else {
-            failedFunctions = new JsonArray();
-        }
-        if (!errorContainsFunction(failedFunctions, error.get("name").getAsString())) {
-            failedFunctions.add(error);
-            results.add("error", failedFunctions);
-            StoreUtils.saveJsonObject(results, fileName, true);
-        }
-    }
 
     private static Callable<Map<String, String>> makeFunctionTask(final String dataset, final String sourcePath,
                                                                   final String functionName, final int taskNumber,
@@ -283,8 +231,9 @@ public class MethodExecutor {
     private static void executeAsBash(String dataset, String sourcePath, String functionName, int taskNumber, int totalTasks) {
         try {
             LOGGER.info(String.format("Submitted %s. Doing: %d / %d", functionName, taskNumber + 1, totalTasks));
-            String command = String.format("sh scripts/%s/execute_single_function.sh %s %s",
-                    dataset, sourcePath, functionName);
+            String command = String.format("sh %s %s %s",
+                    Utils.pathJoin(Settings.getScriptsFolder(dataset), "execute_single_function.sh"),
+                    sourcePath, functionName);
             Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Settings.CODE_HOME));
             process.waitFor();
             LOGGER.info(String.format("Output: %s\nError: %s\n", Utils.getOutput(process), Utils.getError(process)));
@@ -295,18 +244,13 @@ public class MethodExecutor {
     }
 
     private void storeFunction(Function function, boolean onlySingle) {
-        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
-                classMethods.getPackageName().replaceAll("\\.", File.separator));
-        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JsonObject executionResult = executeFunction(function, onlySingle);
         if (executionResult.has("output")) {
             JsonObject outputResult = executionResult.get("output").getAsJsonObject();
-            Utils.mkdir(writeFolder);
-            updateResult(writeFile, outputResult);
+            functionStore.updateFunctionResult(outputResult);
         } else if (executionResult.has("error")) {
             JsonObject error = executionResult.get("error").getAsJsonObject();
-            Utils.mkdir(writeFolder);
-            updateError(writeFile, error);
+            functionStore.updateFunctionError(error);
         }
     }
 
@@ -325,6 +269,8 @@ public class MethodExecutor {
             StringWriter sw = new StringWriter();
             e.printStackTrace(new PrintWriter(sw));
             failedFunction.addProperty("name", function.getName());
+            failedFunction.addProperty("class", function.getClassName());
+            failedFunction.addProperty("package", function.getPackageName());
             failedFunction.addProperty("errorTrace", sw.toString());
             returnVal.add("error", failedFunction);
         }
@@ -333,23 +279,19 @@ public class MethodExecutor {
 
 
     private JsonObject processFunction(Function function) {
-        System.out.println(String.format("Function: %s", function.getName()));
         List<Object[]> executionArgs = fetchFunctionExecutionArgs(function);
         if (executionArgs == null || executionArgs.size() == 0) {
             LOGGER.info(String.format("Execution args does not exist for args key: %s", function.makeArgumentsKey()));
             return null;
         }
         JsonArray executions = new JsonArray();
-        int count = 0;
         for (Object[] executionArg: executionArgs) {
-//            if (count % 100 == 0) {
-//                LOGGER.info(String.format("Completed %d / %d executions ... ", count, executionArgs.size()));
-//            }
             executions.add(profileMethod(function, executionArg));
-            count ++;
         }
         JsonObject functionData = new JsonObject();
         functionData.addProperty("name", function.getName());
+        functionData.addProperty("class", function.getClassName());
+        functionData.addProperty("package", function.getPackageName());
         functionData.addProperty("inputKey", function.makeArgumentsKey());
         functionData.add("outputs", executions);
         return functionData;
@@ -367,6 +309,7 @@ public class MethodExecutor {
         executions.add(profileMethod(function, executionArgs.get(0)));
         JsonObject functionData = new JsonObject();
         functionData.addProperty("name", function.getName());
+        functionData.addProperty("class", function.getClassName());
         functionData.addProperty("inputKey", function.makeArgumentsKey());
         functionData.add("outputs", executions);
         return functionData;
@@ -405,7 +348,7 @@ public class MethodExecutor {
 
 
     private List<Object[]> fetchFunctionExecutionArgs(Function function) {
-        JsonArray arguments = store.loadFuzzedArguments(function.makeArgumentsKey());
+        JsonArray arguments = argumentStore.loadFuzzedArguments(function.makeArgumentsKey());
         List<Object[]> functionArgs = new ArrayList<>();
         for (Object arg: arguments) {
             functionArgs.add(function.convertToFunctionArguments(arg).toArray());
@@ -429,20 +372,29 @@ public class MethodExecutor {
     public static void executeProblem(String dataset, String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Settings.getDatasetSourceFolder(dataset), problem);
-        ArgumentStore store = ArgumentStore.loadStore(dataset);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
-            MethodExecutor executor = new MethodExecutor(dataset, javaFile, store);
+            MethodExecutor executor = new MethodExecutor(dataset, javaFile);
             functionTasks.addAll(executor.getFunctionTasks());
         }
         MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
+    private static void testExecution() {
+        String dataset = CodejamUtils.DATASET;
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/andrewzta/generated_class_611053ab6e8e44feba9742e74b380905.java";
+        String functionName = "func_29a5b2b4a58747c48866fbc18d62781c";
+//        MethodExecutor.process(sourceFile, functionName, dataset, false);
+        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
+        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());
+    }
+
     public static void main(String[] args) {
 //        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/smallest/smallest_c868b30a_000/generated_class_44dcbccdc0964592ab3a44f1eff79f26.java";
-//        ArgumentStore store = ArgumentStore.loadStore("introclass");
-//        MethodExecutor methodExecutor = new MethodExecutor("introclass", source, store);
+//        ArgumentStore argumentStore = ArgumentStore.loadStore("introclass");
+//        MethodExecutor methodExecutor = new MethodExecutor("introclass", source, argumentStore);
 //        methodExecutor.process();
-        executeProblem("introclass", "digits");
+//        executeProblem("introclass", "digits");
+        testExecution();
     }
 }
