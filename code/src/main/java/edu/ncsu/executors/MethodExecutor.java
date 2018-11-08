@@ -382,11 +382,11 @@ public class MethodExecutor {
 
     private static void testExecution() {
         String dataset = CodejamUtils.DATASET;
-        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/andrewzta/generated_class_611053ab6e8e44feba9742e74b380905.java";
-        String functionName = "func_29a5b2b4a58747c48866fbc18d62781c";
-//        MethodExecutor.process(sourceFile, functionName, dataset, false);
-        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
-        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Joshik/generated_class_341efab3ac8241be9251fd06a52a0ed6.java";
+        String functionName = "func_54301f1628b843e9b05bbb64e724498c";
+        MethodExecutor.process(sourceFile, functionName, dataset, false);
+//        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
+//        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());
     }
 
     public static void main(String[] args) {
