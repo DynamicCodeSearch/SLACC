@@ -15,6 +15,11 @@ public class Execute {
             @Override
             public void write(int b) {}
         }));
+
+//        System.setErr(new PrintStream(new OutputStream() {
+//            @Override
+//            public void write(int b) {}
+//        }));
     }
 
     public static void executeFunction(String filePath, String functionName) {

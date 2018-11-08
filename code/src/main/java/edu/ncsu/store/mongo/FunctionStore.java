@@ -1,6 +1,7 @@
 package edu.ncsu.store.mongo;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.util.JSON;
@@ -24,8 +25,7 @@ public class FunctionStore implements IFunctionStore {
 
     private void updateFunction(JsonObject result, String collectionName) {
         String functionName = result.get("name").getAsString();
-        String jsonString = new Gson().toJson(result);
-        Document document = new Document((Map<String, Object>) JSON.parse(jsonString));
+        Document document = MongoDriver.parseAsDocument(result);
         MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, collectionName);
         if (!MongoDriver.collectionExists(collection))
             MongoDriver.createIndexForCollection(collection, "name");
@@ -65,5 +65,11 @@ public class FunctionStore implements IFunctionStore {
             return true;
         Document failedFunction = getFunction(function.getName(), FAILED_FUNCTIONS_COLLECTION);
         return isResult(function, failedFunction);
+    }
+
+    public static void main(String[] args) {
+        String jsonString = "{\"name\": Infinity}".replaceAll("(-)?Infinity", "NaN");
+        Document document = new Document((Map<String, Object>) JSON.parse(jsonString));
+        System.out.println(document.toJson());
     }
 }

@@ -1,16 +1,21 @@
 package edu.ncsu.store.mongo;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
+import com.mongodb.util.JSON;
 import edu.ncsu.utils.Utils;
 import org.bson.Document;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,6 +24,8 @@ public class MongoDriver {
     private static final Logger LOGGER = Logger.getLogger(MongoDriver.class.getName());
 
     private static final Logger mongoLogger = Logger.getLogger( "org.mongodb.driver" );
+
+    private static Gson GSON = new GsonBuilder().serializeSpecialFloatingPointValues().create();
 
     private static MongoClient client = null;
 
@@ -108,6 +115,11 @@ public class MongoDriver {
         collection.deleteOne(Filters.eq(key, value));
     }
 
+
+    public static Document parseAsDocument(JsonObject result) {
+        String jsonString = GSON.toJson(result).trim().replaceAll("(-)?Infinity", "NaN");
+        return new Document((Map<String, Object>) JSON.parse(jsonString));
+    }
 
     public static void main(String[] args) {
         LOGGER.info(String.format("HostName of MongoD Server: %s", MongoDriver.getClient().getAddress().getHost()));
