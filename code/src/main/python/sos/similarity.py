@@ -9,10 +9,12 @@ __author__ = "bigfatnoob"
 from collections import defaultdict
 from sklearn.cluster import DBSCAN
 import numpy as np
+import re
 
 from utils import cache, logger, lib
 from utils.lib import O
 from utils.stat import Stat
+from sos.function import Function, Outputs
 from store import json_store, mongo_store
 import properties
 
@@ -76,9 +78,40 @@ class Clusterer(O):
     return clusters
 
 
-def similarity_for_dataset(dataset):
+def load_functions(dataset):
   data_store = get_store(dataset)
-  functions = data_store.load_functions()
+  functions_arr = data_store.load_functions()[:100]
+  function_pattern = re.compile(r'^func_')
+  functions = []
+  for func_dict in functions_arr:
+    if not function_pattern.match(func_dict['name']): continue
+    function_metadata = data_store.load_metadata(func_dict)
+    return_meta_data = function_metadata["return"]
+    outputs = Outputs(func_dict["outputs"])
+    funct = Function(name=func_dict["name"], dataset=dataset,
+                     class_name=func_dict["class"], package=func_dict["package"],
+                     input_key=func_dict["inputKey"], outputs=outputs,
+                     lines_touched=function_metadata.get("linesTouched", None),
+                     span=function_metadata.get("span", None), body=function_metadata["body"])
+    if data_store.is_object_return(return_meta_data):
+      for attribute, returns in data_store.get_return_vals(outputs.returns).items():
+        clone = funct.clone()
+        clone.outputs = outputs.clone()
+        clone.outputs.returns = returns[:]
+        clone.return_attribute = attribute
+        # clone.is_useful()
+        functions.append(clone)
+    else:
+      # funct.is_useful()
+      functions.append(funct)
+  valid_functions = [func for func in functions if func.is_useful()]
+  LOGGER.info("Valid Functions : %d / %d" % (len(valid_functions), len(functions)))
+  return valid_functions
+
+
+def similarity_for_dataset(dataset):
+  functions = load_functions(dataset)
+  exit(0)
   clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.txt")
   clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.pkl")
   clusters_report_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.md")

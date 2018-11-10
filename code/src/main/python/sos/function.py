@@ -8,44 +8,32 @@ __author__ = "bigfatnoob"
 
 from utils.lib import O
 from utils import cache, lib
+from store import json_store, mongo_store
 import properties
 
 
-def load_inputs(dataset, args_key):
-  args_index = cache.load_json(lib.get_dataset_arg_index(dataset))
-  if args_key not in args_index:
-    return None
-  arg_files_name = os.path.join(lib.get_dataset_args_folder(dataset), "%s.json" % args_index[args_key])
-  arguments = cache.load_json(arg_files_name)
-  assert len(arguments) == properties.FUZZ_ARGUMENT_SIZE
-  return arguments
+def get_store(dataset):
+  if properties.STORE == "json":
+    return json_store.InputStore(dataset)
+  elif properties.STORE == "mongo":
+    return mongo_store.InputStore(dataset)
+  raise RuntimeError("Invalid configuration: %s" % properties.STORE)
 
-
-def is_array(arg_sets):
-  if not type(arg_sets[0]) is list:
-    return False
-  return len(arg_sets[0]) != len(arg_sets[1]) != len(arg_sets[2])
 
 
 class InputCache(O):
   _cache = {}
+  _store = None
 
   @staticmethod
   def load(dataset, key):
     if key in InputCache._cache:
       return InputCache._cache[key]
-    arguments = load_inputs(dataset, key)
-    if arguments is None:
-      return None
-    if is_array(arguments):
-      key_args = arguments
-    else:
-      key_args = [[] for _ in range(len(arguments[0]))]
-      for i in range(len(arguments[0])):
-        for arg in arguments:
-          key_args[i].append(arg)
-    InputCache._cache[key] = key_args
-    return key_args
+    if not InputCache._store or InputCache._store.dataset != dataset:
+      InputCache._store = get_store(dataset)
+    arguments = InputCache._store.load_inputs(key)
+    InputCache._cache[key] = arguments
+    return arguments
 
 
 class Function(O):

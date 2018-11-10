@@ -9,6 +9,21 @@ __author__ = "bigfatnoob"
 from utils.lib import O
 
 
+class InputStore(O):
+  def __init__(self, dataset, **kwargs):
+    O.__init__(self, **kwargs)
+    self.dataset = dataset
+
+  def load_inputs(self, args_key):
+    raise NotImplementedError("Should be implemented in subclass")
+
+  @staticmethod
+  def is_array(arg_sets):
+    if not type(arg_sets[0]) is list:
+      return False
+    return len(arg_sets[0]) != len(arg_sets[1]) != len(arg_sets[2])
+
+
 class FunctionStore(O):
   def __init__(self, dataset, **kwargs):
     O.__init__(self, **kwargs)
@@ -17,8 +32,11 @@ class FunctionStore(O):
   def load_functions(self):
     raise NotImplementedError("Should be implemented in subclass")
 
+  def load_metadata(self, funct):
+    raise NotImplementedError("Should be implemented in subclass")
+
   @staticmethod
-  def __is_object_return(metadata):
+  def is_object_return(metadata):
     """
     Is the return type of object
     :param metadata:
@@ -27,7 +45,7 @@ class FunctionStore(O):
     return not metadata["isArray"] and not metadata["isPrimitive"]
 
   @staticmethod
-  def __get_return_vals(returns):
+  def get_return_vals(returns):
     return_keys = []
 
     def get_key(d):
