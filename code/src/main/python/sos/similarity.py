@@ -80,7 +80,7 @@ class Clusterer(O):
 
 def load_functions(dataset):
   data_store = get_store(dataset)
-  functions_arr = data_store.load_functions()[:100]
+  functions_arr = data_store.load_functions()
   function_pattern = re.compile(r'^func_')
   functions = []
   for func_dict in functions_arr:
