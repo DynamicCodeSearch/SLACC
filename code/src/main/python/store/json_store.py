@@ -6,18 +6,38 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-import re
-
 from store import base_store
 from utils import lib, logger, cache
-from sos.function import Function, Outputs
+import properties
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
+
+
+class InputStore(base_store.InputStore):
+  def __init__(self, dataset, **kwargs):
+    base_store.InputStore.__init__(self, dataset, **kwargs)
+
+  def load_inputs(self, args_key):
+    args_index = cache.load_json(lib.get_dataset_arg_index(self.dataset))
+    if args_key not in args_index:
+      return None
+    arg_files_name = os.path.join(lib.get_dataset_args_folder(self.dataset), "%s.json" % args_index[args_key])
+    arguments = cache.load_json(arg_files_name)
+    assert len(arguments) == properties.FUZZ_ARGUMENT_SIZE
+    if self.is_array(arguments):
+      key_args = arguments
+    else:
+      key_args = [[] for _ in range(len(arguments[0]))]
+      for i in range(len(arguments[0])):
+        for arg in arguments:
+          key_args[i].append(arg)
+    return key_args
 
 
 class FunctionStore(base_store.FunctionStore):
   def __init__(self, dataset, **kwargs):
     base_store.FunctionStore.__init__(self, dataset, **kwargs)
+    self.class_meta_data = {}
 
   def load_functions(self):
     functions = []
@@ -26,9 +46,7 @@ class FunctionStore(base_store.FunctionStore):
       if not json_file.endswith(".json"):
         continue
       functions += self.__load_functions_for_class(json_file)
-    valid_functions = [func for func in functions if func.is_useful()]
-    LOGGER.info("Valid Functions : %d / %d" % (len(valid_functions), len(functions)))
-    return valid_functions
+    return functions
 
   def __load_functions_for_class(self, class_json_file):
     """
@@ -36,44 +54,19 @@ class FunctionStore(base_store.FunctionStore):
     :param class_json_file: Json file containing the results for the class json.
     :return: Parsed functions from class json file.
     """
-    def get_package(json_file):
-      return json_file.split("%sfunctions%s" %
-                             (os.path.sep, os.path.sep))[-1].rsplit(os.path.sep, 1)[0].replace(os.path.sep, ".")
-
     class_json = cache.load_json(class_json_file)
-    class_name = cache.get_file_name(class_json_file)
-    package = get_package(class_json_file)
-    functions = []
-    function_pattern = re.compile(r'^func_')
-    class_metadata = self.__load_class_metadata(package, class_name)
-    for function_name, details in class_json.items():
-      if not function_pattern.match(function_name):
-        continue
-      function_metadata = class_metadata[function_name]
-      return_meta_data = function_metadata["return"]
-      outputs = Outputs(details["outputs"])
-      funct = Function(name=function_name, dataset=self.dataset,
-                       class_name=class_name, package=package,
-                       input_key=details["inputKey"], outputs=outputs,
-                       lines_touched=function_metadata.get("linesTouched", None),
-                       span=function_metadata.get("span", None), body=function_metadata["body"])
-      if FunctionStore.__is_object_return(return_meta_data):
-        for attribute, returns in FunctionStore.__get_return_vals(outputs.returns).items():
-          clone = funct.clone()
-          clone.outputs = outputs.clone()
-          clone.outputs.returns = returns[:]
-          clone.return_attribute = attribute
-          # clone.is_useful()
-          functions.append(clone)
-      else:
-        # funct.is_useful()
-        functions.append(funct)
-    return functions
+    return class_json.values()
+
+  def load_metadata(self, funct):
+    return self.__load_class_metadata(funct["package"], funct["class"])[funct["name"]]
 
   def __load_class_metadata(self, package, class_name):
     metadata_file = os.path.join(lib.get_dataset_meta_results_folder(self.dataset), package.replace(".", os.path.sep),
                                  "%s.json" % class_name)
-    return cache.load_json(metadata_file)
+    if metadata_file not in self.class_meta_data:
+      self.class_meta_data[metadata_file] = cache.load_json(metadata_file)
+    return self.class_meta_data[metadata_file]
+
 
 
 
