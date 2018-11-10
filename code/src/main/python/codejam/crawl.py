@@ -1,3 +1,4 @@
+from __future__ import print_function, division
 import sys
 import os
 
@@ -68,7 +69,7 @@ def crawl(year, rnd, problem_id):
 def _main():
   args = sys.argv
   if len(args) < 4:
-    print "Use python codejam/crawl.py <year> <round> <problem_id>"
+    print("Use python codejam/crawl.py <year> <round> <problem_id>")
     exit(0)
   year = int(args[1])
   rnd = int(args[2])

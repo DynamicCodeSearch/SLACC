@@ -48,10 +48,9 @@ public class MongoDriver {
         if ( mongoHome != null && !mongoHome.isEmpty()) {
             String fileName = Utils.pathJoin(mongoHome, "host_machine.txt");
             String hostName = Utils.getFileContent(fileName);
-            if (hostName == null) {
-                return getDefaultHostName();
+            if (hostName != null && !hostName.isEmpty()) {
+                return hostName;
             }
-            return hostName;
         }
         return getDefaultHostName();
     }
