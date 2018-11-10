@@ -26,7 +26,7 @@ def get_hostname():
   if mongo_home:
     file_name = os.path.join(mongo_home, "host_machine.txt")
     if cache.file_exists(file_name):
-      return cache.read_file(file_name)
+      return cache.read_file(file_name).strip()
   return get_default_hostname()
 
 
