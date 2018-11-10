@@ -40,8 +40,8 @@ class InputCache(O):
     if is_array(arguments):
       key_args = arguments
     else:
-      key_args = [[] for _ in xrange(len(arguments[0]))]
-      for i in xrange(len(arguments[0])):
+      key_args = [[] for _ in range(len(arguments[0]))]
+      for i in range(len(arguments[0])):
         for arg in arguments:
           key_args[i].append(arg)
     InputCache._cache[key] = key_args
@@ -93,7 +93,7 @@ class Function(O):
       self.useful = False
       return self.useful
     return_not_nones_indices = []
-    for i in xrange(len(self.outputs.returns)):
+    for i in range(len(self.outputs.returns)):
       if self.outputs.returns[i] is not None:
         return_not_nones_indices.append(i)
     if len(return_not_nones_indices) == 0:
@@ -130,4 +130,3 @@ class Outputs(O):
     new.errors = self.errors[:]
     new.durations = self.durations[:]
     return new
-

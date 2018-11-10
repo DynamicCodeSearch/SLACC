@@ -1,3 +1,4 @@
+from __future__ import print_function, division
 import sys
 import os
 
@@ -6,9 +7,9 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-import cPickle as cPkl
+import pickle as c_pickle
 import json
-import logger
+from utils import logger
 import shutil
 
 
@@ -21,21 +22,22 @@ def read_file(file_name):
   :param file_name:
   :return:
   """
-  with open(file_name) as f:
+  with open(file_name, "r") as f:
     return f.read()
 
 
-def write_file(file_name, content):
+def write_file(file_name, content, mode='w'):
   """
   Writing to the file
   :param file_name: Name of the file
   :param content: Content of the file
+  :param mode: Mode of the file
   :return:
   """
   splits = file_name.rsplit(os.path.sep, 1)
   if len(splits) > 1:
     mkdir(splits[0])
-  with open(file_name, "wb") as f:
+  with open(file_name, mode) as f:
     f.write(content)
 
 
@@ -48,8 +50,8 @@ def load_pickle(file_name, verbose=False):
       print("File %s does not exist" % file_name)
     return None
   try:
-    with open(file_name) as f:
-      return cPkl.load(f)
+    with open(file_name, "r") as f:
+      return c_pickle.load(f)
   except Exception:
     if verbose:
       print("Exception while loading file" % file_name)
@@ -66,8 +68,8 @@ def save_pickle(file_name, obj):
   splits = file_name.rsplit(os.path.sep, 1)
   if len(splits) > 1:
     mkdir(splits[0])
-  with open(file_name, "wb") as f:
-    cPkl.dump(obj, f, cPkl.HIGHEST_PROTOCOL)
+  with open(file_name, "w") as f:
+    c_pickle.dump(obj, f, c_pickle.HIGHEST_PROTOCOL)
 
 
 def file_exists(file_name):
@@ -127,11 +129,26 @@ def load_json(file_name):
   """
   try:
     return json.loads(read_file(file_name))
-  except ValueError, e:
+  except ValueError as e:
     LOGGER.info("ERROR while processing file: %s", file_name)
     LOGGER.exception(e, exc_info=True)
     # print(file_name)
     return {}
+
+
+def store_json(data, file_name, mode='w'):
+  """
+  Store json file
+  :param data: Type of data
+  :param file_name: Name of file
+  :param mode: Mode of writing(w/wb)
+  :return:
+  """
+  splits = file_name.rsplit(os.path.sep, 1)
+  if len(splits) > 1:
+    mkdir(splits[0])
+  with open(file_name, mode) as json_file:
+    json.dump(data, json_file, default=lambda o: o.__dict__, indent=2)
 
 
 def get_file_name(file_path):

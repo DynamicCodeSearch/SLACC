@@ -1,0 +1,320 @@
+{
+  "$ROOT$->func_a->local": {
+    "d": {
+      "scope": {
+        "name": "local", 
+        "parent": {
+          "name": "func_a", 
+          "parent": {
+            "name": "$ROOT$", 
+            "parent": null
+          }
+        }
+      }, 
+      "name": "d", 
+      "var_type": "arg", 
+      "positions": [
+        {
+          "line": 16, 
+          "col_offset": 12
+        }, 
+        {
+          "line": 17, 
+          "col_offset": 11
+        }
+      ]
+    }
+  }, 
+  "$ROOT$->func_a": {
+    "a": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "a", 
+      "var_type": "local", 
+      "positions": [
+        {
+          "line": 19, 
+          "col_offset": 2
+        }, 
+        {
+          "line": 21, 
+          "col_offset": 5
+        }, 
+        {
+          "line": 23, 
+          "col_offset": 7
+        }, 
+        {
+          "line": 26, 
+          "col_offset": 7
+        }, 
+        {
+          "line": 33, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 35, 
+          "col_offset": 15
+        }, 
+        {
+          "line": 36, 
+          "col_offset": 8
+        }, 
+        {
+          "line": 36, 
+          "col_offset": 13
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 9
+        }
+      ]
+    }, 
+    "b": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "b", 
+      "var_type": "local", 
+      "positions": [
+        {
+          "line": 20, 
+          "col_offset": 2
+        }, 
+        {
+          "line": 22, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 24, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 27, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 30, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 34, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 35, 
+          "col_offset": 17
+        }, 
+        {
+          "line": 36, 
+          "col_offset": 17
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 11
+        }
+      ]
+    }, 
+    "i": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "i", 
+      "var_type": "local", 
+      "positions": [
+        {
+          "line": 32, 
+          "col_offset": 6
+        }
+      ]
+    }, 
+    "y": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "y", 
+      "var_type": "arg", 
+      "positions": [
+        {
+          "line": 15, 
+          "col_offset": 13
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 17
+        }
+      ]
+    }, 
+    "x": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "x", 
+      "var_type": "arg", 
+      "positions": [
+        {
+          "line": 15, 
+          "col_offset": 11
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 30
+        }
+      ]
+    }, 
+    "z": {
+      "scope": {
+        "name": "func_a", 
+        "parent": {
+          "name": "$ROOT$", 
+          "parent": null
+        }
+      }, 
+      "name": "z", 
+      "var_type": "arg", 
+      "positions": [
+        {
+          "line": 15, 
+          "col_offset": 15
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 20
+        }
+      ]
+    }
+  }, 
+  "$ROOT$": {
+    "tup": {
+      "scope": {
+        "name": "$ROOT$", 
+        "parent": null
+      }, 
+      "name": "tup", 
+      "var_type": "global", 
+      "positions": [
+        {
+          "line": 13, 
+          "col_offset": 0
+        }, 
+        {
+          "line": 36, 
+          "col_offset": 25
+        }
+      ]
+    }, 
+    "c": {
+      "scope": {
+        "name": "$ROOT$", 
+        "parent": null
+      }, 
+      "name": "c", 
+      "var_type": "global", 
+      "positions": [
+        {
+          "line": 9, 
+          "col_offset": 0
+        }, 
+        {
+          "line": 25, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 25, 
+          "col_offset": 8
+        }, 
+        {
+          "line": 28, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 28, 
+          "col_offset": 8
+        }, 
+        {
+          "line": 31, 
+          "col_offset": 4
+        }, 
+        {
+          "line": 31, 
+          "col_offset": 8
+        }, 
+        {
+          "line": 38, 
+          "col_offset": 13
+        }
+      ]
+    }, 
+    "dic": {
+      "scope": {
+        "name": "$ROOT$", 
+        "parent": null
+      }, 
+      "name": "dic", 
+      "var_type": "global", 
+      "positions": [
+        {
+          "line": 12, 
+          "col_offset": 0
+        }, 
+        {
+          "line": 36, 
+          "col_offset": 4
+        }
+      ]
+    }, 
+    "lst": {
+      "scope": {
+        "name": "$ROOT$", 
+        "parent": null
+      }, 
+      "name": "lst", 
+      "var_type": "global", 
+      "positions": [
+        {
+          "line": 11, 
+          "col_offset": 0
+        }, 
+        {
+          "line": 35, 
+          "col_offset": 4
+        }
+      ]
+    }, 
+    "__author__": {
+      "scope": {
+        "name": "$ROOT$", 
+        "parent": null
+      }, 
+      "name": "__author__", 
+      "var_type": "global", 
+      "positions": [
+        {
+          "line": 7, 
+          "col_offset": 0
+        }
+      ]
+    }
+  }
+}

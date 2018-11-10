@@ -7,6 +7,9 @@ __author__ = "bigfatnoob"
 
 import properties
 
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 class O(object):
   def __init__(self, **d):
@@ -144,3 +147,7 @@ def list_files(folder, check_nest=False, is_absolute=False, ignores=None):
       else:
         files.append(f)
   return files
+
+
+def get_type(val):
+  return type(val).__name__

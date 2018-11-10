@@ -34,3 +34,9 @@ FUZZ_ARGUMENT_SIZE = 256
 SUCCESS_CODE = 200
 CODE_JAM = "codejam"
 INTRO_CLASS_JAVA = "introclass"
+
+
+"""
+Config
+"""
+STORE = "mongo"  # Can also be "mongo"

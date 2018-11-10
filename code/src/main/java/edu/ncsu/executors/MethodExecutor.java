@@ -48,6 +48,11 @@ public class MethodExecutor {
     static {
         if (taskExecutor == null || taskExecutor.isShutdown())
             taskExecutor = Executors.newFixedThreadPool(Settings.getNumThreads());
+
+        System.setOut(new PrintStream(new OutputStream() {
+            @Override
+            public void write(int b) {}
+        }));
     }
 
     private void initialize() {
@@ -382,8 +387,8 @@ public class MethodExecutor {
 
     private static void testExecution() {
         String dataset = CodejamUtils.DATASET;
-        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Joshik/generated_class_341efab3ac8241be9251fd06a52a0ed6.java";
-        String functionName = "func_54301f1628b843e9b05bbb64e724498c";
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/mikhailOK/generated_class_aacc8ca0bf5a414da3ff3f807a0410bc.java";
+        String functionName = "func_5ce52d0a333d437295bcaa61f2714cac";
         MethodExecutor.process(sourceFile, functionName, dataset, false);
 //        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
 //        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());

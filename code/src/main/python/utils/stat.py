@@ -1,3 +1,4 @@
+from __future__ import print_function, division
 import sys
 import os
 
@@ -22,13 +23,13 @@ class Stat(lib.O):
     return np.min(self.arr)
 
   def mean(self):
-    return np.mean(self.arr)
+    return np.asscalar(np.mean(self.arr))
 
   def median(self):
-    return np.median(self.arr)
+    return np.asscalar(np.median(self.arr))
 
   def std(self):
-    return np.std(self.arr)
+    return np.asscalar(np.std(self.arr))
 
   def iqr(self):
     [q75, q25] = np.percentile(self.arr, [75, 25])
