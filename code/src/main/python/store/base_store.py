@@ -35,6 +35,9 @@ class FunctionStore(O):
   def load_metadata(self, funct):
     raise NotImplementedError("Should be implemented in subclass")
 
+  def update_function_arg_type(self, function_name, function_arg_types):
+    raise NotImplementedError("Should be implemented in subclass")
+
   @staticmethod
   def is_object_return(metadata):
     """
@@ -79,3 +82,15 @@ class FunctionStore(O):
         for k, v in zip(return_keys, get_value(ret)):
           ret_vals_dict[k].append(v)
     return ret_vals_dict
+
+
+class PyFileMetaStore(O):
+  def __init__(self, dataset, **kwargs):
+    O.__init__(self, **kwargs)
+    self.dataset = dataset
+
+  def load_meta(self, file_name):
+    raise NotImplementedError("Should be implemented in subclass")
+
+  def save_meta(self, bson_dict):
+    raise NotImplementedError("Should be implemented in subclass")

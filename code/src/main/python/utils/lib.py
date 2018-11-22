@@ -122,32 +122,3 @@ def get_clusters_folder(dataset):
   """
   return properties.CLUSTERS_FOLDER % dataset
 
-
-def list_files(folder, check_nest=False, is_absolute=False, ignores=None):
-  """
-  List files in the folder
-  :param folder: Path of the folder
-  :param check_nest: If true walks through nested folders
-  :param is_absolute: If true returns absolute path else return relative path
-  :param ignores: List of file names to ignore
-  :return: List of files
-  """
-  files = []
-  for f in os.listdir(folder):
-    child = os.path.join(folder, f)
-    if os.path.isdir(child) and check_nest:
-      child_files = list_files(child, check_nest=True, is_absolute=is_absolute)
-      if child_files:
-        files += child_files
-    elif not os.path.isdir(child):
-      if ignores and f in ignores:
-        continue
-      if is_absolute:
-        files.append(child)
-      else:
-        files.append(f)
-  return files
-
-
-def get_type(val):
-  return type(val).__name__

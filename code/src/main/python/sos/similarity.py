@@ -147,4 +147,3 @@ if __name__ == "__main__":
     similarity_for_introclass()
   else:
     print("Invalid dataset : %s" % args[1])
-

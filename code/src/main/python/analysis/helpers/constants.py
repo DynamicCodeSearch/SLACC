@@ -9,7 +9,7 @@ __author__ = "bigfatnoob"
 from utils.lib import O
 
 
-ROOT_SCOPE = "$ROOT$"
+ROOT_SCOPE = "__ROOT__"
 
 VAR_TYPE = O(
   GLOBAL="global",
@@ -23,4 +23,4 @@ SCOPE_SEPARATOR = "->"
 
 PRIMITIVES = {'int', 'long', 'float', 'str'}
 
-
+GENERATED_PREFIX = "generated_py_"

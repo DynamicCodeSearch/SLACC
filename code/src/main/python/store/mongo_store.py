@@ -41,3 +41,27 @@ class FunctionStore(base_store.FunctionStore):
 
   def load_metadata(self, funct):
     return mongo_driver.get_collection(self.dataset, "functions_metadata").find_one({"name": funct["name"]})
+
+  def update_function_arg_type(self, function_name, function_arg_types):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_arg_types")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "name")
+    collection.insert({
+      "name": function_name,
+      "types": function_arg_types
+    })
+
+
+class PyFileMetaStore(base_store.PyFileMetaStore):
+  def __init__(self, dataset, **kwargs):
+    base_store.PyFileMetaStore.__init__(self, dataset,  **kwargs)
+
+  def load_meta(self, file_name):
+    collection = mongo_driver.get_collection(self.dataset, "py_file_meta")
+    return collection.find_one({"file_path": file_name})
+
+  def save_meta(self, bson_dict):
+    collection = mongo_driver.get_collection(self.dataset, "py_file_meta")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "file_path")
+    collection.insert(bson_dict)

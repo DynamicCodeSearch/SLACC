@@ -40,7 +40,7 @@ def crawl_link(url, key):
     if not cache.is_valid_python_file(file_path):
       LOGGER.info("Invalid Python File: %s. Deleting it .... " % file_path)
       cache.delete_file(file_path)
-  if len(lib.list_files(user_name_path, False, False, ignores=["__init__.py"])) == 0:
+  if len(cache.list_files(user_name_path, False, False, ignores=["__init__.py"])) == 0:
     LOGGER.info("Folder '%s' contains no python file. Deleting it")
     cache.delete_folder(user_name_path)
 
