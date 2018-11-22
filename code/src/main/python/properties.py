@@ -34,7 +34,7 @@ FUZZ_ARGUMENT_SIZE = 256
 SUCCESS_CODE = 200
 CODE_JAM = "codejam"
 INTRO_CLASS_JAVA = "introclass"
-
+MIN_STATEMENT_SIZE = 2
 
 """
 Config

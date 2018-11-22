@@ -8,7 +8,7 @@ __author__ = "bigfatnoob"
 
 import ast
 
-from analysis import constants as a_consts
+from analysis.helpers import constants as a_consts
 from analysis.blocks import position as position_block
 from analysis.blocks import scope as scope_block
 from analysis.blocks import types as types_block
@@ -18,8 +18,9 @@ from utils import cache
 
 
 class VariableVisitor(parser.Traveller):
-  def __init__(self):
+  def __init__(self, file_path):
     parser.Traveller.__init__(self)
+    self.file_path = file_path
     scope = scope_block.Scope(a_consts.ROOT_SCOPE, None)
     self._current_scope = scope
     # Map: Key = Scope, Value = Map<VarName, Var>
@@ -30,6 +31,42 @@ class VariableVisitor(parser.Traveller):
     self.scopes = {
       str(scope): scope
     }
+    self.method_scopes = {a_consts.ROOT_SCOPE: str(scope)}
+
+  def to_bson(self):
+    d = {'file_path': self.file_path}
+    if self.scopes:
+      d['scopes'] = {}
+      for key, val in self.scopes.items():
+        d['scopes'][key] = val.to_bson()
+    if self.scope_variable_map:
+      d['scope_variable_map'] = {}
+      for scope, variable_map in self.scope_variable_map.items():
+        var_map = {}
+        for var_name, variable in variable_map.items():
+          var_map[var_name] = variable.to_bson()
+        d['scope_variable_map'][str(scope)] = var_map
+    if self.method_scopes:
+      d['method_scopes'] = self.method_scopes
+    return d
+
+  @staticmethod
+  def from_bson(bson_dict):
+    o = VariableVisitor(bson_dict['file_path'])
+    if 'scopes' in bson_dict:
+      o.scopes = scope_block.from_bson(bson_dict['scopes'])
+    if 'scope_variable_map' in bson_dict:
+      o.scope_variable_map = {}
+      for scope_str, var_map in bson_dict['scope_variable_map'].items():
+        scope = o.scopes[scope_str]
+        variables_map = {}
+        for var_name, var_dict in var_map.items():
+          variable = variable_block.Variable.from_json(var_dict, scope)
+          variables_map[var_name] = variable
+        o.scope_variable_map[scope] = variables_map
+    if 'method_scopes' in bson_dict:
+      o.method_scopes = bson_dict['method_scopes']
+    return o
 
   @staticmethod
   def _is_variable_store(node):
@@ -39,7 +76,11 @@ class VariableVisitor(parser.Traveller):
     scope = scope_block.Scope(name, self._current_scope)
     self.scopes[str(scope)] = scope
     self.scope_variable_map[scope] = {}
+    self._current_scope.children[name] = scope
     self._current_scope = scope
+    if name in self.method_scopes:
+      raise RuntimeError("Method %s already")
+    self.method_scopes[name] = str(scope)
     return scope
 
   def get_scope(self, scope_name):
@@ -106,11 +147,19 @@ class VariableVisitor(parser.Traveller):
       json_dict[str(scope)] = variables
     cache.store_json(json_dict, store_name)
 
-  @staticmethod
-  def parse(file_name):
-    source_code = cache.read_file(file_name)
+  def parse(self):
+    source_code = cache.read_file(self.file_path)
     tree = ast.parse(source_code)
-    visitor = VariableVisitor()
-    visitor.visit(tree)
+    self.visit(tree)
     # print(visitor.scope_variable_map)
-    return visitor
+    return self
+
+  def print_variables(self):
+    for scope, variable_map in self.scope_variable_map.items():
+      print("\n\n### Scope: %s\n" % str(scope))
+      for variable in variable_map.values():
+        print(variable)
+        print("Variable: %s, Type: %s" % (variable.name, variable.type and variable.type.name))
+        print("Store Positions: ", variable.get_store_positions())
+        print("Update Positions: ", variable.get_updated_positions())
+

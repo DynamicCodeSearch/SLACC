@@ -7,7 +7,7 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 
-from analysis import constants as a_consts
+from analysis.helpers import constants as a_consts
 from utils.lib import O
 
 
@@ -15,6 +15,7 @@ class Scope(O):
   def __init__(self, name, parent, **kwargs):
     self.name = name
     self.parent = parent
+    self.children = {}
     O.__init__(self, **kwargs)
 
   def __str__(self):
@@ -30,6 +31,31 @@ class Scope(O):
     return hash(str(self))
 
   def __eq__(self, other):
-    if other is None or not isinstance(other, BasicType):
+    if other is None or not isinstance(other, Scope):
       return False
     return hash(self) == hash(other)
+
+  def to_bson(self):
+    d = {"name": self.name}
+    if self.parent:
+      d['parent'] = str(self.parent)
+    if self.children:
+      d['children'] = {}
+      for name, child in self.children.items():
+        d['children'][name] = str(child)
+    return d
+
+
+def from_bson(scope_map):
+  scopes = {}
+  for key, val in scope_map.items():
+    scope = Scope(val['name'], val.get('parent', None))
+    scope.children = val.get('children', None)
+    scopes[key] = scope
+  for key, scope in scopes.items():
+    if scope.parent:
+      scope.parent = scopes[scope.parent]
+    if scope.children:
+      for child_key, child_str in scope.children.items():
+        scope.children[child_key] = scopes[child_str]
+  return scopes

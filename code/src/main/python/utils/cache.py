@@ -16,6 +16,13 @@ import shutil
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 
+def get_parent_folder(file_name):
+  splits = file_name.rsplit(os.path.sep, 1)
+  if len(splits) > 1:
+    return splits[0]
+  return None
+
+
 def read_file(file_name):
   """
   Name of the file.
@@ -34,9 +41,9 @@ def write_file(file_name, content, mode='w'):
   :param mode: Mode of the file
   :return:
   """
-  splits = file_name.rsplit(os.path.sep, 1)
-  if len(splits) > 1:
-    mkdir(splits[0])
+  parent = get_parent_folder(file_name)
+  if parent:
+    mkdir(parent)
   with open(file_name, mode) as f:
     f.write(content)
 
@@ -65,9 +72,9 @@ def save_pickle(file_name, obj):
   :param obj:
   :return:
   """
-  splits = file_name.rsplit(os.path.sep, 1)
-  if len(splits) > 1:
-    mkdir(splits[0])
+  parent = get_parent_folder(file_name)
+  if parent:
+    mkdir(parent)
   with open(file_name, "w") as f:
     c_pickle.dump(obj, f, c_pickle.HIGHEST_PROTOCOL)
 
@@ -144,9 +151,9 @@ def store_json(data, file_name, mode='w'):
   :param mode: Mode of writing(w/wb)
   :return:
   """
-  splits = file_name.rsplit(os.path.sep, 1)
-  if len(splits) > 1:
-    mkdir(splits[0])
+  parent = get_parent_folder(file_name)
+  if parent:
+    mkdir(parent)
   with open(file_name, mode) as json_file:
     json.dump(data, json_file, default=lambda o: o.__dict__, indent=2)
 
@@ -182,3 +189,31 @@ def is_valid_python_file(path):
       return True
   except Exception as e:
     return False
+
+
+def list_files(folder, check_nest=False, is_absolute=False, ignores=None):
+  """
+  List files in the folder
+  :param folder: Path of the folder
+  :param check_nest: If true walks through nested folders
+  :param is_absolute: If true returns absolute path else return relative path
+  :param ignores: List of file names to ignore
+  :return: List of files
+  """
+  files = []
+  for f in os.listdir(folder):
+    child = os.path.join(folder, f)
+    if os.path.isdir(child) and check_nest:
+      child_files = list_files(child, check_nest=True, is_absolute=is_absolute)
+      if child_files:
+        files += child_files
+    elif not os.path.isdir(child):
+      if ignores and f in ignores:
+        continue
+      if is_absolute:
+        files.append(child)
+      else:
+        files.append(f)
+  return files
+
+

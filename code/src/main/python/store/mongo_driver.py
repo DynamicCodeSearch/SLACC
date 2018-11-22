@@ -7,7 +7,7 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 
-from pymongo import MongoClient
+import pymongo
 import socket
 
 from utils import cache, logger
@@ -33,7 +33,7 @@ def get_hostname():
 def get_client():
   global __MONGO_CLIENT
   if __MONGO_CLIENT is None:
-    __MONGO_CLIENT = MongoClient(host=get_hostname())
+    __MONGO_CLIENT = pymongo.MongoClient(host=get_hostname())
   try:
     __MONGO_CLIENT.address
     return __MONGO_CLIENT
@@ -57,6 +57,16 @@ def get_dataset_db(dataset):
 def get_collection(dataset, collection_name):
   return get_dataset_db(dataset).get_collection(collection_name)
 
+
+def is_collection_exists(collection):
+  return collection.count > 0
+
+
+def create_index_for_collection(collection, *fields):
+  indices = []
+  for field in fields:
+    indices.append((field, pymongo.ASCENDING))
+  collection.create_index(indices, unique=True)
 
 
 if __name__ == "__main__":
