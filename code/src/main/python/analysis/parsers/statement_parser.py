@@ -30,7 +30,7 @@ def get_start_end(node):
 
 
 class StatementVisitor(parser.Traveller):
-  def __init__(self, file_path, variable_visitor=None):
+  def __init__(self, file_path, dataset,  variable_visitor=None):
     defaults = [  # Expressions
                 "Call", "Expr", "UnaryOp", "UAdd", "USub", "Not", "Invert",
                 "BinOp", "Add", "Sub", "Mult", "Div", "FloorDiv", "Mod", "Pow",
@@ -52,8 +52,9 @@ class StatementVisitor(parser.Traveller):
                 ]
     parser.Traveller.__init__(self, defaults=defaults, caller=self.visit_statement)
     self.file_path = file_path
+    self.dataset = dataset
     if not variable_visitor:
-      variable_visitor = arg_analysis.parse_file_for_args(file_path)
+      variable_visitor = arg_analysis.parse_file_for_args(file_path, dataset)
     # self.statement_blocks = []
     self.statement_groups = []
     self.scope_variable_map = variable_visitor.scope_variable_map
@@ -228,7 +229,7 @@ class StatementVisitor(parser.Traveller):
 
 
 def _test():
-  visitor = StatementVisitor("dummy.py")
+  visitor = StatementVisitor("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py", "codejam")
   visitor.parse()
 
 

@@ -52,7 +52,7 @@ class Variable(O):
   @staticmethod
   def from_json(bson_dict, scope):
     positions = [position_block.Position.from_bson(pos) for pos in bson_dict['positions']]
-    variable = Variable(bson_dict['name'], scope, bson_dict['var_type'], positions)
+    variable = Variable(str(bson_dict['name']), scope, str(bson_dict['var_type']), positions)
     if "type" in bson_dict:
       variable.type = types_block.from_bson(bson_dict['type'])
     if "_store_positions" in bson_dict:

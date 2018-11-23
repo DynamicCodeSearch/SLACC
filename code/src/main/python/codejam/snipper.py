@@ -6,16 +6,10 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-
-from analysis import arguments
 from analysis.helpers import constants as a_consts
+from analysis import generate
 from utils import cache
 import properties
-
-
-def get_meta_for_file(file_path):
-  args_meta_data = arguments.parse_file_for_args(file_path, properties.CODE_JAM)
-  return args_meta_data
 
 
 def execute(problem_id):
@@ -24,11 +18,10 @@ def execute(problem_id):
     file_name = cache.get_file_name(file_path)
     if file_name == "__init__" or file_name.startswith(a_consts.GENERATED_PREFIX):
       continue
-    get_meta_for_file(file_path)
+    generate.generate_for_file(properties.CODE_JAM, file_path)
 
 
 if __name__ == "__main__":
-  # get_meta_for_file("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/zibada/a.py")
   args = sys.argv
   if len(args) < 2:
     print("Use python codejam/file_meta_data.py <problem_id>")
