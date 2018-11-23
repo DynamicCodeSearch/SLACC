@@ -18,7 +18,7 @@ from store import json_store, mongo_store
 import properties
 
 
-DEBUG = True
+DEBUG = False
 
 
 def get_store(dataset):
@@ -110,7 +110,7 @@ def get_variables_in_range(variables, start, end):
 
 def generate_for_file(dataset, file_name):
   store = get_store(dataset)
-  visitor = statement_parser.StatementVisitor(file_name)
+  visitor = statement_parser.StatementVisitor(file_name, dataset)
   visitor.parse()
   variable_map = create_variable_map(visitor)
   generated_functions = {}
@@ -133,7 +133,6 @@ def generate_for_file(dataset, file_name):
       function_nodes = create_function_nodes(statement_group, function_meta)
       arg_types = {}
       for arg in function_meta['args']:
-        print()
         arg_types[arg['name']] = arg['type'].to_bson()
       for function_name in function_nodes.keys():
         store.update_function_arg_type(function_name, arg_types)
@@ -148,8 +147,16 @@ def generate_for_file(dataset, file_name):
   body = ["import sys",
           "sys.path.append('%s')" % properties.PYTHON_PROJECTS_HOME,
           "from %s import *" % python_file.replace(os.path.sep, ".")]
+  success, failure = 0, 0
   for function_node in generated_functions.values():
-    body.append(astor.to_source(function_node))
+    try:
+      function_source = astor.to_source(function_node)
+      body.append(function_source)
+      success += 1
+    except TypeError:
+      failure += 1
+  if DEBUG:
+    print "Success: %d, Failure: %d" % (success, failure)
   content = "\n\n".join(body)
   write_file = os.path.join(parent_folder, "%s.py" % generate_py_file_name())
   cache.write_file(write_file, content)
@@ -160,7 +167,8 @@ def generate_for_file(dataset, file_name):
 
 def _test():
   # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
-  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py")
+  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py")
+  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/kia/a.py")
 
 
 if __name__ == "__main__":

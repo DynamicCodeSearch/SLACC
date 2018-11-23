@@ -63,9 +63,10 @@ class BasicType(O):
   @staticmethod
   def from_json(bson_dict):
     o = BasicType()
-    o.name = bson_dict['name']
+    o.name = str(bson_dict['name'])
     o.is_primitive_type = bson_dict['is_primitive_type']
-    o.module = bson_dict['module']
+    if "module" in bson_dict:
+      o.module = str(bson_dict['module'])
     o.is_valid = bson_dict['is_valid']
     return o
 
@@ -123,7 +124,7 @@ class ListType(O):
   @staticmethod
   def from_json(bson_dict):
     o = ListType()
-    o.name = bson_dict['name']
+    o.name = str(bson_dict['name'])
     o.is_list = bson_dict['is_list']
     o.is_valid = bson_dict['is_valid']
     o.type = from_bson(bson_dict['type']) if 'type' in bson_dict else None
@@ -171,7 +172,7 @@ class DictType(O):
   @staticmethod
   def from_json(bson_dict):
     o = DictType()
-    o.name = bson_dict['name']
+    o.name = str(bson_dict['name'])
     o.is_dict = bson_dict['is_dict']
     o.is_valid = bson_dict['is_valid']
     o.key_type = from_bson(bson_dict['key_type']) if 'key_type' in bson_dict else None
@@ -213,7 +214,7 @@ class TupleType(O):
   @staticmethod
   def from_json(bson_dict):
     o = TupleType()
-    o.name = bson_dict['name']
+    o.name = str(bson_dict['name'])
     o.is_tuple = bson_dict['is_tuple']
     o.is_valid = bson_dict['is_valid']
     o.types = [from_bson(t) for t in bson_dict['types']] if 'types' in bson_dict else None

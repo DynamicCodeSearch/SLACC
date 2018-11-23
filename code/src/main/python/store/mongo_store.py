@@ -10,6 +10,7 @@ __author__ = "bigfatnoob"
 from store import base_store, mongo_driver
 from utils import logger
 import properties
+import re
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
@@ -57,8 +58,13 @@ class PyFileMetaStore(base_store.PyFileMetaStore):
     base_store.PyFileMetaStore.__init__(self, dataset,  **kwargs)
 
   def load_meta(self, file_name):
+    sep_positions = [m.start() for m in re.finditer(os.sep, file_name)]
+    if sep_positions and len(sep_positions) > 3:
+      fp_regex = file_name[sep_positions[2]:]
+    else:
+      fp_regex = file_name
     collection = mongo_driver.get_collection(self.dataset, "py_file_meta")
-    return collection.find_one({"file_path": file_name})
+    return collection.find_one({"file_path": {"$regex": fp_regex}})
 
   def save_meta(self, bson_dict):
     collection = mongo_driver.get_collection(self.dataset, "py_file_meta")
