@@ -17,7 +17,7 @@ import properties
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 
-FORCE_FETCH = True
+FORCE_FETCH = False
 
 
 def get_data_store(dataset):
