@@ -59,11 +59,19 @@ def create_function_nodes(statement_group, function_meta):
   return function_nodes
 
 
+def get_line_numbers(statement_group):
+  line_numbers = set()
+  for statement in statement_group:
+    line_numbers.update(range(statement.start_pos.line, statement.end_pos.line + 1))
+  return line_numbers
+
+
 def get_meta_for_statement_group(statement_group, method, variable_map, local_variables):
   start = statement_group[0].start_pos
   end = statement_group[-1].end_pos
+  line_numbers = get_line_numbers(statement_group)
   scope = method.get_scope()
-  variables = get_variables_in_range(variable_map[str(scope)], start, end)
+  variables = get_variables_in_range(variable_map[str(scope)], start, end, line_numbers)
   has_return_statement = isinstance(statement_group[-1], statement_block.Statement) and statement_group[-1].is_return
   args = []
   returns = []
@@ -72,7 +80,7 @@ def get_meta_for_statement_group(statement_group, method, variable_map, local_va
   for variable in variables:
     if DEBUG:
       print(variable.name, variable.get_updated_positions(), variable.get_store_positions())
-    if variable.is_argument(start, local_variables):
+    if variable.is_argument(start, local_variables, line_numbers):
       args.append(variable)
     if not has_return_statement and variable.is_updated_in_range(start, end):
       returns.append(variable)
@@ -102,10 +110,12 @@ def create_variable_map(visitor):
   return variable_map
 
 
-def get_variables_in_range(variables, start, end):
+def get_variables_in_range(variables, start, end, line_numbers):
   ranged_variables = []
   for variable in variables:
     for pos in variable.positions:
+      if pos.line not in line_numbers:
+        continue
       if start <= pos <= end:
         ranged_variables.append(variable)
         break
