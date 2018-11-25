@@ -16,7 +16,22 @@ class Scope(O):
     self.name = name
     self.parent = parent
     self.children = {}
+    self._danglings = {}
     O.__init__(self, **kwargs)
+
+  def get_danglings(self):
+    return self._danglings
+
+  def update_dangling(self, name, position):
+    if name in self._danglings:
+      positions = self._danglings.get(name, set())
+      positions.add(position)
+    else:
+      positions = {position}
+    self._danglings[name] = positions
+
+  def set_danglings(self, danglings):
+    self._danglings = danglings
 
   def __str__(self):
     as_str = self.name

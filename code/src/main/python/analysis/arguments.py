@@ -17,16 +17,19 @@ import properties
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 
+FORCE_FETCH = True
+
+
 def get_data_store(dataset):
   if properties.STORE == "mongo":
     return mongo_store.PyFileMetaStore(dataset)
   raise RuntimeError("Currently supports only mongo store. Not supported for '%s'" % properties.STORE)
 
 
-def parse_file_for_args(file_path, dataset, main_function_name="_main"):
+def parse_file_for_args(file_path, dataset, main_function_name="_main", force_fetch=FORCE_FETCH):
   store = get_data_store(dataset)
   existing = store.load_meta(file_path)
-  if existing:
+  if not force_fetch and existing:
     LOGGER.info("Fetching existing metadata for %s" % file_path)
     return arg_parser.VariableVisitor.from_bson(existing)
   LOGGER.info("Generating metadata for %s" % file_path)
@@ -47,5 +50,5 @@ def parse_file_for_args(file_path, dataset, main_function_name="_main"):
 
 
 if __name__ == "__main__":
-  parse_file_for_args("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py", properties.CODE_JAM)
-  # parse_file_for_args("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py", properties.CODE_JAM)
+  # parse_file_for_args("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py", properties.CODE_JAM)
+  parse_file_for_args("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py", properties.CODE_JAM)

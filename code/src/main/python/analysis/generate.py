@@ -67,7 +67,11 @@ def get_meta_for_statement_group(statement_group, method, variable_map, local_va
   has_return_statement = isinstance(statement_group[-1], statement_block.Statement) and statement_group[-1].is_return
   args = []
   returns = []
+  if DEBUG:
+    print "Start: %s, End: %s" % (start, end)
   for variable in variables:
+    if DEBUG:
+      print(variable.name, variable.get_updated_positions(), variable.get_store_positions())
     if variable.is_argument(start, local_variables):
       args.append(variable)
     if not has_return_statement and variable.is_updated_in_range(start, end):
@@ -141,7 +145,6 @@ def generate_for_file(dataset, file_name):
         print(len(function_nodes))
         # for function_node in function_nodes:
         #   print(astor.to_source(function_node))
-
   python_file = file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:].split(".")[0]
   parent_folder = cache.get_parent_folder(file_name)
   body = ["import sys",
@@ -163,12 +166,10 @@ def generate_for_file(dataset, file_name):
   return generated_functions
 
 
-
-
 def _test():
-  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
+  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
   # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py")
-  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/kia/a.py")
+  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/kia/a.py")
 
 
 if __name__ == "__main__":
