@@ -94,14 +94,16 @@ class Variable(O):
         return True
     return False
 
-  def is_argument(self, start, local_variables):
+  def is_argument(self, start, local_variables, line_numbers):
     if self.var_type == a_consts.VAR_TYPE.ARG:
       return True
     if self not in local_variables and not isinstance(self.type, types_block.BasicType):
       return True
-    if len(self.get_updated_positions()) == 0:
-      return True
-    return sorted(self.get_updated_positions())[0] < start
+    updated_positions = set()
+    for pos in self.get_updated_positions():
+      if pos.line in line_numbers:
+        updated_positions.add(pos)
+    return len(updated_positions) == 0 or sorted(updated_positions)[0] < start
 
   def has_visited(self, position):
     return position in self.get_updated_positions()

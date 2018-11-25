@@ -23,10 +23,11 @@ class Method(O):
     self.start_pos = None
     self.end_pos = None
     self.args = None
-    self.statement_blocks = [] # [<Statements>]
-    self._statement_groups = None # [[<Statements>], [<Statements>]]
+    self.statement_blocks = []  # [<Statements>]
+    self._statement_groups = None  # [[<Statements>], [<Statements>]]
     self._ast = None
     self._scope = None
+    self._prerequisite_statements = []
     O.__init__(self, **kwargs)
 
   def get_ast(self):
@@ -35,21 +36,43 @@ class Method(O):
   def get_scope(self):
     return self._scope
 
+  def is_root(self):
+    return self.name == a_consts.ROOT_SCOPE
+
+  def split_statement_blocks(self):
+    split = None
+    for i, statement in enumerate(self.statement_blocks):
+      if isinstance(statement, Method):
+        split = i
+    if split is None:
+      return self.statement_blocks
+    else:
+      self._prerequisite_statements, statements = self.statement_blocks[:split+1], self.statement_blocks[split+1:]
+    return statements
+
   def get_statement_groups(self):
     if self._statement_groups is not None:
       return self._statement_groups
     # self._statement_groups = Method.create_statement_groups(self.statement_blocks)
     # return self._statement_groups
-    self._statement_groups = []
-    groups = Method.create_statement_groups(self.statement_blocks)
+    _statement_groups = []
+    method_statement_blocks = self.split_statement_blocks()
+    groups = Method.create_statement_groups(method_statement_blocks)
     for group in groups:
       combinations = Method.get_combinations(group)
       if combinations and len(combinations) > 0:
-        self._statement_groups += combinations
-    for statement in self.statement_blocks:
+        _statement_groups += combinations
+    for statement in method_statement_blocks:
       if isinstance(statement, statement_block.GroupedStatement) or \
          isinstance(statement, statement_block.ChoiceGroupedStatement):
-        self._statement_groups.append([statement])
+        _statement_groups.append([statement])
+    self._statement_groups = []
+    if len(self._prerequisite_statements) >= properties.MIN_STATEMENT_SIZE:
+      self._statement_groups.append(self._prerequisite_statements)
+    for _statement_group in _statement_groups:
+      _statement_group = self._prerequisite_statements + _statement_group
+      if len(_statement_group) >= properties.MIN_STATEMENT_SIZE:
+        self._statement_groups.append(_statement_group)
     return self._statement_groups
 
   def get_text(self):
@@ -82,19 +105,20 @@ class Method(O):
           sub_ret_list = Method.create_statement_groups(choice)
           if sub_ret_list:
             ret_list += sub_ret_list
-    if len(statement_group) >= properties.MIN_STATEMENT_SIZE:
+    # min_size = properties.MIN_STATEMENT_SIZE
+    min_size = 1
+    if len(statement_group) >= min_size:
       ret_list.append(statement_group)
     return ret_list
 
   @staticmethod
   def get_combinations(statement_blocks):
+    step_start = properties.MIN_STATEMENT_SIZE
+    # step_start = 1
     combinations = []
-    for step_size in xrange(properties.MIN_STATEMENT_SIZE, len(statement_blocks)):
+    for step_size in xrange(step_start, len(statement_blocks)):
       for counter in xrange(0, len(statement_blocks) - step_size + 1):
         combinations.append(statement_blocks[counter: counter + step_size])
     combinations.append(statement_blocks)
     return combinations
-
-  def is_root(self):
-    return self.name == a_consts.ROOT_SCOPE
 
