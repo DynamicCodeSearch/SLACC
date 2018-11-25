@@ -19,7 +19,7 @@ class Tracer(O):
     self.variable_visitor = variable_visitor
     self.file_to_trace = file_to_trace
     self.ignores = ignores
-    self.prev_line_no = None
+    self.prev_line_no_map = {}
     self.lines_seen = set()
     O.__init__(self, **kwargs)
 
@@ -59,9 +59,9 @@ class Tracer(O):
     filename = co.co_filename
     if DEBUG:
       print('Call to %s on line %s of %s' % (func_name, line_no, filename))
-    # print(Tracer.get_scope(frame))
-    # exit(0)
-    self.prev_line_no = line_no
+      # print(Tracer.get_scope(frame))
+      # exit(0)
+    self.prev_line_no_map[scope_name] = line_no
     return self.trace_lines
 
   def update_variable(self, variable_name, value, scope, line_no):
@@ -87,6 +87,7 @@ class Tracer(O):
         variable.update_store_position(position)
 
   def trace_lines(self, frame, event, arg):
+    # TODO: Add tracking line numbers for nested feature
     line_no = frame.f_lineno
     if event != 'line' and line_no in self.lines_seen:
       return
@@ -95,9 +96,10 @@ class Tracer(O):
     func_name = code.co_name
     if DEBUG:
       print('  %s line %s' % (func_name, line_no))
-    scope = self.variable_visitor.get_scope(self.get_scope(frame))
-    prev_line_no = self.prev_line_no
-    self.prev_line_no = line_no
+    scope_name = self.get_scope(frame)
+    scope = self.variable_visitor.get_scope(scope_name)
+    prev_line_no = self.prev_line_no_map[scope_name]
+    self.prev_line_no_map[scope_name] = line_no
     for variable_name, value in frame.f_locals.items():
       self.update_variable(variable_name, value, scope, prev_line_no)
     for variable_name, value in frame.f_globals.items():

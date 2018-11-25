@@ -103,7 +103,7 @@ class VariableVisitor(parser.Traveller):
 
   def add_variable(self, name, position, var_type):
     variable_map = self.scope_variable_map.get(self._current_scope, {})
-    variable = variable_block.Variable(name=name, scope=self._current_scope, var_type=var_type, positions=[position])
+    variable = variable_block.Variable(name=name, scope=self._current_scope, var_type=var_type, positions={position})
     variable_map[name] = variable
     self.scope_variable_map[self._current_scope] = variable_map
 
@@ -111,16 +111,17 @@ class VariableVisitor(parser.Traveller):
     variable = self.scope_variable_map.get(scope, {}).get(name, None)
     if not variable:
       raise RuntimeError("Variable with name '%s' not found in scope '%s'" % (name, scope.name))
-    variable.positions.append(position)
+    variable.positions.add(position)
 
   def visit_Name(self, node, meta):
     variable_name = node.id
     variable = self.find_variable(variable_name, self._current_scope)
     is_variable_store = VariableVisitor._is_variable_store(node)
+    position = position_block.Position.get_position(node)
     if not variable and not is_variable_store:
       # Might be loading a global variable
+      self._current_scope.update_dangling(variable_name, position)
       return
-    position = position_block.Position.get_position(node)
     if meta and meta["var_type"]:
       var_type = meta["var_type"]
     elif self._current_scope.name == a_consts.ROOT_SCOPE:
@@ -147,19 +148,30 @@ class VariableVisitor(parser.Traveller):
       json_dict[str(scope)] = variables
     cache.store_json(json_dict, store_name)
 
+  def update_danglings(self):
+    for scope in self.scopes.values():
+      for var_name, positions in scope.get_danglings().items():
+        par_scope = scope.parent
+        while par_scope and par_scope in self.scope_variable_map:
+          if var_name in self.scope_variable_map[par_scope]:
+            self.scope_variable_map[par_scope][var_name].positions.update(positions)
+            break
+          par_scope = par_scope.parent
+      scope.set_danglings({})
+
   def parse(self):
     source_code = cache.read_file(self.file_path)
     tree = ast.parse(source_code)
     self.visit(tree)
-    # print(visitor.scope_variable_map)
+    self.update_danglings()
     return self
 
   def print_variables(self):
     for scope, variable_map in self.scope_variable_map.items():
       print("\n\n### Scope: %s\n" % str(scope))
       for variable in variable_map.values():
-        print(variable)
         print("Variable: %s, Type: %s" % (variable.name, variable.type and variable.type.name))
+        print("Positions: ", variable.positions)
         print("Store Positions: ", variable.get_store_positions())
         print("Update Positions: ", variable.get_updated_positions())
 
