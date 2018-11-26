@@ -52,5 +52,5 @@ def get_generated_functions(file_path):
 
 
 if __name__ == "__main__":
-  get_generated_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/generated_py_894b4b91802947cabb56ff23de4cf62f.py")
+  get_generated_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/generated_py_15cf7f9f3c2c48ccab3c0a8dc3ce4884.py")
   # compile_py("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/temp_asewqeqwewqe.py")
