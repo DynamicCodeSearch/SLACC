@@ -24,3 +24,5 @@ SCOPE_SEPARATOR = "->"
 PRIMITIVES = {'int', 'long', 'float', 'str'}
 
 GENERATED_PREFIX = "generated_py_"
+
+TEMPORARY_PREFIX = "tmp_py_"

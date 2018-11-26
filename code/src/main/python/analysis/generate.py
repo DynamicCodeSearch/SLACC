@@ -36,6 +36,9 @@ def generate_function_name():
 def generate_py_file_name():
   return "%s%s" % (a_consts.GENERATED_PREFIX, helper.generate_random_string())
 
+def generate_py_temp_name():
+  return "%s%s" % (a_consts.TEMPORARY_PREFIX, helper.generate_random_string())
+
 
 def print_statements(statement_group):
   for statement in statement_group:
@@ -122,12 +125,30 @@ def get_variables_in_range(variables, start, end, line_numbers):
   return ranged_variables
 
 
+def is_valid_function(header_str, function_body, parent_folder):
+  file_name = generate_py_temp_name()
+  temp_file = os.path.join(parent_folder, "%s.py" % file_name)
+  content = "%s\n\n%s" % (header_str, function_body)
+  cache.write_file(temp_file, content)
+  validity = helper.is_valid_file(temp_file)
+  cache.delete_file(temp_file)
+  return validity
+
+
 def generate_for_file(dataset, file_name):
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
+  parent_folder = cache.get_parent_folder(file_name)
   store = get_store(dataset)
   visitor = statement_parser.StatementVisitor(file_name, dataset)
   visitor.parse()
   variable_map = create_variable_map(visitor)
   generated_functions = {}
+  python_file = file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:].split(".")[0]
+  headers = ["import sys",
+             "sys.path.append('%s')" % properties.PYTHON_PROJECTS_HOME,
+             "from %s import *" % python_file.replace(os.path.sep, ".")]
+  header_str = "\n".join(headers)
+  body = [header_str]
   for method in visitor.methods:
     if DEBUG:
       print("Method Name: %s. Statement Blocks: %d" % (method.name, len(method.statement_blocks)))
@@ -148,37 +169,24 @@ def generate_for_file(dataset, file_name):
       arg_types = {}
       for arg in function_meta['args']:
         arg_types[arg['name']] = arg['type'].to_bson()
-      for function_name in function_nodes.keys():
-        store.update_function_arg_type(function_name, arg_types)
-      generated_functions.update(function_nodes)
+      for function_name, function_node in function_nodes.items():
+        function_body = astor.to_source(function_node)
+        if is_valid_function(header_str, function_body, parent_folder):
+          body.append(function_body)
+          store.update_function_arg_type(function_name, arg_types)
       if DEBUG:
         print(len(function_nodes))
-        # for function_node in function_nodes:
-        #   print(astor.to_source(function_node))
-  python_file = file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:].split(".")[0]
-  parent_folder = cache.get_parent_folder(file_name)
-  body = ["import sys",
-          "sys.path.append('%s')" % properties.PYTHON_PROJECTS_HOME,
-          "from %s import *" % python_file.replace(os.path.sep, ".")]
-  success, failure = 0, 0
-  for function_node in generated_functions.values():
-    try:
-      function_source = astor.to_source(function_node)
-      body.append(function_source)
-      success += 1
-    except TypeError:
-      failure += 1
-  if DEBUG:
-    print "Success: %d, Failure: %d" % (success, failure)
   content = "\n\n".join(body)
   write_file = os.path.join(parent_folder, "%s.py" % generate_py_file_name())
   cache.write_file(write_file, content)
+  assert helper.is_valid_file(write_file)
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
   return generated_functions
 
 
 def _test():
-  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
-  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dennislissov/A.py")
+  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
+  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/a.py")
   # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/kia/a.py")
 
 
