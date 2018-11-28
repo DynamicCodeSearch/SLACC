@@ -53,7 +53,11 @@ class FunctionStore(base_store.FunctionStore):
     })
 
   def load_function_arg_type(self, function_name):
-    return mongo_driver.get_collection(self.dataset, "py_functions_arg_types").find_one({"name": function_name})
+    try:
+      return mongo_driver.get_collection(self.dataset, "py_functions_arg_types").find_one({"name": function_name})
+    except Exception as e:
+      LOGGER.exception("Failed to load args for function: '%s'. Returning None" % function_name, e.message)
+      return None
 
   def save_py_function(self, function_json):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
