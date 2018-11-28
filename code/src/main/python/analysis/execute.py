@@ -219,17 +219,21 @@ def execute_function(func, arg):
 
 def execute_file(dataset, file_name):
   sys.path.append(properties.PYTHON_PROJECTS_HOME)
-  n_valids, n_totals = 0, 0
-  for func in helper.get_generated_functions(file_name):
-    func_name = func.__name__
-    valid, func_key = is_executable_function(dataset, func)
-    n_totals += 1
-    if valid:
-      evaluated = evaluate_function(dataset, file_name, func_name)
-      if evaluated is not None:
-        n_valids += 1
-  sys.path.remove(properties.PYTHON_PROJECTS_HOME)
-  LOGGER.info("Valid Functions: %d / %d" % (n_valids, n_totals))
+  try:
+    n_valids, n_totals = 0, 0
+    for func in helper.get_generated_functions(file_name):
+      func_name = func.__name__
+      valid, func_key = is_executable_function(dataset, func)
+      n_totals += 1
+      if valid:
+        evaluated = evaluate_function(dataset, file_name, func_name)
+        if evaluated is not None:
+          n_valids += 1
+    LOGGER.info("Valid Functions: %d / %d" % (n_valids, n_totals))
+  except Exception as e:
+    LOGGER.exception("Failed to process file: %s" % file_name, e.message)
+  finally:
+    sys.path.remove(properties.PYTHON_PROJECTS_HOME)
 
 
 def execute_problem(dataset, problem_id=None):
