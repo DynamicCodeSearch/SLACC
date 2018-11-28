@@ -7,10 +7,17 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 
-import uuid
 import ast
+import inspect
+import re
+import uuid
+
+from analysis.helpers import constants as a_consts
 from utils import cache
 import properties
+
+
+LIST_KEY_PATTERN = re.compile('(\(.+\))@(\d+)')
 
 
 def get_type(val):
@@ -48,7 +55,49 @@ def get_generated_functions(file_path):
   sys.path.append(properties.PYTHON_PROJECTS_HOME)
   module = import_file(file_path)
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)
-  print(dir(module))
+  functions = []
+  for name in dir(module):
+    if name.startswith(a_consts.FUNCTION_PREFIX):
+      functions.append(getattr(module, name))
+  return functions
+
+
+def get_function(file_path, function_name):
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
+  module = import_file(file_path)
+  sys.path.remove(properties.PYTHON_PROJECTS_HOME)
+  return getattr(module, function_name, None)
+
+
+def get_func_arg_names(func):
+  return inspect.getargspec(func).args
+
+
+def get_family_name(type_name):
+  if type_name == "int":
+    return "int"
+  elif type_name == "long":
+    return "int"
+  elif type_name == "str":
+    return "string"
+  elif type_name == "float":
+    return "float"
+  elif type_name == "bool":
+    return "boolean"
+  else:
+    return None
+
+
+def is_list_key(key):
+  return LIST_KEY_PATTERN.match(key) is not None
+
+
+def parse_list_key(key):
+  matches = LIST_KEY_PATTERN.match(key)
+  if not matches:
+    return None, None
+  return matches.group(1), int(matches.group(2))
+
 
 
 if __name__ == "__main__":

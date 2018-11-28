@@ -52,6 +52,36 @@ class FunctionStore(base_store.FunctionStore):
       "types": function_arg_types
     })
 
+  def load_function_arg_type(self, function_name):
+    return mongo_driver.get_collection(self.dataset, "py_functions_arg_types").find_one({"name": function_name})
+
+  def save_py_function(self, function_json):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "name")
+    try:
+      collection.insert(function_json)
+    except Exception:
+      del function_json['outputs']
+      self.save_failed_py_function(function_json)
+
+  def load_py_function(self, function_name):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    return collection.find_one({"name": function_name})
+
+  def exists_py_function(self, function_name):
+    return self.load_py_function(function_name) is not None
+
+  def save_failed_py_function(self, function_json):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_failed")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "name")
+    collection.insert(function_json)
+
+  def is_invalid_py_function(self, function_name):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_failed")
+    return collection.find_one({"name": function_name}) is not None
+
 
 class PyFileMetaStore(base_store.PyFileMetaStore):
   def __init__(self, dataset, **kwargs):
@@ -71,3 +101,12 @@ class PyFileMetaStore(base_store.PyFileMetaStore):
     if not mongo_driver.is_collection_exists(collection):
       mongo_driver.create_index_for_collection(collection, "file_path")
     collection.insert(bson_dict)
+
+
+class ArgumentStore(base_store.ArgumentStore):
+  def __init__(self, dataset, **kwargs):
+    base_store.ArgumentStore.__init__(self, dataset, **kwargs)
+
+  def load_args(self, args_key):
+    collection = mongo_driver.get_collection(self.dataset, "fuzzed_args")
+    return collection.find_one({"key": args_key})

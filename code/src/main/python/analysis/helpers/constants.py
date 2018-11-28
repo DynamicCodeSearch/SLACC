@@ -21,8 +21,12 @@ VAR_TYPE = O(
 
 SCOPE_SEPARATOR = "->"
 
-PRIMITIVES = {'int', 'long', 'float', 'str'}
+PRIMITIVES = {'int', 'long', 'float', 'str', 'bool'}
 
 GENERATED_PREFIX = "generated_py_"
 
 TEMPORARY_PREFIX = "tmp_py_"
+
+FUNCTION_PREFIX = "func_"
+
+METHOD_WAIT_TIMEOUT = 1

@@ -38,6 +38,24 @@ class FunctionStore(O):
   def update_function_arg_type(self, function_name, function_arg_types):
     raise NotImplementedError("Should be implemented in subclass")
 
+  def load_function_arg_type(self, function_name):
+    raise NotImplementedError("Should be implemented in subclass")
+
+  def save_py_function(self, function_json):
+    raise NotImplementedError("Should be implemented")
+
+  def load_py_function(self, function_name):
+    raise NotImplementedError("Should be implemented")
+
+  def exists_py_function(self, function_json):
+    raise NotImplementedError("Should be implemented")
+
+  def save_failed_py_function(self, function_json):
+    raise NotImplementedError("Should be implemented")
+
+  def is_invalid_py_function(self, function_name):
+    raise NotImplementedError("Should be implemented")
+
   @staticmethod
   def is_object_return(metadata):
     """
@@ -93,4 +111,13 @@ class PyFileMetaStore(O):
     raise NotImplementedError("Should be implemented in subclass")
 
   def save_meta(self, bson_dict):
+    raise NotImplementedError("Should be implemented in subclass")
+
+
+class ArgumentStore(O):
+  def __init__(self, dataset, **kwargs):
+    O.__init__(self, **kwargs)
+    self.dataset = dataset
+
+  def load_args(self, arg_key):
     raise NotImplementedError("Should be implemented in subclass")
