@@ -70,3 +70,6 @@ class FunctionStore(base_store.FunctionStore):
   def update_function_arg_type(self, function_name, function_arg_types):
     raise NotImplementedError("Not Implemented for JSON")
 
+  def load_function_arg_type(self, function_name):
+    raise NotImplementedError("Not Implemented for JSON")
+

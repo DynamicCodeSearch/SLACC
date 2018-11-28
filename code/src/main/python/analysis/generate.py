@@ -30,11 +30,12 @@ def get_store(dataset):
 
 
 def generate_function_name():
-  return "func_%s" % (helper.generate_random_string())
+  return "%s%s" % (a_consts.FUNCTION_PREFIX, helper.generate_random_string())
 
 
 def generate_py_file_name():
   return "%s%s" % (a_consts.GENERATED_PREFIX, helper.generate_random_string())
+
 
 def generate_py_temp_name():
   return "%s%s" % (a_consts.TEMPORARY_PREFIX, helper.generate_random_string())
@@ -185,8 +186,8 @@ def generate_for_file(dataset, file_name):
 
 
 def _test():
-  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
-  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/a.py")
+  generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
+  # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/a.py")
   # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/kia/a.py")
 
 
