@@ -109,4 +109,8 @@ class ArgumentStore(base_store.ArgumentStore):
 
   def load_args(self, args_key):
     collection = mongo_driver.get_collection(self.dataset, "fuzzed_args")
-    return collection.find_one({"key": args_key})
+    try:
+      return collection.find_one({"key": args_key})
+    except Exception as e:
+      LOGGER.exception("Failed to load args with key: '%s'. Returning None" % args_key, e)
+      return None
