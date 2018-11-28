@@ -231,7 +231,7 @@ def execute_file(dataset, file_name):
           n_valids += 1
     LOGGER.info("Valid Functions: %d / %d" % (n_valids, n_totals))
   except Exception as e:
-    LOGGER.exception("Failed to process file: %s" % file_name, e.message)
+    LOGGER.critical("Failed to process file: %s. Message: %s" % (file_name, e.message))
   finally:
     sys.path.remove(properties.PYTHON_PROJECTS_HOME)
 
