@@ -86,6 +86,20 @@ class FunctionStore(base_store.FunctionStore):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_failed")
     return collection.find_one({"name": function_name}) is not None
 
+  def load_py_functions(self):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    return collection.find()
+
+  def save_py_metadata(self, func_json):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "name")
+    collection.insert(func_json)
+
+  def load_py_metadata(self, function_name):
+    collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
+    return collection.find_one({"name": function_name})
+
 
 class PyFileMetaStore(base_store.PyFileMetaStore):
   def __init__(self, dataset, **kwargs):

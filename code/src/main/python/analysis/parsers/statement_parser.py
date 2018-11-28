@@ -17,7 +17,6 @@ from analysis.blocks import position as position_block
 from analysis.blocks import statements as statement_block
 from analysis.parsers import parser
 from utils import cache, logger
-import properties
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))

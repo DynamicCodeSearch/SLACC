@@ -99,6 +99,9 @@ def parse_list_key(key):
   return matches.group(1), int(matches.group(2))
 
 
+def get_simple_name(file_name):
+  return file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:]
+
 
 if __name__ == "__main__":
   get_generated_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/generated_py_15cf7f9f3c2c48ccab3c0a8dc3ce4884.py")

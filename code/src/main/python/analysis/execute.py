@@ -6,6 +6,7 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
+import inspect
 import signal
 import time
 
@@ -124,10 +125,6 @@ def get_function_args(dataset, arg_keys):
   return all_func_args
 
 
-def get_simple_name(file_name):
-  return file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:]
-
-
 """
 Executions
 """
@@ -146,7 +143,7 @@ def timeout_handler(signum, frame):
 
 def evaluate_function(dataset, file_name, func):
   function_store = get_function_store(dataset)
-  simple_name = get_simple_name(file_name)
+  simple_name = helper.get_simple_name(file_name)
   if isinstance(func, str):
     func = helper.get_function(file_name, func)
   if func is None:
@@ -243,7 +240,7 @@ def execute_problem(dataset, problem_id=None):
   for file_path in cache.list_files(root_folder, check_nest=True, is_absolute=True):
     if not cache.get_file_name(file_path).startswith(a_consts.GENERATED_PREFIX):
       continue
-    LOGGER.info("Processing '%s'" % get_simple_name(file_path))
+    LOGGER.info("Processing '%s'" % helper.get_simple_name(file_path))
     execute_file(dataset, file_path)
 
 
@@ -286,7 +283,7 @@ def get_valid_functions_from_folder(dataset, problem_id=None):
     file_name = cache.get_file_name(file_path)
     if not file_name.startswith(a_consts.GENERATED_PREFIX):
       continue
-    LOGGER.info("Processing '%s'" % get_simple_name(file_path))
+    LOGGER.info("Processing '%s'" % helper.get_simple_name(file_path))
     valid_keys, n_generated_functions = get_valid_function_keys_from_file(dataset, file_path)
     LOGGER.info("Valid Functions: %d / %d\n" % (len(valid_keys), n_generated_functions))
     accessed_keys.update(valid_keys)
@@ -296,8 +293,35 @@ def get_valid_functions_from_folder(dataset, problem_id=None):
 
 
 """
-Multiple Threading
+Metadata
 """
+
+
+def extract_metadata_for_folder(dataset, problem_id=None):
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
+  root_folder = properties.PYTHON_PROJECTS_HOME
+  function_store = get_function_store(dataset)
+  if problem_id:
+    root_folder = os.path.join(root_folder, problem_id)
+  for file_path in cache.list_files(root_folder, check_nest=True, is_absolute=True):
+    file_name = cache.get_file_name(file_path)
+    if not file_name.startswith(a_consts.GENERATED_PREFIX):
+      continue
+    LOGGER.info("Processing '%s' ..." % helper.get_simple_name(file_path))
+    for func in helper.get_generated_functions(file_path):
+      function_name = func.__name__
+      stored_meta = function_store.load_py_metadata(function_name)
+      if stored_meta is not None:
+        continue
+      valid, func_key = is_executable_function(dataset, func)
+      if valid:
+        meta_data = {
+          "name": function_name,
+          "body": inspect.getsource(func),
+          "inputKey": func_key
+        }
+        function_store.save_py_metadata(meta_data)
+  sys.path.remove(properties.PYTHON_PROJECTS_HOME)
 
 
 if __name__ == "__main__":
