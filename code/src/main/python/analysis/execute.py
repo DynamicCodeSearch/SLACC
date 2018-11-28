@@ -141,7 +141,7 @@ def timeout_handler(signum, frame):
   raise TimeoutException
 
 
-signal.signal(signal.SIGALRM, timeout_handler)
+# signal.signal(signal.SIGALRM, timeout_handler)
 
 
 def evaluate_function(dataset, file_name, func):
@@ -195,6 +195,7 @@ def evaluate_function(dataset, file_name, func):
 
 
 def execute_function(func, arg):
+  signal.signal(signal.SIGALRM, timeout_handler)
   signal.alarm(a_consts.METHOD_WAIT_TIMEOUT)
   duration = a_consts.METHOD_WAIT_TIMEOUT * 1000
   return_variable, error_message = None, None
@@ -206,6 +207,7 @@ def execute_function(func, arg):
     error_message = "Method timed out after %d seconds" % a_consts.METHOD_WAIT_TIMEOUT
   except Exception as e:
     error_message = e.message
+  signal.signal(signal.SIGALRM, signal.SIG_DFL)
   return {
     "return": return_variable,
     "errorMessage": error_message,
@@ -293,7 +295,8 @@ Multiple Threading
 
 
 if __name__ == "__main__":
-  execute_file("codejam", "codejam/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/"
-                          "python/stupid/generated_py_fbeac120693f4b3fa9f5fc909133e66b.py")
+  # execute_file("codejam", "codejam/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/"
+  #                         "python/stupid/generated_py_fbeac120693f4b3fa9f5fc909133e66b.py")
   # get_valid_functions_from_folder("codejam")
   # print(get_function_args("codejam", ["int", "(int)@1"])[0])
+  print(signal.getsignal(signal.SIG_DFL))
