@@ -73,3 +73,26 @@ class FunctionStore(base_store.FunctionStore):
   def load_function_arg_type(self, function_name):
     raise NotImplementedError("Not Implemented for JSON")
 
+  def save_py_function(self, function_json):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def load_py_function(self, function_name):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def exists_py_function(self, function_json):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def save_failed_py_function(self, function_json):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def is_invalid_py_function(self, function_name):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def load_py_functions(self):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def save_py_metadata(self, func_json):
+    raise NotImplementedError("Not Implemented for JSON")
+
+  def load_py_metadata(self, function_name):
+    raise NotImplementedError("Not Implemented for JSON")

@@ -56,6 +56,15 @@ class FunctionStore(O):
   def is_invalid_py_function(self, function_name):
     raise NotImplementedError("Should be implemented")
 
+  def load_py_functions(self):
+    raise NotImplementedError("Should be implemented")
+
+  def save_py_metadata(self, func_json):
+    raise NotImplementedError("Should be implemented")
+
+  def load_py_metadata(self, function_name):
+    raise NotImplementedError("Should be implemented")
+
   @staticmethod
   def is_object_return(metadata):
     """
