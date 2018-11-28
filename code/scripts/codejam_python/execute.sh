@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name snip_functions
+#SBATCH --job-name execute_functions
 #SBATCH -N 1
 #SBATCH -p opteron
 # Use modules to set the software environment
