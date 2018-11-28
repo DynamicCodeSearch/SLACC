@@ -8,7 +8,7 @@
 cd src/main/python
 if [ -z "$1" ]
 then
-    python codejam/executor.py
+    python codejam/function_metadata.py
 else
-    python codejam/executor.py $1
+    python codejam/function_metadata.py $1
 fi
