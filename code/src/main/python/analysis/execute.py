@@ -152,6 +152,7 @@ def evaluate_function(dataset, file_name, func):
   if func is None:
     return None
   function_name = func.__name__
+  LOGGER.info("Processing '%s' ..." % function_name)
   if function_store.exists_py_function(function_name) and not RE_EVALUATE:
     LOGGER.info("Function '%s' from '%s' exists. Returning existing value ..." % (function_name, simple_name))
     return function_store.load_py_function(function_name)
