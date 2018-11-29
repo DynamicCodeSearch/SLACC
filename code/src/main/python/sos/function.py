@@ -55,6 +55,7 @@ class Function(O):
     self.outputs = None
     # Meta-info
     self.useful = None
+    self.source = None
     O.__init__(self, **kwargs)
 
   def clone(self):
