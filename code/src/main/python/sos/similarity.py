@@ -79,6 +79,7 @@ class Clusterer(O):
 
 
 def load_functions(dataset):
+  LOGGER.info("Loading java functions for '%s' ... " % dataset)
   data_store = get_store(dataset)
   functions_arr = data_store.load_functions()
   function_pattern = re.compile(r'^func_')
@@ -92,7 +93,7 @@ def load_functions(dataset):
                      class_name=func_dict["class"], package=func_dict["package"],
                      input_key=func_dict["inputKey"], outputs=outputs,
                      lines_touched=function_metadata.get("linesTouched", None),
-                     span=function_metadata.get("span", None), body=function_metadata["body"])
+                     span=function_metadata.get("span", None), body=function_metadata["body"], source="java")
     if data_store.is_object_return(return_meta_data):
       for attribute, returns in data_store.get_return_vals(outputs.returns).items():
         clone = funct.clone()
@@ -109,12 +110,42 @@ def load_functions(dataset):
   return valid_functions
 
 
-def similarity_for_dataset(dataset):
-  functions = load_functions(dataset)
-  exit(0)
-  clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.txt")
-  clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.pkl")
-  clusters_report_file = os.path.join(lib.get_clusters_folder(dataset), "clusters.md")
+def load_py_functions(dataset):
+  LOGGER.info("Loading python functions for '%s' ... " % dataset)
+  data_store = get_store(dataset)
+  functions_arr = data_store.load_py_functions()
+  function_pattern = re.compile(r'^func_')
+  functions = []
+  for func_dict in functions_arr:
+    if not function_pattern.match(func_dict['name']): continue
+    function_metadata = data_store.load_py_metadata(func_dict['name'])
+    outputs = Outputs(func_dict["outputs"])
+    funct = Function(name=func_dict["name"], dataset=dataset,
+                     input_key=func_dict["inputKey"], outputs=outputs,
+                     lines_touched=function_metadata.get("linesTouched", None),
+                     span=function_metadata.get("span", None), body=function_metadata["body"], source="python")
+    functions.append(funct)
+  valid_functions = [func for func in functions if func.is_useful()]
+  LOGGER.info("Valid Functions : %d / %d" % (len(valid_functions), len(functions)))
+  return valid_functions
+
+
+def compute_similarity(dataset, language):
+  if language == "java":
+    functions = load_functions(dataset)
+  elif language == "python":
+    functions = load_py_functions(dataset)
+  elif language == "java_python":
+    functions = load_functions(dataset) + load_py_functions(dataset)
+  else:
+    raise RuntimeError("Invalid language: %s" % language)
+  if dataset not in ["codejam", "introclass"]:
+    raise RuntimeError("Invalid dataset: %s" % dataset)
+  name = language
+  LOGGER.info("Clustering ... ")
+  clusters_txt_file = os.path.join(lib.get_clusters_folder(dataset), "%s.txt" % name)
+  clusters_pkl_file = os.path.join(lib.get_clusters_folder(dataset), "%s.pkl" % name)
+  clusters_report_file = os.path.join(lib.get_clusters_folder(dataset), "%s.md" % name)
   clusters = Clusterer(functions).cluster(clusters_txt_file)
   cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
@@ -128,22 +159,18 @@ def similarity_for_dataset(dataset):
   cache.write_file(clusters_report_file, meta_data)
 
 
-def similarity_for_introclass():
-  similarity_for_dataset("introclass")
-
-
-def similarity_for_codejam():
-  similarity_for_dataset("codejam")
+def _main():
+  args = sys.argv
+  if len(args) < 2:
+    print("""
+    python sos/similiarity <dataset> <?language>
+    dataset: codejam/introclass
+    language: java(default)/python/java_python
+    """)
+    exit(0)
+  language = args[2] if len(args) >= 3 else "java"
+  compute_similarity(args[1], language)
 
 
 if __name__ == "__main__":
-  args = sys.argv
-  if len(args) < 2:
-    print("Provide a dataset")
-    exit(0)
-  if args[1] == "codejam":
-    similarity_for_codejam()
-  elif args[1] == "introclass":
-    similarity_for_introclass()
-  else:
-    print("Invalid dataset : %s" % args[1])
+  _main()
