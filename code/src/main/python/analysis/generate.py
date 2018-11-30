@@ -29,18 +29,6 @@ def get_store(dataset):
   raise RuntimeError("Invalid configuration: %s" % properties.STORE)
 
 
-def generate_function_name():
-  return "%s%s" % (a_consts.FUNCTION_PREFIX, helper.generate_random_string())
-
-
-def generate_py_file_name():
-  return "%s%s" % (a_consts.GENERATED_PREFIX, helper.generate_random_string())
-
-
-def generate_py_temp_name():
-  return "%s%s" % (a_consts.TEMPORARY_PREFIX, helper.generate_random_string())
-
-
 def print_statements(statement_group):
   for statement in statement_group:
     statement.pprint()
@@ -52,11 +40,11 @@ def create_function_nodes(statement_group, function_meta):
   function_nodes = {}
   function_body = [statement.get_ast() for statement in statement_group]
   if function_meta["has_return_statement"]:
-    name = generate_function_name()
+    name = helper.generate_function_name()
     function_nodes[name] = ast.FunctionDef(name=name, args=args, body=function_body, decorator_list=[])
   else:
     for ret_variable in function_meta["returns"]:
-      name = generate_function_name()
+      name = helper.generate_function_name()
       return_statement = ast.Return(value=ast.Name(id=ret_variable.name))
       function_nodes[name] = ast.FunctionDef(name=name, args=args, body=function_body + [return_statement],
                                              decorator_list=[])
@@ -127,7 +115,7 @@ def get_variables_in_range(variables, start, end, line_numbers):
 
 
 def is_valid_function(header_str, function_body, parent_folder):
-  file_name = generate_py_temp_name()
+  file_name = helper.generate_py_temp_name()
   temp_file = os.path.join(parent_folder, "%s.py" % file_name)
   content = "%s\n\n%s" % (header_str, function_body)
   cache.write_file(temp_file, content)
@@ -178,7 +166,7 @@ def generate_for_file(dataset, file_name):
       if DEBUG:
         print(len(function_nodes))
   content = "\n\n".join(body)
-  write_file = os.path.join(parent_folder, "%s.py" % generate_py_file_name())
+  write_file = os.path.join(parent_folder, "%s.py" % helper.generate_py_file_name())
   cache.write_file(write_file, content)
   assert helper.is_valid_file(write_file)
   sys.path.append(properties.PYTHON_PROJECTS_HOME)
