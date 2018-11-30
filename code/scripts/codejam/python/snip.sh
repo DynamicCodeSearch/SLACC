@@ -7,7 +7,7 @@
 
 if [ -z "$1" ]
 then
-    echo "Invalid command. Run: sbatch scripts/codejam_python/snip.sh <problem_id>"
+    echo "Invalid command. Run: sbatch scripts/codejam/python/snip.sh <problem_id>"
 else
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1/*/generated_py_*.py
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1/*/tmp_py_*.py
