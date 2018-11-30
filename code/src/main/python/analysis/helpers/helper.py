@@ -103,6 +103,18 @@ def get_simple_name(file_name):
   return file_name.split(properties.PYTHON_PROJECTS_HOME)[-1][1:]
 
 
+def generate_function_name():
+  return "%s%s" % (a_consts.FUNCTION_PREFIX, generate_random_string())
+
+
+def generate_py_file_name():
+  return "%s%s" % (a_consts.GENERATED_PREFIX, generate_random_string())
+
+
+def generate_py_temp_name():
+  return "%s%s" % (a_consts.TEMPORARY_PREFIX, generate_random_string())
+
+
 if __name__ == "__main__":
   get_generated_functions("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/generated_py_15cf7f9f3c2c48ccab3c0a8dc3ce4884.py")
   # compile_py("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/temp_asewqeqwewqe.py")

@@ -9,6 +9,7 @@ __author__ = "bigfatnoob"
 from utils.lib import O
 from utils import cache, lib
 from store import json_store, mongo_store
+from analysis.helpers import helper as analysis_helper
 import properties
 
 
@@ -18,7 +19,6 @@ def get_store(dataset):
   elif properties.STORE == "mongo":
     return mongo_store.InputStore(dataset)
   raise RuntimeError("Invalid configuration: %s" % properties.STORE)
-
 
 
 class InputCache(O):
@@ -56,13 +56,20 @@ class Function(O):
     # Meta-info
     self.useful = None
     self.source = None
+    self.is_cloned = False
+    self.base_name = None
     O.__init__(self, **kwargs)
 
   def clone(self):
     new = Function()
     for key in self.has().keys():
-      if key == "id": continue
-      new[key] = self[key]
+      if key in ["id", "name"]:
+        continue
+      else:
+        new[key] = self[key]
+    new.base_name = self.name
+    new.name = analysis_helper.generate_function_name()
+    new.is_cloned = True
     return new
 
   def is_useful(self):
