@@ -36,6 +36,10 @@ class FunctionStore(base_store.FunctionStore):
   def __init__(self, dataset, **kwargs):
     base_store.FunctionStore.__init__(self, dataset, **kwargs)
 
+  def load_function(self, function_name):
+    collection = mongo_driver.get_collection(self.dataset, "functions_executed")
+    return collection.find_one({"name": function_name})
+
   def load_functions(self):
     collection = mongo_driver.get_collection(self.dataset, "functions_executed")
     return collection.find()

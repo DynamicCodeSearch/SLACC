@@ -29,10 +29,13 @@ class FunctionStore(O):
     O.__init__(self, **kwargs)
     self.dataset = dataset
 
+  def load_function(self, function_name):
+    raise NotImplementedError("Should be implemented in subclass")
+
   def load_functions(self):
     raise NotImplementedError("Should be implemented in subclass")
 
-  def load_metadata(self, funct):
+  def load_metadata(self, function_name):
     raise NotImplementedError("Should be implemented in subclass")
 
   def update_function_arg_type(self, function_name, function_arg_types):

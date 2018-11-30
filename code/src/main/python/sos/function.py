@@ -70,24 +70,35 @@ class Function(O):
     if self.useful is not None:
       return self.useful
     inputs = InputCache.load(self.dataset, self.input_key)
+    # No inputs found
     if inputs is None:
       self.useful = False
       return self.useful
     only_none = True
-    for retrn in self.outputs.returns:
+    return_not_nones_indices = []
+    last_return_value = None
+    returns_same_value = True
+    for i, retrn in enumerate(self.outputs.returns):
       if retrn is not None:
         only_none = False
-        break
+        if last_return_value is None:
+          last_return_value = retrn
+        elif returns_same_value and last_return_value != retrn:
+          returns_same_value = False
+        return_not_nones_indices.append(i)
+    # If outputs contain only None
     if only_none:
       self.useful = False
       return self.useful
-    return_not_nones_indices = []
-    for i in range(len(self.outputs.returns)):
-      if self.outputs.returns[i] is not None:
-        return_not_nones_indices.append(i)
+    # If it returns same value
+    if returns_same_value:
+      self.useful = False
+      return self.useful
+    # If contains non return indices
     if len(return_not_nones_indices) == 0:
       self.useful = False
       return self.useful
+    # Check if any of the args are the same as the return types
     for input_arg in inputs:
       is_valid_input = False
       for i in return_not_nones_indices:

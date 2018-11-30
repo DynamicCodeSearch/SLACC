@@ -39,6 +39,9 @@ class FunctionStore(base_store.FunctionStore):
     base_store.FunctionStore.__init__(self, dataset, **kwargs)
     self.class_meta_data = {}
 
+  def load_function(self, function_name):
+    raise NotImplementedError("Not Implemented for JSON")
+
   def load_functions(self):
     functions = []
     results_folder = lib.get_dataset_functions_results_folder(self.dataset)
