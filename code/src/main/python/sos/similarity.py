@@ -159,6 +159,26 @@ def compute_similarity(dataset, language):
   cache.write_file(clusters_report_file, meta_data)
 
 
+def _test_function():
+  dataset = "codejam"
+  data_store = get_store("codejam")
+  func_dict = data_store.load_function("func_b1d6e0e04b4f4065870c60fcba28ff0c")
+  function_metadata = data_store.load_metadata(func_dict)
+  outputs = Outputs(func_dict["outputs"])
+  funct = Function(name=func_dict["name"], dataset=dataset,
+                   class_name=func_dict["class"], package=func_dict["package"],
+                   input_key=func_dict["inputKey"], outputs=outputs,
+                   lines_touched=function_metadata.get("linesTouched", None),
+                   span=function_metadata.get("span", None), body=function_metadata["body"], source="java")
+  print func_dict
+  print(funct.is_useful())
+
+
+def _test_functions():
+  load_functions("codejam")
+  load_py_functions("codejam")
+
+
 def _main():
   args = sys.argv
   if len(args) < 2:
