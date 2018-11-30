@@ -173,7 +173,7 @@ public class Settings {
 
     public static String getScriptsFolder(String dataset) {
         if (dataset.equals(CodejamUtils.DATASET))
-            return Utils.pathJoin("scripts", "codejam_java");
+            return Utils.pathJoin("scripts", "codejam", "java");
         else if (dataset.equals(IntroClassUtils.DATASET))
             return Utils.pathJoin("scripts", "introclass");
         throw new RuntimeException(String.format("Illegal dataset: %s", dataset));
