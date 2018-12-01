@@ -133,3 +133,9 @@ class ArgumentStore(O):
 
   def load_args(self, arg_key):
     raise NotImplementedError("Should be implemented in subclass")
+
+
+class ExecutionStore(O):
+  def __init__(self, dataset, **kwargs):
+    O.__init__(self, **kwargs)
+    self.dataset = dataset

@@ -6,8 +6,11 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-from utils import lib, cache, logger
 from collections import defaultdict
+
+from utils import lib, cache, logger
+from store import mongo_store
+import properties
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -15,6 +18,12 @@ LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 def get_cluster_path(dataset, language):
   return os.path.join(lib.get_clusters_folder(dataset), "%s.pkl" % language)
+
+
+def get_execution_store(dataset):
+  if properties.STORE == "mongo":
+    return mongo_store.ExecutionStore(dataset)
+  raise RuntimeError("Invalid configuration: %s" % properties.STORE)
 
 
 def save_clustered_function_names(dataset, language):
@@ -37,17 +46,17 @@ def save_clustered_function_names(dataset, language):
       function_names[lang].add(name)
       if clone_name:
         cloned_functions[name][clone_attribute] = clone_name
-  base_save_dir = os.path.join(lib.get_clusters_folder(dataset), language)
-  function_names_path = os.path.join(base_save_dir, "function_names.pkl")
-  cloned_functions_path = os.path.join(base_save_dir, "cloned_functions.pkl")
-  cache.save_pickle(function_names_path, function_names)
-  cache.save_pickle(cloned_functions_path, cloned_functions)
+  execution_store = get_execution_store(dataset)
+  for lang, names in function_names.items():
+    execution_store.save_language_executed_function_names(lang, list(names))
+  for name, clones in cloned_functions.items():
+    execution_store.save_cloned_function_names(name, clones)
 
 
 def _help():
   return """
   Format:
-    python sos/similiarity <utility> <dataset> <language>
+    python sos/similarity <utility> <dataset> <language>
     utility: save_function_names
     dataset: codejam/introclass
     language: java(default)/python/java_python

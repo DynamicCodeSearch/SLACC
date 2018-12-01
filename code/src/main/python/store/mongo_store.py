@@ -138,3 +138,28 @@ class ArgumentStore(base_store.ArgumentStore):
     except Exception as e:
       LOGGER.exception("Failed to load args with key: '%s'. Returning None" % args_key, e)
       return None
+
+
+class ExecutionStore(base_store.ExecutionStore):
+  def __init__(self, dataset, **kwargs):
+    base_store.ExecutionStore.__init__(self, dataset, **kwargs)
+
+  def save_language_executed_function_names(self, language, names):
+    collection = mongo_driver.get_collection(self.dataset, "language_executed_functions")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "language")
+    if mongo_driver.contains_document(collection, "language", language):
+      mongo_driver.delete_document(collection, "language", language)
+    collection.insert({
+      "language": language,
+      "names": names
+    })
+
+  def save_cloned_function_names(self, name, clones):
+    collection = mongo_driver.get_collection(self.dataset, "cloned_functions")
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "name")
+    if mongo_driver.contains_document(collection, "_function_name_", name):
+      mongo_driver.delete_document(collection, "_function_name_", name)
+    clones["_function_name_"] = name
+    collection.insert(clones)
