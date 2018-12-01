@@ -41,6 +41,10 @@ public class Main {
                 case "extract_metadata":
                     edu.ncsu.codejam.Metadata.main(args);
                     break;
+                // For Validating clusters
+                case "test_extract_fuzzed_args":
+                    edu.ncsu.codejam.Arguments.storeTestFuzzedArguments();
+                    break;
                 default:
                     LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
                     break;

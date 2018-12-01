@@ -16,13 +16,13 @@ public class ArgumentStore implements IArgumentStore {
 
     private static final Logger LOGGER = Logger.getLogger(ArgumentStore.class.getName());
 
-    private String dataset;
+    protected String dataset;
 
     private final static String PRIMITIVE_ARGS_COLLECTION = "primitive_args";
 
     private final static String FUZZED_ARGS_COLLECTION = "fuzzed_args";
 
-    private ArgumentStore(String dataset) {
+    protected ArgumentStore(String dataset) {
         this.dataset = dataset;
     }
 
@@ -30,7 +30,8 @@ public class ArgumentStore implements IArgumentStore {
         return new ArgumentStore(dataset);
     }
 
-    private MongoCollection<Document> getFuzzedCollection() {
+
+    protected MongoCollection<Document> getFuzzedCollection() {
         return MongoDriver.getCollection(this.dataset, FUZZED_ARGS_COLLECTION);
     }
 
@@ -94,7 +95,7 @@ public class ArgumentStore implements IArgumentStore {
 
     @Override
     public JsonArray loadFuzzedArguments(String key) {
-        MongoCollection<Document> collection = getFuzzedCollection();;
+        MongoCollection<Document> collection = getFuzzedCollection();
         Document document = MongoDriver.getDocument(collection, "key", key);
         if (document == null)
             return null;
@@ -103,7 +104,7 @@ public class ArgumentStore implements IArgumentStore {
 
     @Override
     public void deleteFuzzedArguments() {
-        MongoDriver.dropCollection(this.dataset, FUZZED_ARGS_COLLECTION);
+        getFuzzedCollection().drop();
     }
 
     public static void main(String[] args) {

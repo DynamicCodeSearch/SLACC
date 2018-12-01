@@ -94,6 +94,8 @@ public class Settings {
     public static int FUZZ_ARGUMENT_SIZE = 256;
 //    public static int FUZZ_ARGUMENT_SIZE = 3;
 
+    public static int TEST_FUZZ_ARGUMENT_SIZE = FUZZ_ARGUMENT_SIZE * 5;
+
     /***
      * Three seconds
      */

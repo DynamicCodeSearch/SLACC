@@ -24,9 +24,19 @@ public class ArgumentExtractor {
      * @param dataset - Name of the dataset
      */
     public ArgumentExtractor(String dataset) {
-        this.dataset = dataset;
-        this.store = BaseStorage.loadArgumentStore(dataset);
+        this(dataset, false);
     }
+
+
+    public ArgumentExtractor(String dataset, Boolean isTest) {
+        this.dataset = dataset;
+        if (isTest) {
+            this.store = BaseStorage.loadTestArgumentStore(dataset);
+        } else {
+            this.store = BaseStorage.loadArgumentStore(dataset);
+        }
+    }
+
 
     /**
      * Extract and store primitive arguments for a dataset.
@@ -71,7 +81,7 @@ public class ArgumentExtractor {
      * Generate arguments and save for the java file.
      * @param javaFile - Path of the java file.
      */
-    public void generateForJavaFile(String javaFile) {
+    public void generateForJavaFile(String javaFile, int numArgs) {
         ClassMethods classMethods = new ClassMethods(this.dataset, javaFile);
         for (Method method: classMethods.getMethods()) {
             Function function = new Function(this.dataset, method, classMethods.getMethodBodies().get(method.getName()));
@@ -80,25 +90,25 @@ public class ArgumentExtractor {
             String key = function.makeArgumentsKey();
             if (!this.store.fuzzedKeyExists(key)) {
                 LOGGER.info(String.format("Storing Key: %s", key));
-                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function);
+                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function, numArgs);
                 if (arguments != null) {
                     this.store.saveFuzzedArguments(key, arguments);
                 }
-
             }
         }
     }
+
 
     /**
      * Store fuzzed arguments for list of java files and dataset
      * @param javaFiles - List of path of java files
      */
-    public void storeFuzzedArguments(List<String> javaFiles) {
+    public void storeFuzzedArguments(List<String> javaFiles, int numArgs) {
         LOGGER.info("Generating random args. Here we go ....");
         store.deleteFuzzedArguments();
         for (String javaFile: javaFiles) {
             LOGGER.info(String.format("Running for %s", javaFile));
-            generateForJavaFile(javaFile);
+            generateForJavaFile(javaFile, numArgs);
         }
     }
 }
