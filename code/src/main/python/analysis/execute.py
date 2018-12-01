@@ -310,15 +310,13 @@ def extract_metadata_for_folder(dataset, problem_id=None):
     LOGGER.info("Processing '%s' ..." % helper.get_simple_name(file_path))
     for func in helper.get_generated_functions(file_path):
       function_name = func.__name__
-      stored_meta = function_store.load_py_metadata(function_name)
-      if stored_meta is not None:
-        continue
       valid, func_key = is_executable_function(dataset, func)
       if valid:
         meta_data = {
           "name": function_name,
           "body": inspect.getsource(func),
-          "inputKey": func_key
+          "inputKey": func_key,
+          "filePath": file_path
         }
         function_store.save_py_metadata(meta_data)
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)

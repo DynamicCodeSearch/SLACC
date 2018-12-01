@@ -69,5 +69,17 @@ def create_index_for_collection(collection, *fields):
   collection.create_index(indices, unique=True)
 
 
+def get_document(collection, key, value):
+  return collection.find_one({key: value})
+
+
+def contains_document(collection, key, value):
+  return get_document(collection, key, value) is not None
+
+
+def delete_document(collection, key, value):
+  collection.delete_one({key: value})
+
+
 if __name__ == "__main__":
   print(get_dataset_db("codejam"))
