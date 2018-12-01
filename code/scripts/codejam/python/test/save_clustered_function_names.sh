@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name cluster
+#SBATCH --job-name save_fn_names
 #SBATCH -N 1
 #SBATCH -p opteron
 
