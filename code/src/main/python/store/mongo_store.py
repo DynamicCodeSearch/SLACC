@@ -98,6 +98,8 @@ class FunctionStore(base_store.FunctionStore):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
     if not mongo_driver.is_collection_exists(collection):
       mongo_driver.create_index_for_collection(collection, "name")
+    if mongo_driver.contains_document(collection, "name", func_json["name"]):
+      mongo_driver.delete_document(collection, "name", func_json["name"])
     collection.insert(func_json)
 
   def load_py_metadata(self, function_name):
