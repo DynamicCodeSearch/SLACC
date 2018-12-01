@@ -1,6 +1,7 @@
 package edu.ncsu.introclass;
 
 import edu.ncsu.arguments.ArgumentExtractor;
+import edu.ncsu.config.Settings;
 
 import java.util.List;
 import java.util.logging.Logger;
@@ -20,7 +21,7 @@ public class Arguments {
     public static void storeFuzzedArguments() {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         List<String> javaFiles = IntroClassUtils.listGeneratedFiles();
-        extractor.storeFuzzedArguments(javaFiles);
+        extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE);
     }
 
 }

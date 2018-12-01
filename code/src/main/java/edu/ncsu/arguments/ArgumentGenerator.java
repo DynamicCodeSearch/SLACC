@@ -224,7 +224,7 @@ public class ArgumentGenerator {
     // *********************************************************************************** //
     // Objects and Functions
 
-    public static List<Object> generateArgumentsForFunction(String dataset, Function function) {
+    public static List<Object> generateArgumentsForFunction(String dataset, Function function, int numArgs) {
         if (!function.isValidArgs()) {
             LOGGER.info(String.format("%s does not contain valid arguments", function.getName()));
             return null;
@@ -235,7 +235,7 @@ public class ArgumentGenerator {
             return null;
         }
         List<Object> fuzzed = new ArrayList<>();
-        for (int i = 0; i< Settings.FUZZ_ARGUMENT_SIZE; i++) {
+        for (int i = 0; i< numArgs; i++) {
             List<Object> args = new ArrayList<>();
             for (FunctionVariable variable: function.getArguments()) {
                 Map<String, Object> generated = generateArgumentsForFunctionVariable(dataset, variable, variable.getArrayDimensions());

@@ -39,4 +39,13 @@ public class BaseStorage {
         }
     }
 
+    public static IArgumentStore loadTestArgumentStore(String dataset) {
+        switch (STORAGE) {
+            case Settings.MONGO_STORAGE:
+                return edu.ncsu.store.mongo.ExtendedArgumentStore.loadStore(dataset);
+            default:
+                throw new RuntimeException("Test storage supported only for mongo");
+        }
+    }
+
 }
