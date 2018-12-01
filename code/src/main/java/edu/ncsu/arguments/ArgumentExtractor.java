@@ -84,7 +84,7 @@ public class ArgumentExtractor {
     public void generateForJavaFile(String javaFile, int numArgs) {
         ClassMethods classMethods = new ClassMethods(this.dataset, javaFile);
         for (Method method: classMethods.getMethods()) {
-            Function function = new Function(this.dataset, method, classMethods.getMethodBodies().get(method.getName()));
+            Function function = new Function(this.dataset, method, classMethods.getMethodBodies().get(method.getName()), javaFile);
             if (!function.isValidArgs())
                 continue;
             String key = function.makeArgumentsKey();
