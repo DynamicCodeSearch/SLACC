@@ -22,6 +22,8 @@ public class Function {
 
     private String dataset;
 
+    private String filePath;
+
     private Method method;
 
     private MethodDeclaration ast;
@@ -98,11 +100,12 @@ public class Function {
 //        return expandedArgs;
 //    }
 
-    public Function(String dataset, Method method, MethodDeclaration ast) {
+    public Function(String dataset, Method method, MethodDeclaration ast, String filePath) {
         this.dataset = dataset;
         this.method = method;
         this.method.setAccessible(true);
         this.ast = ast;
+        this.filePath = filePath;
         arguments = new ArrayList<>();
         for (Parameter parameter: ast.getParameters()) {
             FunctionVariable variable = FunctionVariable.getFunctionVariable(
@@ -245,6 +248,7 @@ public class Function {
         metadata.addProperty("name", this.getName());
         metadata.addProperty("body", this.ast.toStringWithoutComments());
         metadata.addProperty("inputKey", this.makeArgumentsKey());
+        metadata.addProperty("filePath", this.filePath);
         if (this.linesTouched != null && this.linesTouched.size() > 0) {
             JsonArray linesTouched = new JsonArray();
             for (Integer line: this.linesTouched)

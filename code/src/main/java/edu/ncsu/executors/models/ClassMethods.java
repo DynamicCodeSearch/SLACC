@@ -68,7 +68,7 @@ public class ClassMethods {
 
     public Function getFunction(Method method) {
         MethodDeclaration ast = getMethodBody(method.getName());
-        return new Function(this.dataset, method, ast);
+        return new Function(this.dataset, method, ast, this.sourcePath);
     }
 
     public String getDataset() {
