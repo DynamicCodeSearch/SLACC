@@ -45,6 +45,12 @@ public class Main {
                 case "test_extract_fuzzed_args":
                     edu.ncsu.codejam.Arguments.storeTestFuzzedArguments();
                     break;
+                case "test_reexecute_functions":
+                    edu.ncsu.codejam.Execute.reExecuteFunctions();
+                    break;
+                case "test_reexecute_single":
+                    edu.ncsu.codejam.Execute.reExecuteFunction(args[2], args[3]);
+                    break;
                 default:
                     LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
                     break;

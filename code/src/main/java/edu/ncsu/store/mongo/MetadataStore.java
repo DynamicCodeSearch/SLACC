@@ -29,4 +29,13 @@ public class MetadataStore implements IMetadataStore {
             collection.insertOne(document);
         }
     }
+
+    @Override
+    public String getSourceFile(String dataset, String functionName) {
+        MongoCollection<Document> collection = MongoDriver.getCollection(dataset, FUNCTION_METADATA_COLLECTION);
+        Document document = MongoDriver.getDocument(collection, "name", functionName);
+        if (document == null)
+            return null;
+        return document.get("filePath").toString();
+    }
 }

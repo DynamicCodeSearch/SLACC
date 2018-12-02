@@ -9,6 +9,7 @@ import edu.ncsu.store.IFunctionStore;
 import edu.ncsu.utils.Utils;
 
 import java.io.File;
+import java.util.List;
 
 public class FunctionStore implements IFunctionStore {
 
@@ -80,5 +81,10 @@ public class FunctionStore implements IFunctionStore {
         if (!results.has("errors"))
             return false;
         return errorContainsFunction(results.getAsJsonArray("errors"), function.getName());
+    }
+
+    @Override
+    public List<String> getExecutedFunctionNames(String language) {
+        throw new RuntimeException("This method is not implemented for JSON. Check out Mongo.");
     }
 }

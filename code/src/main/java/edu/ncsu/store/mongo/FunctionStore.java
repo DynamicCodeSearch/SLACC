@@ -1,7 +1,5 @@
 package edu.ncsu.store.mongo;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.util.JSON;
@@ -9,15 +7,20 @@ import edu.ncsu.executors.models.Function;
 import edu.ncsu.store.IFunctionStore;
 import org.bson.Document;
 
+import java.util.List;
 import java.util.Map;
 
 public class FunctionStore implements IFunctionStore {
 
-    private String dataset;
+    protected String dataset;
 
-    private static final String SUCCESS_FUNCTIONS_COLLECTION = "functions_executed";
+    protected String getSuccessFunctionsCollection() {
+        return "functions_executed";
+    }
 
-    private static final String FAILED_FUNCTIONS_COLLECTION = "functions_failed";
+    protected String getFailedFunctionsCollection() {
+        return "functions_failed";
+    }
 
     public FunctionStore(String dataset) {
         this.dataset = dataset;
@@ -43,12 +46,12 @@ public class FunctionStore implements IFunctionStore {
 
     @Override
     public void updateFunctionResult(JsonObject result) {
-        updateFunction(result, SUCCESS_FUNCTIONS_COLLECTION);
+        updateFunction(result, getSuccessFunctionsCollection());
     }
 
     @Override
     public void updateFunctionError(JsonObject result) {
-        updateFunction(result, FAILED_FUNCTIONS_COLLECTION);
+        updateFunction(result, getFailedFunctionsCollection());
     }
 
     private boolean isResult(Function function, Document document) {
@@ -60,16 +63,27 @@ public class FunctionStore implements IFunctionStore {
 
     @Override
     public boolean isStored(Function function) {
-        Document successFunction = getFunction(function.getName(), SUCCESS_FUNCTIONS_COLLECTION);
+        Document successFunction = getFunction(function.getName(), getSuccessFunctionsCollection());
         if (isResult(function, successFunction))
             return true;
-        Document failedFunction = getFunction(function.getName(), FAILED_FUNCTIONS_COLLECTION);
+        Document failedFunction = getFunction(function.getName(), getFailedFunctionsCollection());
         return isResult(function, failedFunction);
+    }
+
+    @Override
+    public List<String> getExecutedFunctionNames(String language) {
+        MongoCollection<Document> collection = MongoDriver.getCollection(this.dataset, "language_executed_functions");
+        Document document = MongoDriver.getDocument(collection, "language", language);
+        if (document != null && document.containsKey("names"))
+            return (List<String>) document.get("names");
+        return null;
     }
 
     public static void main(String[] args) {
         String jsonString = "{\"name\": Infinity}".replaceAll("(-)?Infinity", "NaN");
         Document document = new Document((Map<String, Object>) JSON.parse(jsonString));
         System.out.println(document.toJson());
+//        FunctionStore store = new FunctionStore("codejam");
+//        System.out.println(store.getExecutedFunctionNames("java"));
     }
 }

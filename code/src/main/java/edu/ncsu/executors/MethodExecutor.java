@@ -12,6 +12,7 @@ import edu.ncsu.executors.models.Function;
 import edu.ncsu.store.BaseStorage;
 import edu.ncsu.store.IArgumentStore;
 import edu.ncsu.store.IFunctionStore;
+import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.Utils;
 
 import java.io.*;
@@ -29,6 +30,8 @@ public class MethodExecutor {
     private static final Logger LOGGER = Logger.getLogger(MethodExecutor.class.getName());
 
     private static final String METHOD_EXECUTED = "COMPLETED";
+
+    private static Boolean ONLY_SINGLE = false;
 
     private static ExecutorService taskExecutor;
 
@@ -82,63 +85,32 @@ public class MethodExecutor {
         shutdownExecutor(taskExecutor);
     }
 
-    public MethodExecutor(String dataset, String sourcePath) {
-        this.argumentStore = BaseStorage.loadArgumentStore(dataset);
-        this.functionStore = BaseStorage.loadFunctionStore(dataset);
+    private MethodExecutor(String dataset, Boolean isTest) {
         this.dataset = dataset;
+        if (isTest) {
+            this.argumentStore = BaseStorage.loadTestArgumentStore(dataset);
+            this.functionStore = BaseStorage.loadTestFunctionStore(dataset);
+        } else {
+            this.argumentStore = BaseStorage.loadArgumentStore(dataset);
+            this.functionStore = BaseStorage.loadFunctionStore(dataset);
+        }
+    }
+
+    private MethodExecutor(String dataset, String sourcePath) {
+        this(dataset, sourcePath, false);
+    }
+
+    private MethodExecutor(String dataset, String sourcePath, Boolean isTest) {
+        this(dataset, isTest);
         this.classMethods = new ClassMethods(this.dataset, sourcePath);
         initialize();
     }
 
-//    public void process() {
-//        String writeFolder = Utils.pathJoin(Settings.getMetaResultsFunctionsFolder(this.dataset),
-//                classMethods.getPackageName().replaceAll("\\.", File.separator));
-//        String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
-//        List<Callable<Map<String, String>>> functionTasks = getFunctionTasks();
-//        if (functionTasks.isEmpty()) {
-//            LOGGER.info(String.format("%s.%s already processed. Moving On!", classMethods.getPackageName(), classMethods.getClassName()));
-//            shutdown();
-//            return;
-//        }
-//        int totalFunctions = functionTasks.size();
-//        try {
-//            int toRun = functionTasks.size();
-//            LOGGER.info("Invoking All!");
-//            long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
-//            LOGGER.info(String.format("Time to wait = %d", timeToWait));
-//            List<Future<Map<String, String>>> functionResults = taskExecutor.invokeAll(functionTasks, timeToWait, TimeUnit.SECONDS);
-//            LOGGER.info("Invoked All!");
-//            for (Future<Map<String, String>> functionResult: functionResults) {
-////                assert functionResult.isDone();
-//                Map<String, String> executionResult = functionResult.get();
-//                LOGGER.info("Fetched execution results");
-//                if (!executionResult.get("status").equals(METHOD_EXECUTED)) {
-//                    Utils.mkdir(writeFolder);
-//                    LOGGER.severe(String.format("Exception occurred while processing function: %s", executionResult.get("name")));
-//                    JsonObject failedFunction = new JsonObject();
-//                    failedFunction.addProperty("name", executionResult.get("name"));
-//                    failedFunction.addProperty("errorTrace", executionResult.get("status"));
-//                    updateError(writeFile, failedFunction);
-//                }
-//                LOGGER.info(String.format("Functions remaining: %d/%d", toRun, totalFunctions));
-//                --toRun;
-//            }
-//            LOGGER.info("Completed invocation");
-//        } catch (Exception e) {
-//            LOGGER.severe(String.format("Exception while invoking all function tasks in class: %s.%s",
-//                    classMethods.getPackageName(), classMethods.getClassName()));
-//            e.printStackTrace();
-//        }
-//        LOGGER.info(String.format("Shutting Down Class: %s.%s", classMethods.getPackageName(), classMethods.getClassName()));
-//        shutdown();
-//        return;
-//    }
-
     /**
      * Retrieve function tasks for the Method Executor
-     * @return
+     * @return Function Tasks for the java file
      */
-    public List<Callable<Map<String, String>>> getFunctionTasks() {
+    private List<Callable<Map<String, String>>> getFunctionTasks() {
         LOGGER.info(String.format("Fetching function tasks for %s.%s ...", classMethods.getPackageName(), classMethods.getClassName()));
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         int totalFunctions = 0;
@@ -154,7 +126,8 @@ public class MethodExecutor {
         }
         LOGGER.info(String.format("Number of functions to process = %d / %d", functionTasks.size(), totalFunctions));
         for (int i=0; i<validFunctions.size(); i++)
-            functionTasks.add(makeFunctionTask(this.dataset, classMethods.getSourcePath(), validFunctions.get(i).getName(), i , validFunctions.size()));
+            functionTasks.add(makeFunctionTask(this.dataset, classMethods.getSourcePath(),
+                    validFunctions.get(i).getName(), i , validFunctions.size(), false));
         return functionTasks;
     }
 
@@ -162,7 +135,7 @@ public class MethodExecutor {
      * Execute a list of FunctionTask.
      * @param functionTasks - list of function tasks to execute.
      */
-    public static void executeFunctionTasks(List<Callable<Map<String, String>>> functionTasks) {
+    private static void executeFunctionTasks(List<Callable<Map<String, String>>> functionTasks) {
         if (functionTasks == null || functionTasks.size() == 0)
             return;
         long timeToWait = 2 * functionTasks.size() * Settings.ALL_METHOD_EXECUTIONS_WAIT_TIME * Settings.METHOD_EXECUTION_WAIT_TIME;
@@ -183,17 +156,18 @@ public class MethodExecutor {
             }
             LOGGER.info("Completed invocation");
         } catch (Exception e) {
-            LOGGER.severe(String.format("Exception while invoking all function tasks"));
+            LOGGER.severe("Exception while invoking all function tasks");
             e.printStackTrace();
         }
 
     }
 
 
-    public static void process(String filePath, String functionName, String dataset, boolean onlySingle) {
-        MethodExecutor executor =  new MethodExecutor(dataset, filePath);
+    public static void process(String filePath, String functionName, String dataset, Boolean isTest) {
+        MethodExecutor executor =  new MethodExecutor(dataset, filePath, isTest);
         ClassMethods classMethods = executor.classMethods;
-        LOGGER.info(String.format("Processing function %s.%s.%s ... ", classMethods.getPackageName(), classMethods.getClassName(), functionName));
+        LOGGER.info(String.format("Processing function %s.%s.%s ... ",
+                classMethods.getPackageName(), classMethods.getClassName(), functionName));
         Function function = null;
         for (Method method: classMethods.getMethods()) {
             Function tempFunction = classMethods.getFunction(method);
@@ -206,7 +180,7 @@ public class MethodExecutor {
             LOGGER.info("No function found. Terminating");
         } else {
             LOGGER.info(String.format("Storing Function: %s", functionName));
-            executor.storeFunction(function, onlySingle);
+            executor.storeFunction(function);
             LOGGER.info(String.format("Function Stored: %s", functionName));
         }
         LOGGER.info(String.format("Shutting Down Function: %s", functionName));
@@ -216,14 +190,14 @@ public class MethodExecutor {
 
     private static Callable<Map<String, String>> makeFunctionTask(final String dataset, final String sourcePath,
                                                                   final String functionName, final int taskNumber,
-                                                                  final int totalTasks) {
+                                                                  final int totalTasks, final boolean isTest) {
         return new Callable<Map<String, String>>() {
             @Override
             public Map<String, String> call() {
                 Map<String, String> retMap = new HashMap<>();
                 retMap.put("name", functionName);
                 try {
-                    executeAsBash(dataset, sourcePath, functionName, taskNumber, totalTasks);
+                    executeAsBash(dataset, sourcePath, functionName, taskNumber, totalTasks, isTest);
                     retMap.put("status", METHOD_EXECUTED);
                 } catch (Exception e) {
                     retMap.put("status", e.getMessage());
@@ -233,11 +207,14 @@ public class MethodExecutor {
         };
     }
 
-    private static void executeAsBash(String dataset, String sourcePath, String functionName, int taskNumber, int totalTasks) {
+    private static void executeAsBash(String dataset, String sourcePath, String functionName, int taskNumber, int totalTasks, boolean isTest) {
         try {
             LOGGER.info(String.format("Submitted %s. Doing: %d / %d", functionName, taskNumber + 1, totalTasks));
+            String scriptsFolder = Settings.getScriptsFolder(dataset);
+            if (isTest)
+                scriptsFolder = Utils.pathJoin(scriptsFolder, "test");
             String command = String.format("sh %s %s %s",
-                    Utils.pathJoin(Settings.getScriptsFolder(dataset), "execute_single_function.sh"),
+                    Utils.pathJoin(scriptsFolder, "execute_single_function.sh"),
                     sourcePath, functionName);
             Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Settings.CODE_HOME));
             process.waitFor();
@@ -248,8 +225,8 @@ public class MethodExecutor {
         }
     }
 
-    private void storeFunction(Function function, boolean onlySingle) {
-        JsonObject executionResult = executeFunction(function, onlySingle);
+    private void storeFunction(Function function) {
+        JsonObject executionResult = executeFunction(function);
         if (executionResult.has("output")) {
             JsonObject outputResult = executionResult.get("output").getAsJsonObject();
             functionStore.updateFunctionResult(outputResult);
@@ -259,10 +236,10 @@ public class MethodExecutor {
         }
     }
 
-    private JsonObject executeFunction(Function function, boolean onlySingle) {
+    private JsonObject executeFunction(Function function) {
         JsonObject returnVal = new JsonObject();
         try {
-            if (onlySingle) {
+            if (ONLY_SINGLE) {
                 returnVal.add("output", processFunctionOnce(function));
             } else {
                 returnVal.add("output", processFunction(function));
@@ -361,6 +338,8 @@ public class MethodExecutor {
         return functionArgs;
     }
 
+
+
     // *******************************************************************************
     // Static executor method that executes dataset, problem, function etc
 
@@ -385,21 +364,35 @@ public class MethodExecutor {
         MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
+    public static void reExecuteDataset(String dataset) {
+        LOGGER.info(String.format("Rerunning java functions for dataset: %s", dataset));
+        MethodExecutor executor = new MethodExecutor(dataset, true);
+        List<String> functionNames = executor.functionStore.getExecutedFunctionNames("java");
+        IMetadataStore metadataStore = BaseStorage.loadMetadataStore();
+        List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
+        int index = 0;
+        int totalFunctions = functionNames.size();
+        for (String functionName: functionNames) {
+            String sourceFile = metadataStore.getSourceFile(dataset, functionName);
+            if (sourceFile == null) {
+                throw new RuntimeException("Source File not found for function: " + functionName);
+            }
+            functionTasks.add(makeFunctionTask(dataset, sourceFile, functionName, index, totalFunctions, true));
+            index += 1;
+        }
+        MethodExecutor.executeFunctionTasks(functionTasks);
+    }
+
     private static void testExecution() {
         String dataset = CodejamUtils.DATASET;
-        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/mikhailOK/generated_class_aacc8ca0bf5a414da3ff3f807a0410bc.java";
-        String functionName = "func_5ce52d0a333d437295bcaa61f2714cac";
-        MethodExecutor.process(sourceFile, functionName, dataset, false);
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y14R5P1/qwerty/generated_class_4dec2b245c5b4a438a1eefcbddc26a64.java";
+        String functionName = "func_b11490d8ef8a4bd7ba2bb6021af14760";
+        MethodExecutor.process(sourceFile, functionName, dataset, true);
 //        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
 //        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());
     }
 
     public static void main(String[] args) {
-//        String source = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/smallest/smallest_c868b30a_000/generated_class_44dcbccdc0964592ab3a44f1eff79f26.java";
-//        ArgumentStore argumentStore = ArgumentStore.loadStore("introclass");
-//        MethodExecutor methodExecutor = new MethodExecutor("introclass", source, argumentStore);
-//        methodExecutor.process();
-//        executeProblem("introclass", "digits");
         testExecution();
     }
 }

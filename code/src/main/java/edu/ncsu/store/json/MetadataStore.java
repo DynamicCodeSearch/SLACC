@@ -22,4 +22,9 @@ public class MetadataStore implements IMetadataStore {
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JSONDriver.saveJsonObject(metadata, writeFile, true);
     }
+
+    @Override
+    public String getSourceFile(String dataset, String functionName) {
+        throw new RuntimeException("This method is not implemented for JSON. Check out Mongo.");
+    }
 }
