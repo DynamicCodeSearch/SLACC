@@ -48,4 +48,13 @@ public class BaseStorage {
         }
     }
 
+    public static IFunctionStore loadTestFunctionStore(String dataset) {
+        switch (STORAGE) {
+            case Settings.MONGO_STORAGE:
+                return new edu.ncsu.store.mongo.ExtendedFunctionStore(dataset);
+            default:
+                throw new RuntimeException("Test storage supported only for mongo");
+        }
+    }
+
 }

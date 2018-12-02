@@ -23,7 +23,15 @@ public class Execute {
     }
 
     public static void executeFunction(String filePath, String functionName) {
-        MethodExecutor.process(filePath, functionName, CodejamUtils.DATASET, EXECUTE_ONLY_ONCE);
+        MethodExecutor.process(filePath, functionName, CodejamUtils.DATASET, false);
+    }
+
+    public static void reExecuteFunctions() {
+        MethodExecutor.reExecuteDataset(CodejamUtils.DATASET);
+    }
+
+    public static void reExecuteFunction(String filePath, String functionName) {
+        MethodExecutor.process(filePath, functionName, CodejamUtils.DATASET,  true);
     }
 
     public static void main(String[] args) {
