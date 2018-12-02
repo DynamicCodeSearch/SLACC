@@ -109,8 +109,12 @@ class FunctionStore(base_store.FunctionStore):
     collection.insert(func_json)
 
   def load_py_metadata(self, function_name):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
-    return collection.find_one({"name": function_name})
+    try:
+      collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
+      return collection.find_one({"name": function_name})
+    except Exception:
+      LOGGER.exception("Failed to metadata for function: '%s'. Returning None" % function_name)
+      return None
 
   def get_executed_functions(self, language):
     collection = mongo_driver.get_collection(self.dataset, "language_executed_functions")
@@ -152,7 +156,7 @@ class ArgumentStore(base_store.ArgumentStore):
     try:
       return collection.find_one({"key": args_key})
     except Exception as e:
-      LOGGER.exception("Failed to load args with key: '%s'. Returning None" % args_key, e)
+      LOGGER.exception("Failed to load args with key: '%s'. Returning None" % args_key)
       return None
 
 

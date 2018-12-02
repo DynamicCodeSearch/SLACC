@@ -191,10 +191,11 @@ def evaluate_function(dataset, file_name, func, is_test=False):
   function_store.save_py_function(function_data)
   return function_data
 
-signal.signal(signal.SIGALRM, timeout_handler)
+# signal.signal(signal.SIGALRM, timeout_handler)
+
 def execute_function(func, arg):
-  # prev_signal = signal.getsignal(signal.SIGALRM)
-  # signal.signal(signal.SIGALRM, timeout_handler)
+  prev_signal = signal.getsignal(signal.SIGALRM)
+  signal.signal(signal.SIGALRM, timeout_handler)
   signal.alarm(a_consts.METHOD_WAIT_TIMEOUT)
   duration = a_consts.METHOD_WAIT_TIMEOUT * 1000
   return_variable, error_message = None, None
@@ -206,7 +207,8 @@ def execute_function(func, arg):
     error_message = "Method timed out after %d seconds" % a_consts.METHOD_WAIT_TIMEOUT
   except Exception as e:
     error_message = e.message
-  # signal.signal(signal.SIGALRM, prev_signal)
+  signal.alarm(0)
+  signal.signal(signal.SIGALRM, prev_signal)
   return {
     "return": return_variable,
     "errorMessage": error_message,
@@ -332,8 +334,10 @@ def reexecute_functions(dataset):
   argument_store = get_argument_store(dataset, is_test=True)
   function_names = function_store.get_executed_functions("python")
   for func_name in function_names:
-    file_path = function_store.load_py_metadata(func_name)["filePath"]
     try:
+      file_path = function_store.load_py_metadata(func_name)["filePath"]
+      if not file_path or function_store.exists_py_function(func_name):
+        continue
       evaluate_function(dataset, file_path, func_name, is_test=True)
     except Exception:
       pass
