@@ -23,23 +23,23 @@ _ARGUMENT_STORE = None
 _FUNCTION_STORE = None
 
 
-def get_function_store(dataset):
+def get_function_store(dataset, is_test=False):
   global _FUNCTION_STORE
   if _FUNCTION_STORE is not None:
     return _FUNCTION_STORE
   if properties.STORE != "mongo":
     raise RuntimeError("Currently supports only mongo store. Not supported for '%s'" % properties.STORE)
-  _FUNCTION_STORE = mongo_store.FunctionStore(dataset)
+  _FUNCTION_STORE = mongo_store.FunctionStore(dataset, is_test=is_test)
   return _FUNCTION_STORE
 
 
-def get_argument_store(dataset):
+def get_argument_store(dataset, is_test=False):
   global _ARGUMENT_STORE
   if _ARGUMENT_STORE is not None:
     return _ARGUMENT_STORE
   if properties.STORE != "mongo":
     raise RuntimeError("Currently supports only mongo store. Not supported for '%s'" % properties.STORE)
-  _ARGUMENT_STORE = mongo_store.ArgumentStore(dataset)
+  _ARGUMENT_STORE = mongo_store.ArgumentStore(dataset, is_test=is_test)
   return _ARGUMENT_STORE
 
 
@@ -64,9 +64,9 @@ def create_arg_key(arg_type):
     return family
 
 
-def create_arg_keys(dataset, func):
+def create_arg_keys(dataset, func, is_test):
   func_name = func.__name__
-  arg_types = get_function_store(dataset).load_function_arg_type(func_name)
+  arg_types = get_function_store(dataset, is_test).load_function_arg_type(func_name)
   if not arg_types:
     if DEBUG:
       LOGGER.warning("Arg Types not found for '%s'" % func_name)
@@ -108,10 +108,10 @@ def convert_to_executable_arg(key, val):
     return val
 
 
-def get_function_args(dataset, arg_keys):
+def get_function_args(dataset, arg_keys, is_test=False):
   if not arg_keys: return None
   func_key = create_func_key(arg_keys)
-  arg_data = get_argument_store(dataset).load_args(func_key)
+  arg_data = get_argument_store(dataset, is_test).load_args(func_key)
   if not arg_data:
     if DEBUG:
       LOGGER.warning("Arguments not found for key: '%s'." % func_key)
@@ -141,10 +141,10 @@ def timeout_handler(signum, frame):
 # signal.signal(signal.SIGALRM, timeout_handler)
 
 
-def evaluate_function(dataset, file_name, func):
-  function_store = get_function_store(dataset)
+def evaluate_function(dataset, file_name, func, is_test=False):
+  function_store = get_function_store(dataset, is_test=is_test)
   simple_name = helper.get_simple_name(file_name)
-  if isinstance(func, str):
+  if isinstance(func, basestring):
     func = helper.get_function(file_name, func)
   if func is None:
     return None
@@ -156,8 +156,8 @@ def evaluate_function(dataset, file_name, func):
   if function_store.is_invalid_py_function(function_name) and not RE_EVALUATE:
     LOGGER.info("Function '%s' from '%s' exists and is invalid." % (function_name, simple_name))
     return None
-  arg_keys = create_arg_keys(dataset, func)
-  arg_data = get_function_args(dataset, arg_keys)
+  arg_keys = create_arg_keys(dataset, func, is_test)
+  arg_data = get_function_args(dataset, arg_keys, is_test)
   if not arg_data:
     LOGGER.warning("Arguments not found for key: '%s'. (Function: '%s'; File: '%s')" %
                    (create_func_key(arg_keys), function_name, simple_name))
@@ -220,7 +220,7 @@ def execute_file(dataset, file_name):
     n_valids, n_totals = 0, 0
     for func in helper.get_generated_functions(file_name):
       func_name = func.__name__
-      valid, func_key = is_executable_function(dataset, func)
+      valid, func_key = is_executable_function(dataset, func, False)
       n_totals += 1
       if valid:
         evaluated = evaluate_function(dataset, file_name, func_name)
@@ -244,16 +244,15 @@ def execute_problem(dataset, problem_id=None):
     execute_file(dataset, file_path)
 
 
-
 """
 Validity
 """
 
 
-def is_executable_function(dataset, func):
-  arg_keys = create_arg_keys(dataset, func)
+def is_executable_function(dataset, func, is_test):
+  arg_keys = create_arg_keys(dataset, func, is_test)
   func_key = create_func_key(arg_keys)
-  args = get_function_args(dataset, arg_keys)
+  args = get_function_args(dataset, arg_keys, is_test)
   if args is None:
     return False, func_key
   return True, func_key
@@ -265,7 +264,7 @@ def get_valid_function_keys_from_file(dataset, file_name):
   n_generated_functions = 0
   for func in helper.get_generated_functions(file_name):
     n_generated_functions += 1
-    valid, func_key = is_executable_function(dataset, func)
+    valid, func_key = is_executable_function(dataset, func, True)
     if valid:
       valid_keys.append(func_key)
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)
@@ -310,7 +309,7 @@ def extract_metadata_for_folder(dataset, problem_id=None):
     LOGGER.info("Processing '%s' ..." % helper.get_simple_name(file_path))
     for func in helper.get_generated_functions(file_path):
       function_name = func.__name__
-      valid, func_key = is_executable_function(dataset, func)
+      valid, func_key = is_executable_function(dataset, func, True)
       if valid:
         meta_data = {
           "name": function_name,
@@ -322,7 +321,24 @@ def extract_metadata_for_folder(dataset, problem_id=None):
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)
 
 
+"""
+Re-execute functions
+"""
+
+
+def reexecute_functions(dataset):
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
+  function_store = get_function_store(dataset, is_test=True)
+  argument_store = get_argument_store(dataset, is_test=True)
+  function_names = function_store.get_executed_functions("python")
+  for func_name in function_names:
+    file_path = function_store.load_py_metadata(func_name)["filePath"]
+    evaluate_function(dataset, file_path, func_name, is_test=True)
+  sys.path.remove(properties.PYTHON_PROJECTS_HOME)
+
+
 if __name__ == "__main__":
-  execute_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/falcon/generated_py_0b8135888969475c9b0f67b3e22fb7c5.py")
+  store = get_function_store("codejam", is_test=False)
+  # execute_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/falcon/generated_py_0b8135888969475c9b0f67b3e22fb7c5.py")
   # get_valid_functions_from_folder("codejam")
   # print(get_function_args("codejam", ["int", "(int)@1"])[0])
