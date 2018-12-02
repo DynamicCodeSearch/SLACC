@@ -34,6 +34,7 @@ class InputStore(base_store.InputStore):
 
 class FunctionStore(base_store.FunctionStore):
   def __init__(self, dataset, **kwargs):
+    self.is_test = None
     base_store.FunctionStore.__init__(self, dataset, **kwargs)
 
   def load_function(self, function_name):
@@ -64,7 +65,8 @@ class FunctionStore(base_store.FunctionStore):
       return None
 
   def save_py_function(self, function_json):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    collection_name = "test_py_functions_executed" if self.is_test else "py_functions_executed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     if not mongo_driver.is_collection_exists(collection):
       mongo_driver.create_index_for_collection(collection, "name")
     try:
@@ -74,24 +76,28 @@ class FunctionStore(base_store.FunctionStore):
       self.save_failed_py_function(function_json)
 
   def load_py_function(self, function_name):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    collection_name = "test_py_functions_executed" if self.is_test else "py_functions_executed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     return collection.find_one({"name": function_name})
 
   def exists_py_function(self, function_name):
     return self.load_py_function(function_name) is not None
 
   def save_failed_py_function(self, function_json):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_failed")
+    collection_name = "test_py_functions_failed" if self.is_test else "py_functions_failed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     if not mongo_driver.is_collection_exists(collection):
       mongo_driver.create_index_for_collection(collection, "name")
     collection.insert(function_json)
 
   def is_invalid_py_function(self, function_name):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_failed")
+    collection_name = "test_py_functions_failed" if self.is_test else "py_functions_failed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     return collection.find_one({"name": function_name}) is not None
 
   def load_py_functions(self):
-    collection = mongo_driver.get_collection(self.dataset, "py_functions_executed")
+    collection_name = "test_py_functions_executed" if self.is_test else "py_functions_executed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     return collection.find()
 
   def save_py_metadata(self, func_json):
@@ -105,6 +111,14 @@ class FunctionStore(base_store.FunctionStore):
   def load_py_metadata(self, function_name):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
     return collection.find_one({"name": function_name})
+
+  def get_executed_functions(self, language):
+    collection = mongo_driver.get_collection(self.dataset, "language_executed_functions")
+    document = collection.find_one({"language": language})
+    if document is None:
+      return None
+    return document['names']
+
 
 
 class PyFileMetaStore(base_store.PyFileMetaStore):
@@ -129,10 +143,12 @@ class PyFileMetaStore(base_store.PyFileMetaStore):
 
 class ArgumentStore(base_store.ArgumentStore):
   def __init__(self, dataset, **kwargs):
+    self.is_test = None
     base_store.ArgumentStore.__init__(self, dataset, **kwargs)
 
   def load_args(self, args_key):
-    collection = mongo_driver.get_collection(self.dataset, "fuzzed_args")
+    collection_name = "test_fuzzed_args" if self.is_test else "fuzzed_args"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     try:
       return collection.find_one({"key": args_key})
     except Exception as e:
