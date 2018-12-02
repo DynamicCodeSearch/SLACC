@@ -333,7 +333,10 @@ def reexecute_functions(dataset):
   function_names = function_store.get_executed_functions("python")
   for func_name in function_names:
     file_path = function_store.load_py_metadata(func_name)["filePath"]
-    evaluate_function(dataset, file_path, func_name, is_test=True)
+    try:
+      evaluate_function(dataset, file_path, func_name, is_test=True)
+    except Exception:
+      pass
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)
 
 
