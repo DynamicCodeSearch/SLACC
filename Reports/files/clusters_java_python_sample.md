@@ -112,3 +112,21 @@ def func_fc1df07e5f3644499d33685ea449984b(x):
     hi = max(x)
     return hi
 ```
+
+
+
+## Stats
+### Cluster sizes
+* Number of clusters: 1185
+* Number of functions clustered: 4180
+* Number of functions not clustered: 2248
+
+### REPORT
+```
+       Min : 2
+      Mean : 3.5
+    Median : 2
+       Max : 94
+       std : 4.04
+       iqr : 2
+```
