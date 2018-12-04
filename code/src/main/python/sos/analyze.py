@@ -7,9 +7,12 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 from collections import defaultdict
+import re
 
-from utils import lib, cache, logger
+from sos import similarity
 from store import mongo_store
+from sos.function import Function, Outputs
+from utils import lib, cache, logger
 import properties
 
 
@@ -53,24 +56,59 @@ def save_clustered_function_names(dataset, language):
     execution_store.save_cloned_function_names(name, clones)
 
 
+def get_cross_val(dataset, n_folds):
+  functions = similarity.load_functions(dataset, is_test=True) + similarity.load_py_functions(dataset, is_test=True)
+  all_outputs = [func.outputs for func in functions]
+  folds = []
+  fold_size = len(all_outputs[0].returns) // n_folds
+  for i in range(n_folds):
+    fold = []
+    start, end = i * fold_size, (i + 1) * fold_size
+    for func in functions:
+      clone = func.deep_clone()
+      clone.outputs = all_outputs[i].subset(start, end)
+      fold.append(clone)
+    folds.append(fold)
+  return folds
+
+
+def random_testing(dataset, n_folds=10):
+  LOGGER.info("Random testing with '%d' number of folds" % n_folds)
+  folds = get_cross_val(dataset, n_folds)
+  base_folder = lib.get_clusters_folder(dataset)
+  file_name = "java_python"
+  for index, fold in enumerate(folds):
+    result_folder = os.path.join(base_folder, "random_testing", "fold_%d" % index)
+    LOGGER.info("Random testing for for fold '%d' out of '%d'" % (index + 1, n_folds))
+    similarity.compute_similarity(dataset, functions=fold, base_folder=result_folder, file_name=file_name, skip_singles=True)
+
+  # print(len(functions))
+
+
 def _help():
   return """
   Format:
-    python sos/similarity <utility> <dataset> <language>
-    utility: save_function_names
+    python sos/similarity <utility> <dataset> <?additional_args>
+    utility: save_function_names/random_testing
     dataset: codejam/introclass
-    language: java(default)/python/java_python
+    additional_args
+      language: java(default)/python/java_python
+      n_folds: default(10)
     """
 
 
 def _main():
   args = sys.argv
-  if len(args) < 4:
+  if len(args) < 3:
     print(_help())
     exit(0)
-  utility, dataset, language = args[1], args[2], args[3]
+  utility, dataset = args[1], args[2]
   if utility == "save_function_names":
+    language = args[3] if len(args) >= 4 else "java"
     save_clustered_function_names(dataset, language)
+  elif utility == "random_testing":
+    n_folds = int(args[3]) if len(args) >= 4 else 10
+    random_testing(dataset, n_folds)
   else:
     print("Invalid utility: %s" % utility)
     print(_help())
@@ -78,3 +116,4 @@ def _main():
 
 if __name__ == "__main__":
   _main()
+  # validate("codejam")

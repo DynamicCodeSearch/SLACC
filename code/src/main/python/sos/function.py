@@ -7,7 +7,6 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 from utils.lib import O
-from utils import cache, lib
 from store import json_store, mongo_store
 from analysis.helpers import helper as analysis_helper
 import properties
@@ -70,6 +69,12 @@ class Function(O):
     new.base_name = self.name
     new.name = analysis_helper.generate_function_name()
     new.is_cloned = True
+    return new
+
+  def deep_clone(self):
+    new = Function()
+    for key in self.has().keys():
+      new[key] = self[key]
     return new
 
   def is_useful(self):
@@ -136,4 +141,11 @@ class Outputs(O):
     new.returns = self.returns[:]
     new.errors = self.errors[:]
     new.durations = self.durations[:]
+    return new
+
+  def subset(self, start, end):
+    new = Outputs()
+    new.returns = self.returns[start:end]
+    new.errors = self.errors[start:end]
+    new.durations = self.durations[start:end]
     return new

@@ -70,6 +70,8 @@ def create_index_for_collection(collection, *fields):
 
 
 def get_document(collection, key, value):
+  if collection is None:
+    return None
   return collection.find_one({key: value})
 
 
