@@ -38,11 +38,13 @@ class FunctionStore(base_store.FunctionStore):
     base_store.FunctionStore.__init__(self, dataset, **kwargs)
 
   def load_function(self, function_name):
-    collection = mongo_driver.get_collection(self.dataset, "functions_executed")
+    collection_name = "test_functions_executed" if self.is_test else "functions_executed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     return collection.find_one({"name": function_name})
 
   def load_functions(self):
-    collection = mongo_driver.get_collection(self.dataset, "functions_executed")
+    collection_name = "test_functions_executed" if self.is_test else "functions_executed"
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
     return collection.find()
 
   def load_metadata(self, funct):
@@ -61,7 +63,8 @@ class FunctionStore(base_store.FunctionStore):
     try:
       return mongo_driver.get_collection(self.dataset, "py_functions_arg_types").find_one({"name": function_name})
     except Exception as e:
-      LOGGER.critical("Failed to load args for function: '%s'. Returning None.\nMessage: %s" % (function_name, e.message))
+      LOGGER.critical("Failed to load args for function: '%s'. Returning None."
+                      "\nMessage: %s" % (function_name, e.message))
       return None
 
   def save_py_function(self, function_json):
@@ -178,8 +181,12 @@ class ExecutionStore(base_store.ExecutionStore):
   def save_cloned_function_names(self, name, clones):
     collection = mongo_driver.get_collection(self.dataset, "cloned_functions")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "name")
+      mongo_driver.create_index_for_collection(collection, "_function_name_")
     if mongo_driver.contains_document(collection, "_function_name_", name):
       mongo_driver.delete_document(collection, "_function_name_", name)
     clones["_function_name_"] = name
     collection.insert(clones)
+
+  def load_cloned_function_names(self, name):
+    collection = mongo_driver.get_collection(self.dataset, "cloned_functions")
+    return mongo_driver.get_document(collection, "_function_name_", name)
