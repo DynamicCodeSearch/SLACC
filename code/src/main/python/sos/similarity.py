@@ -161,7 +161,6 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
     if dataset not in ["codejam", "introclass"]:
       raise RuntimeError("Invalid dataset: %s" % dataset)
   LOGGER.info("Clustering ... ")
-  exit(0)
   if file_name is None:
     file_name = language or "clusters"
     LOGGER.info("A @file_name is not provided. Reverting file name to '%s'" % file_name)
