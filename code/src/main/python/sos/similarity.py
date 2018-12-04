@@ -217,7 +217,7 @@ def _main():
     """)
     exit(0)
   language = args[2] if len(args) >= 3 else "java"
-  compute_similarity(args[1], language, skip_singles=True, update_clone_meta=True)
+  compute_similarity(args[1], language, skip_singles=False, update_clone_meta=True)
 
 
 if __name__ == "__main__":
