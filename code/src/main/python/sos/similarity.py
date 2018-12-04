@@ -86,7 +86,7 @@ class Clusterer(O):
     return clusters
 
 
-def load_functions(dataset, is_test=True):
+def load_functions(dataset, is_test=False, update_clone_meta=False):
   LOGGER.info("Loading java functions for '%s' ... " % dataset)
   data_store = get_store(dataset, is_test=is_test)
   functions_arr = data_store.load_functions()
@@ -103,16 +103,19 @@ def load_functions(dataset, is_test=True):
                      lines_touched=function_metadata.get("linesTouched", None),
                      span=function_metadata.get("span", None), body=function_metadata["body"], source="java")
     if data_store.is_object_return(return_meta_data):
-      cloned_function_names = get_execution_store(dataset).load_cloned_function_names(funct.name) if is_test else None
+      cloned_function_names = get_execution_store(dataset).load_cloned_function_names(funct.name)
+      updated_cloned_function_names = {}
       for attribute, returns in data_store.get_return_vals(outputs.returns).items():
         clone = funct.clone()
         clone.outputs = outputs.clone()
         clone.outputs.returns = returns[:]
         clone.return_attribute = attribute
-        functions.append(clone)
         if cloned_function_names and attribute in cloned_function_names:
           clone.name = cloned_function_names[attribute]
+        updated_cloned_function_names[attribute] = clone.name
         functions.append(clone)
+      if update_clone_meta:
+        get_execution_store(dataset).save_cloned_function_names(funct.name, updated_cloned_function_names)
     else:
       functions.append(funct)
   if is_test:
@@ -144,19 +147,21 @@ def load_py_functions(dataset, is_test=False):
   return valid_functions
 
 
-def compute_similarity(dataset, language=None, functions=None, base_folder=None, file_name=None, skip_singles=False):
+def compute_similarity(dataset, language=None, functions=None, base_folder=None, file_name=None,
+                       skip_singles=False, update_clone_meta=False):
   if not functions:
     if language == "java":
-      functions = load_functions(dataset)
+      functions = load_functions(dataset, update_clone_meta=update_clone_meta)
     elif language == "python":
       functions = load_py_functions(dataset)
     elif language == "java_python":
-      functions = load_functions(dataset) + load_py_functions(dataset)
+      functions = load_functions(dataset, update_clone_meta=update_clone_meta) + load_py_functions(dataset)
     else:
       raise RuntimeError("Invalid language: %s" % language)
     if dataset not in ["codejam", "introclass"]:
       raise RuntimeError("Invalid dataset: %s" % dataset)
   LOGGER.info("Clustering ... ")
+  exit(0)
   if file_name is None:
     file_name = language or "clusters"
     LOGGER.info("A @file_name is not provided. Reverting file name to '%s'" % file_name)
@@ -181,7 +186,6 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
 """
 Validity
 """
-
 
 
 def _test_function():
@@ -214,7 +218,7 @@ def _main():
     """)
     exit(0)
   language = args[2] if len(args) >= 3 else "java"
-  compute_similarity(args[1], language)
+  compute_similarity(args[1], language, skip_singles=True, update_clone_meta=True)
 
 
 if __name__ == "__main__":
