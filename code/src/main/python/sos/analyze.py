@@ -36,7 +36,6 @@ def save_clustered_function_names(dataset, language):
   function_names = defaultdict(set)
   cloned_functions = defaultdict(dict)
   for label, functions in clusters.items():
-    if label == -1: continue
     for funct in functions:
       name, clone_name, clone_attribute = None, None, None
       lang = funct.source
@@ -81,8 +80,6 @@ def random_testing(dataset, n_folds=10):
     result_folder = os.path.join(base_folder, "random_testing", "fold_%d" % index)
     LOGGER.info("Random testing for for fold '%d' out of '%d'" % (index + 1, n_folds))
     similarity.compute_similarity(dataset, functions=fold, base_folder=result_folder, file_name=file_name, skip_singles=True)
-
-  # print(len(functions))
 
 
 def _help():
