@@ -114,6 +114,16 @@ def random_testing(dataset, language="java_python", n_folds=10):
     cache.save_pickle(file_name, cluster_distances)
 
 
+def cluster_testing(dataset, language="java_python"):
+  LOGGER.info("Testing different cluster sizes for dataset '%s' and language '%s'" % (dataset, language))
+  functions = similarity.load_functions(dataset) + similarity.load_py_functions(dataset)
+  errors = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30]
+  base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
+  for clustering_error in errors:
+    result_folder = os.path.join(base_folder, "eps_%0.2f" % clustering_error)
+    similarity.compute_similarity(dataset, language, functions=functions, base_folder=result_folder, clustering_error=clustering_error)
+
+
 def _help():
   return """
   Format:
@@ -138,6 +148,9 @@ def _main():
   elif utility == "random_testing":
     n_folds = int(args[3]) if len(args) >= 4 else 10
     random_testing(dataset, n_folds=n_folds)
+  elif utility == "cluster_testing":
+    language = args[3] if len(args) >= 4 else "java"
+    cluster_testing(dataset, language)
   else:
     print("Invalid utility: %s" % utility)
     print(_help())

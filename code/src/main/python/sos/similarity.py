@@ -67,8 +67,9 @@ class Clusterer(O):
   def distance(self, x, y):
     return execution_distance(self.functions[int(x)], self.functions[int(y)])
 
-  def cluster(self, file_name=None, skip_singles=False):
-    dbs = DBSCAN(eps=0.01, min_samples=2, metric=self.distance)
+  def cluster(self, file_name=None, skip_singles=False, clustering_error=0.01):
+    LOGGER.info("Clustering with tolerance '%0.2f'" % clustering_error)
+    dbs = DBSCAN(eps=clustering_error, min_samples=2, metric=self.distance)
     labels = dbs.fit_predict(self.X)
     clusters = defaultdict(list)
     for label, func in zip(labels, self.functions):
@@ -148,7 +149,7 @@ def load_py_functions(dataset, is_test=False):
 
 
 def compute_similarity(dataset, language=None, functions=None, base_folder=None, file_name=None,
-                       skip_singles=False, update_clone_meta=False):
+                       skip_singles=False, update_clone_meta=False, clustering_error=0.01):
   if not functions:
     if language == "java":
       functions = load_functions(dataset, update_clone_meta=update_clone_meta)
@@ -163,13 +164,13 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
   LOGGER.info("Clustering ... ")
   if file_name is None:
     file_name = language or "clusters"
-    LOGGER.info("A @file_name is not provided. Reverting file name to '%s'" % file_name)
+    LOGGER.warning("A @file_name is not provided. Reverting file name to '%s'" % file_name)
   if base_folder is None:
     base_folder = lib.get_clusters_folder(dataset)
   clusters_txt_file = os.path.join(base_folder, "%s.txt" % file_name)
   clusters_pkl_file = os.path.join(base_folder, "%s.pkl" % file_name)
   clusters_report_file = os.path.join(base_folder, "%s.md" % file_name)
-  clusters = Clusterer(functions).cluster(clusters_txt_file, skip_singles=skip_singles)
+  clusters = Clusterer(functions).cluster(clusters_txt_file, skip_singles=skip_singles, clustering_error=clustering_error)
   cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
   sizes = [len(cluster_funcs) for label, cluster_funcs in clusters.items() if label != -1]
