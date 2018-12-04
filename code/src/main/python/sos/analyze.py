@@ -55,31 +55,63 @@ def save_clustered_function_names(dataset, language):
     execution_store.save_cloned_function_names(name, clones)
 
 
-def get_cross_val(dataset, n_folds):
+def get_cross_val(dataset, n_folds, as_dict=False):
   functions = similarity.load_functions(dataset, is_test=True) + similarity.load_py_functions(dataset, is_test=True)
   all_outputs = [func.outputs for func in functions]
   folds = []
   fold_size = len(all_outputs[0].returns) // n_folds
   for i in range(n_folds):
-    fold = []
+    fold = {} if as_dict else []
     start, end = i * fold_size, (i + 1) * fold_size
     for func in functions:
       clone = func.deep_clone()
       clone.outputs = all_outputs[i].subset(start, end)
-      fold.append(clone)
+      if as_dict:
+        fold[clone.name] = clone
+      else:
+        fold.append(clone)
     folds.append(fold)
   return folds
 
 
-def random_testing(dataset, n_folds=10):
+# def random_testing(dataset, n_folds=10):
+#   LOGGER.info("Random testing with '%d' number of folds" % n_folds)
+#   folds = get_cross_val(dataset, n_folds)
+#   base_folder = lib.get_clusters_folder(dataset)
+#   file_name = "java_python"
+#   for index, fold in enumerate(folds):
+#     result_folder = os.path.join(base_folder, "random_testing", "fold_%d" % index)
+#     LOGGER.info("Random testing for for fold '%d' out of '%d'" % (index + 1, n_folds))
+#     clusterer = similarity.Clusterer(fold)
+#     print(clusterer.distance(0, 1))
+#     # print(fold[0].outputs.returns[:10])
+#     # similarity.compute_similarity(dataset, functions=fold, base_folder=result_folder, file_name=file_name, skip_singles=True)
+#   exit(0)
+
+
+def random_testing(dataset, language="java_python", n_folds=10):
   LOGGER.info("Random testing with '%d' number of folds" % n_folds)
-  folds = get_cross_val(dataset, n_folds)
+  folds = get_cross_val(dataset, n_folds, as_dict=True)
   base_folder = lib.get_clusters_folder(dataset)
-  file_name = "java_python"
+  LOGGER.info("Loading pickle ...")
+  cluster_path = get_cluster_path(dataset, language)
+  clusters = cache.load_pickle(cluster_path)
   for index, fold in enumerate(folds):
-    result_folder = os.path.join(base_folder, "random_testing", "fold_%d" % index)
-    LOGGER.info("Random testing for for fold '%d' out of '%d'" % (index + 1, n_folds))
-    similarity.compute_similarity(dataset, functions=fold, base_folder=result_folder, file_name=file_name, skip_singles=True)
+    file_name = os.path.join(base_folder, "random_testing", "fold_%d" % index, "distances.pkl")
+    cluster_distances = {}
+    for label, functions in clusters.items():
+      if label == -1:
+        continue
+      similarity_map = defaultdict(dict)
+      for i in range(len(functions) - 1):
+        for j in range(i + 1, len(functions)):
+          assert i != j
+          f_i, f_j = functions[i], functions[j]
+          distance = similarity.execution_distance(fold[f_i.name], fold[f_j.name])
+          similarity_map[f_i.name][f_j.name] = distance
+          similarity_map[f_j.name][f_i.name] = distance
+      cluster_distances[label] = similarity_map
+    cache.save_pickle(file_name, cluster_distances)
 
 
 def _help():
@@ -105,7 +137,7 @@ def _main():
     save_clustered_function_names(dataset, language)
   elif utility == "random_testing":
     n_folds = int(args[3]) if len(args) >= 4 else 10
-    random_testing(dataset, n_folds)
+    random_testing(dataset, n_folds=n_folds)
   else:
     print("Invalid utility: %s" % utility)
     print(_help())
@@ -113,4 +145,5 @@ def _main():
 
 if __name__ == "__main__":
   _main()
+  # random_testing2("codejam")
   # validate("codejam")
