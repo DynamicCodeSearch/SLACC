@@ -39,4 +39,5 @@ MIN_STATEMENT_SIZE = 2
 """
 Config
 """
-STORE = "mongo"  # Can also be "mongo"
+STORE = "mongo"  # Can be "json"/"mongo"
+CLUSTER_TYPE = "representative"  # Can be "representative"/"dbscan"

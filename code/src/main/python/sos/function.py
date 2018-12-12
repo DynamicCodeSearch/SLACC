@@ -123,6 +123,9 @@ class Function(O):
     self.useful = True
     return self.useful
 
+  def __hash__(self):
+    return self.id
+
 
 class Outputs(O):
   def __init__(self, outputs_json=None, **kwargs):

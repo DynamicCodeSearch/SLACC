@@ -6,20 +6,25 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-from collections import defaultdict
-from sklearn.cluster import DBSCAN
-import numpy as np
 import re
 
 from utils import cache, logger, lib
-from utils.lib import O
 from utils.stat import Stat
 from sos.function import Function, Outputs
+from sos import clusterer
 from store import json_store, mongo_store
 import properties
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
+
+
+def get_clusterer():
+  if properties.CLUSTER_TYPE == "dbscan":
+    return clusterer.DBScanClusterer
+  elif properties.CLUSTER_TYPE == "representative":
+    return clusterer.RepresentativeClusterer
+  raise RuntimeError("Invalid cluster configuration: %s" % properties.CLUSTER_TYPE)
 
 
 def get_store(dataset, is_test=False):
@@ -34,57 +39,6 @@ def get_execution_store(dataset):
   if properties.STORE == "mongo":
     return mongo_store.ExecutionStore(dataset)
   raise RuntimeError("Invalid configuration: %s" % properties.STORE)
-
-
-def execution_similarity(func1, func2):
-  if func1.input_key != func2.input_key:
-    return 0.0
-  sames = 0.0
-  alls = 0.0
-  assert len(func1.outputs.returns) == len(func2.outputs.returns)
-  for i in range(len(func1.outputs.returns)):
-    alls += 1
-    o1 = func1.outputs.returns[i]
-    o2 = func2.outputs.returns[i]
-    e1 = func1.outputs.errors[i]
-    e2 = func2.outputs.errors[i]
-    if o1 == o2 and e1 == e2:
-      sames += 1
-  return sames / alls
-
-
-def execution_distance(func1, func2):
-  return 1.0 - execution_similarity(func1, func2)
-
-
-class Clusterer(O):
-  def __init__(self, functions, **kwargs):
-    self.functions = functions
-    # noinspection PyUnresolvedReferences
-    self.X = np.arange(len(self.functions)).reshape(-1, 1)
-    O.__init__(self, **kwargs)
-
-  def distance(self, x, y):
-    return execution_distance(self.functions[int(x)], self.functions[int(y)])
-
-  def cluster(self, file_name=None, skip_singles=False, clustering_error=0.01):
-    LOGGER.info("Clustering with tolerance '%0.2f'" % clustering_error)
-    dbs = DBSCAN(eps=clustering_error, min_samples=2, metric=self.distance)
-    labels = dbs.fit_predict(self.X)
-    clusters = defaultdict(list)
-    for label, func in zip(labels, self.functions):
-      if skip_singles and label == -1:
-        continue
-      clusters[label].append(func)
-    file_contents = []
-    for label, func_cluster in clusters.items():
-      if label == -1: continue
-      cluster_str = "\n\n****** Cluster %d ******" % label
-      if file_name is not None: file_contents.append(cluster_str)
-      for func in func_cluster:
-        if file_name is not None: file_contents.append(func.body)
-      cache.write_file(file_name, "\n".join(file_contents))
-    return clusters
 
 
 def load_functions(dataset, is_test=False, update_clone_meta=False):
@@ -170,7 +124,7 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
   clusters_txt_file = os.path.join(base_folder, "%s.txt" % file_name)
   clusters_pkl_file = os.path.join(base_folder, "%s.pkl" % file_name)
   clusters_report_file = os.path.join(base_folder, "%s.md" % file_name)
-  clusters = Clusterer(functions).cluster(clusters_txt_file, skip_singles=skip_singles, clustering_error=clustering_error)
+  clusters = get_clusterer()(functions).cluster(clusters_txt_file, skip_singles=skip_singles, clustering_error=clustering_error)
   cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
   sizes = [len(cluster_funcs) for label, cluster_funcs in clusters.items() if label != -1]
@@ -218,7 +172,7 @@ def _main():
     """)
     exit(0)
   language = args[2] if len(args) >= 3 else "java"
-  compute_similarity(args[1], language, skip_singles=False, update_clone_meta=True)
+  compute_similarity(args[1], language, skip_singles=False, update_clone_meta=True, file_name="test")
 
 
 if __name__ == "__main__":
