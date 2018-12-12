@@ -7,11 +7,9 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 from collections import defaultdict
-import re
 
-from sos import similarity
+from sos import similarity, clusterer
 from store import mongo_store
-from sos.function import Function, Outputs
 from utils import lib, cache, logger
 import properties
 
@@ -107,7 +105,7 @@ def random_testing(dataset, language="java_python", n_folds=10):
         for j in range(i + 1, len(functions)):
           assert i != j
           f_i, f_j = functions[i], functions[j]
-          distance = similarity.execution_distance(fold[f_i.name], fold[f_j.name])
+          distance = clusterer.execution_distance(fold[f_i.name], fold[f_j.name])
           similarity_map[f_i.name][f_j.name] = distance
           similarity_map[f_j.name][f_i.name] = distance
       cluster_distances[label] = similarity_map
@@ -121,7 +119,32 @@ def cluster_testing(dataset, language="java_python"):
   base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
   for clustering_error in errors:
     result_folder = os.path.join(base_folder, "eps_%0.2f" % clustering_error)
-    similarity.compute_similarity(dataset, language, functions=functions, base_folder=result_folder, clustering_error=clustering_error)
+    similarity.compute_similarity(dataset, language, functions=functions, base_folder=result_folder,
+                                  clustering_error=clustering_error)
+
+
+def cluster_source(dataset, language="java_python"):
+  LOGGER.info("Loading pickle ...")
+  cluster_path = get_cluster_path(dataset, language)
+  clusters = cache.load_pickle(cluster_path)
+  cluster_type_counts = defaultdict(int)
+  for label, functions in clusters.items():
+    if label == -1:
+      continue
+    contains_java = False
+    contains_python = False
+    for func in functions:
+      if func.source == "java":
+        contains_java = True
+      elif func.source == "python":
+        contains_python = True
+    if contains_python and contains_java:
+      cluster_type_counts["mixed"] += 1
+    elif contains_java:
+      cluster_type_counts["java"] += 1
+    elif contains_python:
+      cluster_type_counts["python"] += 1
+  print(cluster_type_counts)
 
 
 def _help():
@@ -157,6 +180,7 @@ def _main():
 
 
 if __name__ == "__main__":
-  _main()
+  # _main()
+  cluster_source("codejam")
   # random_testing2("codejam")
   # validate("codejam")
