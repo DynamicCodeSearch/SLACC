@@ -103,9 +103,14 @@ public class ArgumentExtractor {
      * Store fuzzed arguments for list of java files and dataset
      * @param javaFiles - List of path of java files
      */
-    public void storeFuzzedArguments(List<String> javaFiles, int numArgs) {
+    public void storeFuzzedArguments(List<String> javaFiles, int numArgs, boolean deleteOld) {
         LOGGER.info("Generating random args. Here we go ....");
-        store.deleteFuzzedArguments();
+        if (deleteOld) {
+            LOGGER.info("Deleting old arguments ... ");
+            store.deleteFuzzedArguments();
+        } else  {
+            LOGGER.info("Retaining old arguments ... ");
+        }
         for (String javaFile: javaFiles) {
             LOGGER.info(String.format("Running for %s", javaFile));
             generateForJavaFile(javaFile, numArgs);

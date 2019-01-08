@@ -27,7 +27,7 @@ public class Main {
                     edu.ncsu.codejam.Arguments.extractAndStorePrimitiveArguments();
                     break;
                 case "extract_fuzzed_args":
-                    edu.ncsu.codejam.Arguments.storeFuzzedArguments();
+                    edu.ncsu.codejam.Arguments.storeFuzzedArguments(Boolean.parseBoolean(args[2]));
                     break;
                 case "dead_code":
                     edu.ncsu.codejam.Clean.eliminateDeadCode();
@@ -70,7 +70,7 @@ public class Main {
                     edu.ncsu.introclass.Arguments.extractAndStorePrimitiveArguments();
                     break;
                 case "extract_fuzzed_args":
-                    edu.ncsu.introclass.Arguments.storeFuzzedArguments();
+                    edu.ncsu.introclass.Arguments.storeFuzzedArguments(Boolean.parseBoolean(args[2]));
                     break;
                 case "dead_code":
                     edu.ncsu.introclass.Clean.eliminateDeadCode();
