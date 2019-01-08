@@ -10,7 +10,6 @@ import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Settings;
 import edu.ncsu.utils.JavaFormatter;
 import edu.ncsu.utils.Utils;
@@ -65,7 +64,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
                         fieldVariablesMap.put(variableName,
                                 new Variable(variableName, fieldType,
                                         fieldVariable.getBeginLine(), field.getBeginColumn(), fieldVariable.getInit(),
-                                        type));
+                                        type, field.getModifiers()));
                     }
                 } else if (member instanceof MethodDeclaration) {
                     MethodDeclaration method = (MethodDeclaration) member;
@@ -131,6 +130,13 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         if (!(arg instanceof Map)){
             throw new RuntimeException("arg is not instance of Map");
         }
+        if (methodCallExpr.getScope() == null) {
+            Map<String, Object> visitorArg = (Map<String, Object>) arg;
+            ClassBlock classBlock = (ClassBlock) visitorArg.get("class");
+            if (classBlock.isStaticMethod(methodCallExpr.getName())) {
+                methodCallExpr.setName(String.format("%s.%s", classBlock.getName(), methodCallExpr.getName()));
+            }
+        }
         Map<String, Object> visitorArg = (Map<String, Object>) arg;
         VisitorHelper.visit(this, methodCallExpr.getScope(), visitorArg);
         if (methodCallExpr.getArgs() != null) {
@@ -145,7 +151,6 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
             parentNode = parentNode.getParentNode();
         }
         return parentNode;
-
     }
 
 
@@ -162,8 +167,22 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         visitorArg.put("class", classBlock);
         if (assignExpr.getTarget() instanceof NameExpr) {
             NameExpr n = (NameExpr) assignExpr.getTarget();
+            updateStaticVariable(n, methodBlock, classBlock);
             VariablePosition position = new VariablePosition(n.getBeginLine(), n.getBeginColumn());
             VisitorHelper.updateVariableUsage(n.getName(), position, methodBlock, classBlock, true);
+        } else if (assignExpr.getTarget() instanceof FieldAccessExpr) {
+            FieldAccessExpr t = (FieldAccessExpr) assignExpr.getTarget();
+            if (t.getScope() != null && t.getScope() instanceof NameExpr &&
+                    ((NameExpr) t.getScope()).getName().equals(classBlock.getName())) {
+                VariablePosition position = new VariablePosition(t.getBeginLine(), t.getBeginColumn());
+                NameExpr n = t.getFieldExpr();
+                if (classBlock.getFieldVariables().containsKey(n.getName())) {
+                    Variable fieldVariable = classBlock.getFieldVariables().get(n.getName());
+                    fieldVariable.insertAssignPosition(position);
+                    fieldVariable.insertUsedPosition(position);
+                    classBlock.getFieldVariables().put(n.getName(), fieldVariable);
+                }
+            }
         }
         VisitorHelper.visit(this, assignExpr.getTarget(), visitorArg);
         VisitorHelper.visit(this, assignExpr.getValue(), visitorArg);
@@ -180,9 +199,24 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         Map<String, Object> visitorArg = (Map<String, Object>) arg;
         MethodBlock methodBlock = (MethodBlock) visitorArg.get("method");
         ClassBlock classBlock = (ClassBlock) visitorArg.get("class");
+        updateStaticVariable(n, methodBlock, classBlock);
         VariablePosition position = new VariablePosition(n.getBeginLine(), n.getBeginColumn());
         VisitorHelper.updateVariableUsage(n.getName(), position, methodBlock, classBlock, false);
+
     }
+
+    private void updateStaticVariable(NameExpr n, MethodBlock methodBlock, ClassBlock classBlock) {
+        String variableName = n.getName();
+        if (methodBlock.getVariableDeclareMap() == null || methodBlock.getVariableDeclareMap().containsKey(variableName))
+            return;
+        if (classBlock.getFieldVariables().containsKey(variableName)) {
+            Variable variable = classBlock.getFieldVariables().get(variableName);
+            if (variable.isStatic() && !(n.getParentNode() instanceof FieldAccessExpr)) {
+                n.setName(String.format("%s.%s", classBlock.getName(), n.getName()));
+            }
+        }
+    }
+
 
     private DummyMethod makeFunction(List<StatementBlock> statementBlocks, ClassBlock classBlock, MethodBlock methodBlock) {
         Map<String, Collection<Variable>> methodVariables = StatementHelper.getUndeclaredVariables(statementBlocks, classBlock, methodBlock);
@@ -296,8 +330,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     }
 
     private static void testGenerateMethods() {
-//        String fName = String.format("%s/CodeJam/Y11R5P1/Egor/Main.java", Settings.CODEJAM_JAVA_FOLDER);
-        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
+//        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
+        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Junk/Dummy.java";
         generateMethodsForJavaFile(fName);
     }
 

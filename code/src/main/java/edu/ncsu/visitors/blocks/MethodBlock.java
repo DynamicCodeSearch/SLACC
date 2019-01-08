@@ -1,6 +1,7 @@
 package edu.ncsu.visitors.blocks;
 
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.ModifierSet;
 import com.github.javaparser.ast.stmt.Statement;
 import edu.ncsu.config.Settings;
 import edu.ncsu.visitors.helpers.StatementHelper;
@@ -149,6 +150,29 @@ public class MethodBlock {
         return variableDeclareMap;
     }
 
+    /***
+     * Initialize instace of Method Block
+     * @param methodDeclaration Method AST node
+     * @param fileSource Path of class file
+     * @param parentClass Name of the class
+     */
+    public MethodBlock(MethodDeclaration methodDeclaration, String fileSource, String parentClass) {
+        this.fileSource = fileSource;
+        this.parentClass = parentClass;
+        this.returnType = methodDeclaration.getType().toString();
+        this.name = methodDeclaration.getName();
+        this.startLine = methodDeclaration.getBeginLine();
+        this.startColumn = methodDeclaration.getBeginColumn();
+        this.endLine = methodDeclaration.getEndLine();
+        this.endColumn = methodDeclaration.getEndColumn();
+        this.methodNode = methodDeclaration;
+    }
+
+    public boolean isStatic() {
+        return ModifierSet.isStatic(this.methodNode.getModifiers());
+    }
+
+
     /**
      * Insert variable when declared.
      * @param localVariable Instance of Variable
@@ -239,24 +263,6 @@ public class MethodBlock {
         if (statementGroups == null)
             createStatementGroups();
         return statementGroups;
-    }
-
-    /***
-     * Initialize instace of Method Block
-     * @param methodDeclaration Method AST node
-     * @param fileSource Path of class file
-     * @param parentClass Name of the class
-     */
-    public MethodBlock(MethodDeclaration methodDeclaration, String fileSource, String parentClass) {
-        this.fileSource = fileSource;
-        this.parentClass = parentClass;
-        this.returnType = methodDeclaration.getType().toString();
-        this.name = methodDeclaration.getName();
-        this.startLine = methodDeclaration.getBeginLine();
-        this.startColumn = methodDeclaration.getBeginColumn();
-        this.endLine = methodDeclaration.getEndLine();
-        this.endColumn = methodDeclaration.getEndColumn();
-        this.methodNode = methodDeclaration;
     }
 
     /***

@@ -7,6 +7,8 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 from collections import defaultdict
+import csv
+import networkx
 
 from sos import similarity, clusterer
 from store import mongo_store
@@ -159,6 +161,67 @@ def _help():
     """
 
 
+def save_only_java_functions(dataset, base_language="java_python"):
+  """
+  Save only java functions from a mixture of java and python clusters
+  :param dataset: Name of dataset
+  :param base_language: Type of language
+  :return:
+  """
+  clusters_base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
+  for folder in cache.list_dir(clusters_base_folder, is_absolute=False):
+    LOGGER.info("Processing '%s' ..." % folder)
+    folder_path = os.path.join(clusters_base_folder, folder)
+    base_clusters_file = os.path.join(folder_path, "%s.pkl" % base_language)
+    base_clusters = cache.load_pickle(base_clusters_file)
+    java_clusters = {}
+    for label, functions in base_clusters.items():
+      if label == -1 or len(functions) == 1: continue
+      contains_java = False
+      contains_python = False
+      for func in functions:
+        if func.source == "java":
+          contains_java = True
+        elif func.source == "python":
+          contains_python = True
+      if contains_java and not contains_python:
+        java_clusters[label] = functions
+    LOGGER.info("For folder = %s, # of java clusters = %d" % (folder, len(java_clusters)))
+    file_path = os.path.join(folder_path, "java.txt")
+    file_contents = []
+    for label, functions in java_clusters.items():
+      file_contents.append("\n\n****** Cluster %d ******" % label)
+      for func in functions:
+        file_contents.append(func.body)
+    cache.write_file(file_path, "\n".join(file_contents))
+
+
+def connected_components(dataset, base_folder):
+  base_folder_path = os.path.join(properties.META_RESULTS_FOLDER, dataset, base_folder)
+  contents = ["# Epsilons and methods"]
+  for file_path in sorted(cache.list_files(base_folder_path, is_absolute=True)):
+    if not file_path.endswith(".csv"):
+      continue
+    epsilon = cache.get_file_name(file_path).split(".")[0].split("_", 1)[1].replace("_", ".")
+    print(file_path)
+    graph = networkx.Graph()
+    contents.append("## eps = %s" % epsilon)
+    with open(file_path) as csv_file:
+      csv_reader = csv.reader(csv_file, delimiter=",")
+      next(csv_reader, None)
+      for row in csv_reader:
+        graph.add_edge(row[0], row[1])
+      n_clusters = networkx.number_connected_components(graph)
+      contents.append("#### \# Functionalities = %d" % n_clusters)
+      contents.append("```")
+      [contents.append("%d: %s" % (i, ",".join(map(str, sorted(map(int, component))))))
+       for i, component in enumerate(networkx.connected_components(graph))]
+      contents.append("```")
+    LOGGER.info("For epsilon = %s, # clusters = %d" % (epsilon, n_clusters))
+  write_file = os.path.join(base_folder_path, "components.md")
+  cache.write_file(write_file, "\n".join(contents))
+
+
 def _main():
   args = sys.argv
   if len(args) < 3:
@@ -179,8 +242,12 @@ def _main():
     print(_help())
 
 
+
+
 if __name__ == "__main__":
   # _main()
-  cluster_source("codejam")
+  save_only_java_functions("codejam")
+  # connected_components("codejam", "HitoshiIO")
+  # cluster_source("codejam")
   # random_testing2("codejam")
   # validate("codejam")

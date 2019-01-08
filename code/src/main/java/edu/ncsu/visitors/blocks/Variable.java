@@ -81,6 +81,11 @@ public class Variable {
     protected Integer endScopeLineNumber;
 
     /**
+     * Modifier code of the variable
+     */
+    protected int modifierCode = -1;
+
+    /**
      * @return Type of variable
      */
     public String getType() {
@@ -201,7 +206,8 @@ public class Variable {
      * @param initValue Initial value of variable
      * @param parentNode AST of block where variable was declared
      */
-    public Variable(String name, Type type, Integer lineNumber, Integer columnNumber, Expression initValue, Node parentNode) {
+    public Variable(String name, Type type, Integer lineNumber, Integer columnNumber, Expression initValue,
+                    Node parentNode) {
         this(name, type.toStringWithoutComments(), lineNumber, columnNumber, initValue, parentNode);
         if (type instanceof ReferenceType) {
             ReferenceType refType = (ReferenceType) type;
@@ -211,6 +217,13 @@ public class Variable {
             this.arrayDimensions = 0;
         }
     }
+
+    public Variable(String name, Type type, Integer lineNumber, Integer columnNumber, Expression initValue,
+                    Node parentNode, int modifierCode) {
+        this(name, type, lineNumber, columnNumber, initValue, parentNode);
+        this.modifierCode = modifierCode;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -276,6 +289,10 @@ public class Variable {
 
     public boolean isMutable() {
         return !(IMMUTABLES.contains(type));
+    }
+
+    public boolean isStatic() {
+        return this.modifierCode != -1 && ModifierSet.isStatic(this.modifierCode);
     }
 
 

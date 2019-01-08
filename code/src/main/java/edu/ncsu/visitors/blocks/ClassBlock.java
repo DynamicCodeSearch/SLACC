@@ -186,4 +186,18 @@ public class ClassBlock {
         this.methodBlocks = methodBlocks;
     }
 
+    /***
+     * Return true if there is a static method of this name
+     * @param methodName
+     * @return
+     */
+    public boolean isStaticMethod(String methodName) {
+        // TODO: update this to support method overloading as well.
+        for (MethodBlock methodBlock: this.methodBlocks) {
+            if (methodBlock.getName().equals(methodName) && methodBlock.isStatic())
+                return true;
+        }
+        return false;
+    }
+
 }
