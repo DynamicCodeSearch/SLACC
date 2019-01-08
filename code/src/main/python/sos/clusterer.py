@@ -64,7 +64,7 @@ class DBScanClusterer(O):
       if file_name is not None: file_contents.append(cluster_str)
       for func in func_cluster:
         if file_name is not None: file_contents.append(func.body)
-      cache.write_file(file_name, "\n".join(file_contents))
+    cache.write_file(file_name, "\n".join(file_contents))
     return clusters
 
 

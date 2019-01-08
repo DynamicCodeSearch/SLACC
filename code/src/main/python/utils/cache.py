@@ -125,7 +125,7 @@ def list_dir(directory, is_absolute=True):
   :param is_absolute: If true returns complete path, else returns just the file/folder name
   :return: List of file/folder names
   """
-  return [os.path.join((directory, f)) if is_absolute else f for f in os.listdir(directory)]
+  return [os.path.join(directory, f) if is_absolute else f for f in os.listdir(directory)]
 
 
 def load_json(file_name):

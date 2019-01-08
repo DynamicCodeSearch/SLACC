@@ -97,4 +97,9 @@ public class InMemoryJavaCompiler {
         }
     }
 
+    public static void main(String[] args) {
+        String fileName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Junk/temp_class_1ffcf8fa52f24822bcbc1283d8912402.java";
+        System.out.println(InMemoryJavaCompiler.compile(fileName, false));
+    }
+
 }
