@@ -18,10 +18,10 @@ public class Arguments {
         extractor.extractAndStorePrimitiveArguments(javaFiles);
     }
 
-    public static void storeFuzzedArguments() {
+    public static void storeFuzzedArguments(Boolean deleteOld) {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         List<String> javaFiles = IntroClassUtils.listGeneratedFiles();
-        extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE);
+        extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE, deleteOld);
     }
 
 }

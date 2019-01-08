@@ -17,18 +17,18 @@ public class Arguments {
         extractor.extractAndStorePrimitiveArguments(javaFiles);
     }
 
-    public static void storeFuzzedArguments() {
+    public static void storeFuzzedArguments(boolean deleteOld) {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         ArgumentExtractor extractor = new ArgumentExtractor(CodejamUtils.DATASET);
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
-        extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE);
+        extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE, deleteOld);
     }
 
     public static void storeTestFuzzedArguments() {
         LOGGER.info("Extracting fuzzed arguments from generated classes ... ");
         ArgumentExtractor extractor = new ArgumentExtractor(CodejamUtils.DATASET, true);
         List<String> javaFiles = CodejamUtils.listGeneratedFiles();
-        extractor.storeFuzzedArguments(javaFiles, Settings.TEST_FUZZ_ARGUMENT_SIZE);
+        extractor.storeFuzzedArguments(javaFiles, Settings.TEST_FUZZ_ARGUMENT_SIZE, true);
     }
 
     public static void main(String[] args) {
