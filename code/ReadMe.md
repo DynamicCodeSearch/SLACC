@@ -54,7 +54,7 @@
   * Java:
     * Store Objects: Run `sh scripts/<dataset>/java/store_objects.sh`
     * Extract Primitive Arguments: Run `sh scripts/<dataset>/java/extract_primitive_arguments.sh`
-    * Extract Fuzzed Arguments: Run `sh scripts/<dataset>/java/extract_fuzzed_arguments.sh`
+    * Extract Fuzzed Arguments: Run `sh scripts/<dataset>/java/extract_fuzzed_arguments.sh <do_delete_old>`
     * Extract Metadata: Run `sh scripts/<dataset>/java/extract_metadata.sh`
   * Python:
     * Extract File Metadata: Run `sh scripts/<dataset>/java/extract_file_meta_data_parallel.sh`
