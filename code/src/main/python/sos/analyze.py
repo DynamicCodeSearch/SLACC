@@ -242,12 +242,14 @@ def _main():
     print(_help())
 
 
-
-
-if __name__ == "__main__":
-  # _main()
-  save_only_java_functions("codejam")
+def _test():
+  # save_only_java_functions("codejam")
   # connected_components("codejam", "HitoshiIO")
   # cluster_source("codejam")
   # random_testing2("codejam")
   # validate("codejam")
+  pass
+
+if __name__ == "__main__":
+  _main()
+  # _test()
