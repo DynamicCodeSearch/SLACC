@@ -71,7 +71,7 @@ public class JSONDriver {
     public static void deleteStore(String storePath) {
         File storeFile = new File(storePath);
         try {
-            FileUtils.deleteDirectory(storeFile);
+            FileUtils.forceDelete(storeFile);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
