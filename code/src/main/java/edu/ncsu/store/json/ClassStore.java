@@ -59,6 +59,24 @@ public class ClassStore {
     public void saveClass(String packageName, String className, JsonArray imports, JsonArray variables,
                           JsonArray parents, JsonArray constructors, boolean isTemplate) {
         LOGGER.info(String.format("Saving class : %s.%s", packageName, className));
+        JsonObject jsonObject = getClassJSON(packageName, className, imports, variables, parents, constructors, isTemplate);
+        saveStore(jsonObject);
+    }
+
+
+    /**
+     * Convert the following into a JSON
+     * @param packageName - Name of the package
+     * @param className - Name of the class
+     * @param imports - List of imports
+     * @param variables - List of variables
+     * @param parents - List of parent classes(extends, implements)
+     * @param constructors - List of constructors
+     * @param isTemplate - True if className is interface or abstract class
+     * @return - JsonObject
+     */
+    public JsonObject getClassJSON(String packageName, String className, JsonArray imports, JsonArray variables,
+                             JsonArray parents, JsonArray constructors, boolean isTemplate) {
         JsonObject jsonObject = getStore();
         JsonObject packageObject = jsonObject.getAsJsonObject(packageName);
         if (packageObject == null) {
@@ -74,7 +92,7 @@ public class ClassStore {
         classObject.addProperty("isTemplate", isTemplate);
         packageObject.add(className, classObject);
         jsonObject.add(packageName, packageObject);
-        saveStore(jsonObject);
+        return jsonObject;
     }
 
 }

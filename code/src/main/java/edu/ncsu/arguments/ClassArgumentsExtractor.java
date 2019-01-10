@@ -3,6 +3,7 @@ package edu.ncsu.arguments;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Settings;
 import edu.ncsu.store.json.ClassStore;
 import edu.ncsu.utils.Utils;
@@ -141,11 +142,25 @@ public class ClassArgumentsExtractor {
         return isValid;
     }
 
+    public static void testStore(String dataset) {
+//        String fileName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/aditsu/Cakes.java";
+        String fileName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/stupid/Dummy.java";
+        ClassArgumentsExtractor classArgumentsExtractor = new ClassArgumentsExtractor(dataset);
+        classArgumentsExtractor.classStore.deleteStore();
+        LOGGER.info(String.format("Processing: '%s'", fileName));
+        new ObjectStoreAdapter(fileName).storeClasses(classArgumentsExtractor.classStore);
+        classArgumentsExtractor.markClasses();
+    }
+
     public static void store(String dataset) {
         ClassArgumentsExtractor classArgumentsExtractor = new ClassArgumentsExtractor(dataset);
         classArgumentsExtractor.classStore.deleteStore();
         classArgumentsExtractor.storeClasses();
         classArgumentsExtractor.markClasses();
+    }
+
+    public static void main(String[] args) {
+        testStore(CodejamUtils.DATASET);
     }
 
 }
