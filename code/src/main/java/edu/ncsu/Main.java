@@ -41,6 +41,9 @@ public class Main {
                 case "extract_metadata":
                     edu.ncsu.codejam.Metadata.main(args);
                     break;
+                case "preprocess":
+                    edu.ncsu.codejam.Preprocess.main(args);
+                    break;
                 // For Validating clusters
                 case "test_extract_fuzzed_args":
                     edu.ncsu.codejam.Arguments.storeTestFuzzedArguments();

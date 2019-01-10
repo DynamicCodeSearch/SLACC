@@ -161,39 +161,75 @@ def _help():
     """
 
 
-def save_only_java_functions(dataset, base_language="java_python"):
+def save_only_target_functions(dataset, mixed_file_base_name, target_language):
   """
   Save only java functions from a mixture of java and python clusters
   :param dataset: Name of dataset
-  :param base_language: Type of language
+  :param mixed_file_base_name: Type of language eg. java_python
+  :param target_language: Target Language
   :return:
   """
   clusters_base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
-  for folder in cache.list_dir(clusters_base_folder, is_absolute=False):
+  for folder in sorted(cache.list_dir(clusters_base_folder, is_absolute=False)):
     LOGGER.info("Processing '%s' ..." % folder)
     folder_path = os.path.join(clusters_base_folder, folder)
-    base_clusters_file = os.path.join(folder_path, "%s.pkl" % base_language)
+    base_clusters_file = os.path.join(folder_path, "%s.pkl" % mixed_file_base_name)
     base_clusters = cache.load_pickle(base_clusters_file)
-    java_clusters = {}
+    target_clusters = {}
     for label, functions in base_clusters.items():
       if label == -1 or len(functions) == 1: continue
-      contains_java = False
-      contains_python = False
+      contains_target = False
+      contains_other = False
       for func in functions:
-        if func.source == "java":
-          contains_java = True
-        elif func.source == "python":
-          contains_python = True
-      if contains_java and not contains_python:
-        java_clusters[label] = functions
-    LOGGER.info("For folder = %s, # of java clusters = %d" % (folder, len(java_clusters)))
-    file_path = os.path.join(folder_path, "java.txt")
+        if func.source == target_language:
+          contains_target = True
+        else:
+          contains_other = True
+      if contains_target and not contains_other:
+        target_clusters[label] = functions
+    LOGGER.info("For folder = %s, # of '%s' clusters = %d" % (folder, target_language, len(target_clusters)))
+    file_path = os.path.join(folder_path, "only_%s.txt" % target_language)
+    pkl_path = os.path.join(folder_path, "only_%s.pkl" % target_language)
     file_contents = []
-    for label, functions in java_clusters.items():
+    for label, functions in target_clusters.items():
       file_contents.append("\n\n****** Cluster %d ******" % label)
       for func in functions:
         file_contents.append(func.body)
     cache.write_file(file_path, "\n".join(file_contents))
+    cache.save_pickle(pkl_path, target_clusters)
+
+
+def save_only_mixed_clusters(dataset, mixed_file_base_name):
+  """
+  Save only mixed functions
+  :param dataset: Name of dataset
+  :param mixed_file_base_name: Type of language eg. java_python
+  :return:
+  """
+  clusters_base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
+  for folder in sorted(cache.list_dir(clusters_base_folder, is_absolute=False)):
+    LOGGER.info("Processing '%s' ..." % folder)
+    folder_path = os.path.join(clusters_base_folder, folder)
+    base_clusters_file = os.path.join(folder_path, "%s.pkl" % mixed_file_base_name)
+    base_clusters = cache.load_pickle(base_clusters_file)
+    mixed_clusters = {}
+    for label, functions in base_clusters.items():
+      if label == -1 or len(functions) == 1: continue
+      sources = set()
+      for func in functions:
+        sources.add(func.source)
+      if len(sources) > 1:
+        mixed_clusters[label] = functions
+    LOGGER.info("For folder = %s, # of mixed clusters = %d" % (folder, len(mixed_clusters)))
+    file_path = os.path.join(folder_path, "only_mixed.txt")
+    pkl_path = os.path.join(folder_path, "only_mixed.pkl")
+    file_contents = []
+    for label, functions in mixed_clusters.items():
+      file_contents.append("\n\n****** Cluster %d ******" % label)
+      for func in functions:
+        file_contents.append(func.body)
+    cache.write_file(file_path, "\n".join(file_contents))
+    cache.save_pickle(pkl_path, mixed_clusters)
 
 
 def connected_components(dataset, base_folder):
@@ -237,6 +273,20 @@ def _main():
   elif utility == "cluster_testing":
     language = args[3] if len(args) >= 4 else "java"
     cluster_testing(dataset, language)
+  elif utility == "save_target":
+    if len(args) < 5:
+      print("""
+      Format: python sos/similarity <utility> <dataset> <mixed_file_base_name> <target_language>
+        eg. python sos/similarity <utility> <dataset> java_python java""")
+      exit()
+    save_only_target_functions(dataset, args[3], args[4])
+  elif utility == "save_mixed":
+    if len(args) < 4:
+      print("""
+      Format: python sos/similarity <utility> <dataset> <mixed_file_base_name>
+        eg. python sos/similarity <utility> <dataset> java_python""")
+      exit()
+    save_only_mixed_clusters(dataset, args[3])
   else:
     print("Invalid utility: %s" % utility)
     print(_help())

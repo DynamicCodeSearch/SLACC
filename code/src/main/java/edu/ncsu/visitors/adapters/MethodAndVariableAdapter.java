@@ -4,6 +4,8 @@ import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.Node;
 import com.github.javaparser.ast.body.*;
 import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import com.github.javaparser.ast.type.ReferenceType;
 import com.github.javaparser.ast.type.Type;
 import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.collect.Sets;
@@ -45,36 +47,42 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     private MethodAndVariableAdapter(String javaFile){
         this.linesCovered = new HashSet<>();
         this.fileName = javaFile;
-        compilationUnit = VisitorHelper.loadCompilationUnit(fileName);
-        commentAdapter = new CommentAdapter(fileName, compilationUnit);
+        this.compilationUnit = VisitorHelper.loadCompilationUnit(fileName);
+        this.commentAdapter = new CommentAdapter(fileName, compilationUnit);
         List<TypeDeclaration> types = compilationUnit.getTypes();
         String fileSource = compilationUnit.toString();
         this.classBlocks = new ArrayList<>();
         for (TypeDeclaration type: types) {
-            String className = type.getName();
-            Map<String, Variable> fieldVariablesMap = new HashMap<>();
-            List<BodyDeclaration> members = type.getMembers();
-            List<MethodBlock> methodBlocks = new ArrayList<>();
-            for (BodyDeclaration  member: members) {
-                if (member instanceof FieldDeclaration) {
-                    FieldDeclaration field = (FieldDeclaration) member;
-                    Type fieldType = field.getType();
-                    for (VariableDeclarator fieldVariable : field.getVariables()) {
-                        String variableName = fieldVariable.getId().getName();
-                        fieldVariablesMap.put(variableName,
-                                new Variable(variableName, fieldType,
-                                        fieldVariable.getBeginLine(), field.getBeginColumn(), fieldVariable.getInit(),
-                                        type, field.getModifiers()));
-                    }
-                } else if (member instanceof MethodDeclaration) {
-                    MethodDeclaration method = (MethodDeclaration) member;
-                    MethodBlock methodBlock = new MethodBlock(method, fileSource, className);
-                    methodBlocks.add(methodBlock);
-                }
-            }
-            ClassBlock classBlock = new ClassBlock(type, compilationUnit, fileName, fieldVariablesMap, methodBlocks);
-            classBlocks.add(classBlock);
+            classBlocks.add(parseTypeDeclaration(type, fileSource));
         }
+    }
+
+    private ClassBlock parseTypeDeclaration(TypeDeclaration typeDeclaration, String fileSource) {
+        String className = typeDeclaration.getName();
+        Map<String, Variable> fieldVariablesMap = new HashMap<>();
+        List<BodyDeclaration> members = typeDeclaration.getMembers();
+        List<MethodBlock> methodBlocks = new ArrayList<>();
+        List<ClassBlock> innerClasses = new ArrayList<>();
+        for (BodyDeclaration  member: members) {
+            if (member instanceof FieldDeclaration) {
+                FieldDeclaration field = (FieldDeclaration) member;
+                Type fieldType = field.getType();
+                for (VariableDeclarator fieldVariable : field.getVariables()) {
+                    String variableName = fieldVariable.getId().getName();
+                    fieldVariablesMap.put(variableName,
+                            new Variable(variableName, fieldType,
+                                    fieldVariable.getBeginLine(), field.getBeginColumn(), fieldVariable.getInit(),
+                                    typeDeclaration, field.getModifiers()));
+                }
+            } else if (member instanceof MethodDeclaration) {
+                MethodDeclaration method = (MethodDeclaration) member;
+                MethodBlock methodBlock = new MethodBlock(method, fileSource, className);
+                methodBlocks.add(methodBlock);
+            } else if (member instanceof ClassOrInterfaceDeclaration) {
+                innerClasses.add(parseTypeDeclaration((ClassOrInterfaceDeclaration) member, fileSource));
+            }
+        }
+        return new ClassBlock(typeDeclaration, compilationUnit, fileName, fieldVariablesMap, methodBlocks, innerClasses);
     }
 
     @SuppressWarnings("unchecked")
@@ -90,8 +98,11 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         MethodBlock methodBlock = (MethodBlock) visitorArg.get("method");
         List<Parameter> methodParameters = methodDeclaration.getParameters();
         for (Parameter methodParameter: methodParameters) {
-            Variable parameter = new Variable(methodParameter.getId().getName(),
-                    methodParameter.getType(),
+            Type paramType = methodParameter.getType();
+            if (paramType instanceof ReferenceType && ((ReferenceType) paramType).getType() instanceof ClassOrInterfaceType) {
+                visit((ClassOrInterfaceType) ((ReferenceType) paramType).getType(), arg);
+            }
+            Variable parameter = new Variable(methodParameter.getId().getName(), paramType,
                     methodParameter.getBeginLine(), methodParameter.getBeginColumn(),
                     null, methodBlock.getMethodNode());
             if (methodParameter.isVarArgs())
@@ -111,6 +122,9 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         Map<String, Object> visitorArg = (Map<String, Object>) arg;
         MethodBlock methodBlock = (MethodBlock) visitorArg.get("method");
         Type type = variableDeclaratorExpr.getType();
+        if (type instanceof ReferenceType && ((ReferenceType) type).getType() instanceof ClassOrInterfaceType) {
+            visit((ClassOrInterfaceType) ((ReferenceType) type).getType(), arg);
+        }
         for (VariableDeclarator variableDeclarator: variableDeclaratorExpr.getVars()) {
             Variable variable = new Variable(variableDeclarator.getId().getName(),
                     type, variableDeclarator.getBeginLine(), variableDeclarator.getBeginColumn(),
@@ -202,7 +216,29 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         updateStaticVariable(n, methodBlock, classBlock);
         VariablePosition position = new VariablePosition(n.getBeginLine(), n.getBeginColumn());
         VisitorHelper.updateVariableUsage(n.getName(), position, methodBlock, classBlock, false);
+    }
 
+    @Override
+    public void visit(ClassOrInterfaceType type, Object arg) {
+        Map<String, Object> visitorArg = (Map<String, Object>) arg;
+        ClassBlock classBlock = (ClassBlock) visitorArg.get("class");
+        if (type.getScope() == null && classBlock.containsInnerClass(type.getName())) {
+            type.setName(String.format("%s.%s", classBlock.getName(), type.getName()));
+        }
+    }
+
+    public void visit(ObjectCreationExpr objectCreationExpr, Object arg) {
+        Map<String, Object> visitorArg = (Map<String, Object>) arg;
+        ClassBlock classBlock = (ClassBlock) visitorArg.get("class");
+        ClassOrInterfaceType type = objectCreationExpr.getType();
+        if (type.getScope() == null && classBlock.containsInnerClass(type.getName())) {
+            type.setName(String.format("%s.%s", classBlock.getName(), type.getName()));
+        }
+        if (objectCreationExpr.getArgs() != null) {
+            for (Expression expression: objectCreationExpr.getArgs()) {
+                VisitorHelper.visit(this, expression, arg);
+            }
+        }
     }
 
     private void updateStaticVariable(NameExpr n, MethodBlock methodBlock, ClassBlock classBlock) {
@@ -277,13 +313,14 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
                 visitorArg.put("method", methodBlock);
                 this.visit(methodBlock.getMethodNode(), visitorArg);
                 for (List<StatementBlock> statementBlocks: methodBlock.getStatementGroups()) {
+                    DummyMethod method = this.makeFunction(statementBlocks, classBlock, methodBlock);
+                    List<String> thisFunctions = method.makeFunctions(true);
 //                    System.out.println("\n**** Combination **** ");
 //                    for (StatementBlock statementBlock: statementBlocks) {
 //                        System.out.println(statementBlock.getStatementAST());
 //                    }
+//                    System.out.println(thisFunctions.size());
 //                    System.out.println("***********************\n\n");
-                    DummyMethod method = this.makeFunction(statementBlocks, classBlock, methodBlock);
-                    List<String> thisFunctions = method.makeFunctions(true);
                     if (thisFunctions != null && thisFunctions.size() > 0) {
                         linesCovered.addAll(getLinesCovered(method));
                         functions.addAll(thisFunctions);
@@ -331,7 +368,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private static void testGenerateMethods() {
 //        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
-        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Junk/Dummy.java";
+        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/aditsu/Cakes.java";
+//        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/stupid/Dummy.java";
         generateMethodsForJavaFile(fName);
     }
 

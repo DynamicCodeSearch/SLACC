@@ -48,6 +48,11 @@ public class ClassBlock {
     private List<MethodBlock> methodBlocks;
 
     /***
+     * List of inner classes
+     */
+    private List<ClassBlock> innerClasses;
+
+    /***
      * Class AST
      */
     private TypeDeclaration classDeclaration;
@@ -177,13 +182,16 @@ public class ClassBlock {
      * @param fieldVariablesMap Map of member variables
      * @param methodBlocks List of method blocks
      */
-    public ClassBlock(TypeDeclaration classDeclaration, CompilationUnit compilationUnit, String fileSource, Map<String, Variable> fieldVariablesMap, List<MethodBlock> methodBlocks) {
+    public ClassBlock(TypeDeclaration classDeclaration, CompilationUnit compilationUnit, String fileSource,
+                      Map<String, Variable> fieldVariablesMap, List<MethodBlock> methodBlocks,
+                      List<ClassBlock> innerClasses) {
         this.classDeclaration = classDeclaration;
         this.compilationUnit = compilationUnit;
         this.fileSource = fileSource;
         this.name = classDeclaration.getName();
         this.fieldVariablesMap = fieldVariablesMap;
         this.methodBlocks = methodBlocks;
+        this.innerClasses = innerClasses;
     }
 
     /***
@@ -195,6 +203,14 @@ public class ClassBlock {
         // TODO: update this to support method overloading as well.
         for (MethodBlock methodBlock: this.methodBlocks) {
             if (methodBlock.getName().equals(methodName) && methodBlock.isStatic())
+                return true;
+        }
+        return false;
+    }
+
+    public boolean containsInnerClass(String name) {
+        for (ClassBlock classBlock: this.innerClasses) {
+            if (classBlock.getName().equals(name))
                 return true;
         }
         return false;
