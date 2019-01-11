@@ -82,7 +82,7 @@ public class FunctionVariable {
 
     public FunctionVariable(String dataset, ClassOrInterfaceType type, String packageName) {
         this.dataset = dataset;
-        setType(type.getName(), packageName);
+        setType(type.toString(), packageName);
     }
 
     public void setType(String type, String packageName) {

@@ -22,7 +22,7 @@ public class PackageManager {
     }
 
     public static Class findClass(String packageName, String className) {
-        String packageClass = String.format("%s.%s", packageName, className);
+        String packageClass = String.format("%s.%s", packageName, className.replace(".", "$"));
         try {
             return Class.forName(packageClass);
         } catch (ClassNotFoundException e){
