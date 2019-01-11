@@ -26,7 +26,7 @@ public class PreprocessAdapter extends VoidVisitorAdapter {
                     "Reverting to old content ... ", adapter.fileName));
             Utils.writeFileContent(oldSource, adapter.fileName);
         } else {
-            LOGGER.info(String.format("Preprocessed file '%s'.", adapter.fileName));
+//            LOGGER.info(String.format("Preprocessed file '%s'.", adapter.fileName));
         }
     }
 
@@ -34,11 +34,19 @@ public class PreprocessAdapter extends VoidVisitorAdapter {
         this.fileName = javaFile;
         this.compilationUnit = VisitorHelper.loadCompilationUnit(javaFile);
         for (TypeDeclaration typeDeclaration: this.compilationUnit.getTypes()) {
-            parseTypeDeclaration(typeDeclaration);
+            if (typeDeclaration instanceof ClassOrInterfaceDeclaration) {
+                parseTypeDeclaration((ClassOrInterfaceDeclaration) typeDeclaration, false);
+            }
+
         }
     }
 
-    private void parseTypeDeclaration(TypeDeclaration typeDeclaration) {
+    private void parseTypeDeclaration(ClassOrInterfaceDeclaration typeDeclaration, boolean isInner) {
+        int classModifier = typeDeclaration.getModifiers();
+        if (isInner && !ModifierSet.isStatic(classModifier)) {
+            classModifier = ModifierSet.addModifier(classModifier, ModifierSet.STATIC);
+            typeDeclaration.setModifiers(classModifier);
+        }
         for (BodyDeclaration member: typeDeclaration.getMembers()) {
             if (member instanceof FieldDeclaration) {
                 FieldDeclaration declaration = (FieldDeclaration) member;
@@ -55,7 +63,7 @@ public class PreprocessAdapter extends VoidVisitorAdapter {
                     declaration.setModifiers(modifiers);
                 }
             } else if (member instanceof ClassOrInterfaceDeclaration){
-                parseTypeDeclaration((ClassOrInterfaceDeclaration) member);
+                parseTypeDeclaration((ClassOrInterfaceDeclaration) member, true);
             }
         }
     }
