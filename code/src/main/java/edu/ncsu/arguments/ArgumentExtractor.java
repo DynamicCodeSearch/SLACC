@@ -120,7 +120,7 @@ public class ArgumentExtractor {
     }
 
     private void testGenerateForJavaFile() {
-        String javaFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/rf/generated_class_d864bfb0b1a94be186e5df060ae1373a.java";
+        String javaFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_5645d9f32cee4da7942ec2779f8a009e.java";
         generateForJavaFile(javaFile, Settings.FUZZ_ARGUMENT_SIZE);
     }
 

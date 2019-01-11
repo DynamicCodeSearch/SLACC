@@ -48,8 +48,9 @@ public class FunctionVariable {
         throw new RuntimeException("Invalid type " + type.getClass().getName());
     }
 
-    public static FunctionVariable fromJSON(JsonObject variableJSON) {
+    public static FunctionVariable fromJSON(String dataset, JsonObject variableJSON) {
         FunctionVariable functionVariable = new FunctionVariable();
+        functionVariable.dataset = dataset;
         String dataType = variableJSON.get("type").getAsString();
         String packageName = null;
         if (variableJSON.has("packageName"))
@@ -358,7 +359,7 @@ public class FunctionVariable {
                 JsonArray variables = new JsonArray();
                 for (JsonElement element: classObject.get("variables").getAsJsonArray()) {
                     JsonObject variableObject = element.getAsJsonObject();
-                    JsonObject variableMetadata = FunctionVariable.fromJSON(variableObject).getMetadata();
+                    JsonObject variableMetadata = FunctionVariable.fromJSON(this.dataset, variableObject).getMetadata();
                     if (variableMetadata != null)
                         variables.add(variableMetadata);
                     else

@@ -385,8 +385,8 @@ public class MethodExecutor {
 
     private static void testExecution() {
         String dataset = CodejamUtils.DATASET;
-        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/rf/generated_class_d864bfb0b1a94be186e5df060ae1373a.java";
-        String functionName = "func_493f96be398c482cbc95a8aebef17821";
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_5645d9f32cee4da7942ec2779f8a009e.java";
+        String functionName = "func_4ee1ed6c56784ee6bc7d9d66cf292d99";
         MethodExecutor.process(sourceFile, functionName, dataset, false);
 //        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
 //        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());

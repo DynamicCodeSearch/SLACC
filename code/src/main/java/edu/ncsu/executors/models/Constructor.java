@@ -53,7 +53,7 @@ public class Constructor {
                         && constructorObj.getAsJsonArray("parameters").size() > constructor.parameters.size()) {
                     constructor.parameters = new ArrayList<>();
                     for (JsonElement parameter: constructorObj.getAsJsonArray("parameters")) {
-                        constructor.parameters.add(FunctionVariable.fromJSON(parameter.getAsJsonObject()));
+                        constructor.parameters.add(FunctionVariable.fromJSON(dataset, parameter.getAsJsonObject()));
                     }
                 }
             }
