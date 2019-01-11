@@ -1,6 +1,7 @@
 package edu.ncsu.arguments;
 
 import edu.ncsu.codejam.CodejamUtils;
+import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
@@ -118,17 +119,13 @@ public class ArgumentExtractor {
         }
     }
 
-    private static void testGenerateForJavaFile() {
-        String dataset = CodejamUtils.DATASET;
-        String javaFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/aditsu/generated_class_5c0b14679b2f4a2b977c84542f1d60dc.java";
-        ClassMethods classMethods = new ClassMethods(dataset, javaFile);
-        for (Method method: classMethods.getMethods()) {
-            Function function = new Function(dataset, method, classMethods.getMethodBodies().get(method.getName()), javaFile);
-            System.out.println(String.format("%s: %s", function.getName(), function.isValidArgs()));
-        }
+    private void testGenerateForJavaFile() {
+        String javaFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/rf/generated_class_d864bfb0b1a94be186e5df060ae1373a.java";
+        generateForJavaFile(javaFile, Settings.FUZZ_ARGUMENT_SIZE);
     }
 
     public static void main(String[] args) {
-        testGenerateForJavaFile();
+        ArgumentExtractor extractor = new ArgumentExtractor(CodejamUtils.DATASET);
+        extractor.testGenerateForJavaFile();
     }
 }

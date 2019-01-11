@@ -12,9 +12,12 @@ public class Preprocess {
 
     private static void preprocess() {
         LOGGER.info(String.format("Preprocessing '%s' dataset ... ", CodejamUtils.DATASET));
-        for (String fileName: Utils.listFilesWithExtension(Settings.getDatasetSourceFolder(CodejamUtils.DATASET),
+        for (String filePath: Utils.listFilesWithExtension(Settings.getDatasetSourceFolder(CodejamUtils.DATASET),
                 ".java", true, true)) {
-            PreprocessAdapter.preprocess(fileName);
+            String fileName = Utils.getFileName(filePath);
+            if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX)) {
+                PreprocessAdapter.preprocess(filePath);
+            }
         }
     }
 
