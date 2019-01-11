@@ -1,5 +1,6 @@
 package edu.ncsu.arguments;
 
+import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.Primitive;
@@ -115,5 +116,19 @@ public class ArgumentExtractor {
             LOGGER.info(String.format("Running for %s", javaFile));
             generateForJavaFile(javaFile, numArgs);
         }
+    }
+
+    private static void testGenerateForJavaFile() {
+        String dataset = CodejamUtils.DATASET;
+        String javaFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/aditsu/generated_class_5c0b14679b2f4a2b977c84542f1d60dc.java";
+        ClassMethods classMethods = new ClassMethods(dataset, javaFile);
+        for (Method method: classMethods.getMethods()) {
+            Function function = new Function(dataset, method, classMethods.getMethodBodies().get(method.getName()), javaFile);
+            System.out.println(String.format("%s: %s", function.getName(), function.isValidArgs()));
+        }
+    }
+
+    public static void main(String[] args) {
+        testGenerateForJavaFile();
     }
 }
