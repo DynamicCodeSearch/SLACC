@@ -50,6 +50,8 @@ def load_functions(dataset, is_test=False, update_clone_meta=False):
   for func_dict in functions_arr:
     if not function_pattern.match(func_dict['name']): continue
     function_metadata = data_store.load_metadata(func_dict)
+    if not function_metadata or not function_metadata.get("return", None):
+      continue
     return_meta_data = function_metadata["return"]
     outputs = Outputs(func_dict["outputs"])
     funct = Function(name=func_dict["name"], dataset=dataset,
