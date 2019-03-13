@@ -146,3 +146,5 @@ code/meta_store
 code/meta_results
 code/results
 *.iml
+SLACC_FSE
+Readme.txt
