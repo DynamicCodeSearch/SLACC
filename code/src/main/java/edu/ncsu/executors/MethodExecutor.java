@@ -210,12 +210,12 @@ public class MethodExecutor {
     private static void executeAsBash(String dataset, String sourcePath, String functionName, int taskNumber, int totalTasks, boolean isTest) {
         try {
             LOGGER.info(String.format("Submitted %s. Doing: %d / %d", functionName, taskNumber + 1, totalTasks));
-            String scriptsFolder = Settings.getScriptsFolder(dataset);
+            String scriptsFolder = Utils.pathJoin("scripts", "java");
             if (isTest)
                 scriptsFolder = Utils.pathJoin(scriptsFolder, "test");
-            String command = String.format("sh %s %s %s",
+            String command = String.format("sh %s %s %s %s",
                     Utils.pathJoin(scriptsFolder, "execute_single_function.sh"),
-                    sourcePath, functionName);
+                    dataset, sourcePath, functionName);
             Process process = Runtime.getRuntime().exec(command, Utils.getEnvs(), new File(Settings.CODE_HOME));
             process.waitFor();
             LOGGER.info(String.format("Output: %s\nError: %s\n", Utils.getOutput(process), Utils.getError(process)));
@@ -348,14 +348,19 @@ public class MethodExecutor {
      * @param dataset - Dataset to execute
      */
     public static void executeDataset(String dataset) {
-        for (String problem: Utils.listDir(Settings.getDatasetSourceFolder(dataset))) {
-            MethodExecutor.executeProblem(dataset, problem);
+        LOGGER.info(String.format("Executing methods for dataset: %s. Here we go .... ", dataset));
+        String datasetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
+        List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
+        for (String javaFile: Utils.listGeneratedFiles(datasetPath)) {
+            MethodExecutor executor = new MethodExecutor(dataset, javaFile);
+            functionTasks.addAll(executor.getFunctionTasks());
         }
+        MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
     public static void executeProblem(String dataset, String problem) {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
-        String problemPath = Utils.pathJoin(Settings.getDatasetSourceFolder(dataset), problem);
+        String problemPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset, problem);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
         for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile);

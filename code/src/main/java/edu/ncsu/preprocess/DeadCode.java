@@ -14,14 +14,14 @@ public class DeadCode {
 
     private static String EXTRACTED = "extracted";
 
-    public static void transfer(String sourceFile, String targetFile) {
+    private static void transfer(String sourceFile, String targetFile) {
         CompilationUnit source = Utils.getCompilationUnit(sourceFile);
         CompilationUnit target = Utils.getCompilationUnit(targetFile);
         target.setTypes(source.getTypes());
         Utils.writeFileContent(target.toString(), targetFile);
     }
 
-    public static void clean(String packageName, String className) {
+    private static void clean(String packageName, String className) {
         String classPath = Utils.pathJoin(Utils.packageToFolder(packageName), String.format("%s.java", className));
         String sourcePath = Utils.pathJoin(Settings.CODE_HOME, EXTRACTED, classPath);
         String targetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, classPath);

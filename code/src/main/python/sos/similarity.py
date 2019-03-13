@@ -115,8 +115,8 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
       functions = load_functions(dataset, update_clone_meta=update_clone_meta) + load_py_functions(dataset)
     else:
       raise RuntimeError("Invalid language: %s" % language)
-    if dataset not in ["codejam", "introclass"]:
-      raise RuntimeError("Invalid dataset: %s" % dataset)
+    # if dataset not in ["codejam", "introclass"]:
+    #   raise RuntimeError("Invalid dataset: %s" % dataset)
   LOGGER.info("Clustering ... ")
   if file_name is None:
     file_name = language or "clusters"
@@ -173,7 +173,7 @@ def _main():
     language: java(default)/python/java_python
     """)
     exit(0)
-  language = args[2] if len(args) >= 3 else "java"
+  language = args[2] if len(args) >= 3 else "java_python"
   compute_similarity(args[1], language, skip_singles=False, update_clone_meta=True)
 
 

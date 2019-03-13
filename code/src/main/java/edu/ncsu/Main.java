@@ -1,5 +1,7 @@
 package edu.ncsu;
 
+import edu.ncsu.mains.*;
+
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,88 +14,54 @@ public class Main {
         if (args.length < 2) {
             LOGGER.log(Level.SEVERE, String.format("Size of arguments is less than 2. Arguments = %s",
                     Arrays.toString(args)));
-        } else if (args[0].equals("CodeJam")) {
-            switch (args[1]) {
+        } else {
+            switch (args[0]) {
                 case "crawl":
-                    edu.ncsu.codejam.Crawler.main(Arrays.copyOfRange(args, 2, args.length));
-                    break;
-                case "store_objects":
-                    edu.ncsu.codejam.ClassStorage.main(args);
-                    break;
-                case "snip":
-                    edu.ncsu.codejam.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
-                    break;
-                case "extract_primitive_args":
-                    edu.ncsu.codejam.Arguments.extractAndStorePrimitiveArguments();
-                    break;
-                case "extract_fuzzed_args":
-                    edu.ncsu.codejam.Arguments.storeFuzzedArguments(Boolean.parseBoolean(args[2]));
-                    break;
-                case "dead_code":
-                    edu.ncsu.codejam.Clean.eliminateDeadCode();
-                    break;
-                case "execute":
-                    edu.ncsu.codejam.Execute.main(Arrays.copyOfRange(args, 2, args.length));
-                    break;
-                case "execute_single":
-                    edu.ncsu.codejam.Execute.executeFunction(args[2], args[3]);
-                    break;
-                case "extract_metadata":
-                    edu.ncsu.codejam.Metadata.main(args);
+                    Crawler.main(Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case "preprocess":
-                    edu.ncsu.codejam.Preprocess.main(args);
+                    PreProcess.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "snip":
+                    Snipper.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "dead_code":
+                    DeadCode.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "store_objects":
+                    ClassStorage.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "extract_primitive_args":
+                    Arguments.extractAndStorePrimitiveArguments(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "extract_fuzzed_args":
+                    Arguments.storeFuzzedArguments(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "extract_metadata":
+                    Metadata.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "execute":
+                    Execute.execute(Arrays.copyOfRange(args, 1, args.length));
+                    break;
+                case "execute_single":
+                    // TODO: Change path of script and MethodExecutor.java to independent of dataset
+                    Execute.executeFunction(Arrays.copyOfRange(args, 1, args.length));
                     break;
                 // For Validating clusters
                 case "test_extract_fuzzed_args":
-                    edu.ncsu.codejam.Arguments.storeTestFuzzedArguments();
+                    Arguments.storeTestFuzzedArguments(Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case "test_reexecute_functions":
-                    edu.ncsu.codejam.Execute.reExecuteFunctions();
+                    Execute.reExecuteFunctions(Arrays.copyOfRange(args, 1, args.length));
                     break;
                 case "test_reexecute_single":
-                    edu.ncsu.codejam.Execute.reExecuteFunction(args[2], args[3]);
+                    Execute.reExecuteFunction(Arrays.copyOfRange(args, 1, args.length));
                     break;
                 default:
-                    LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
+                    LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal argument '%s'", args[0]));
                     break;
             }
-        } else if (args[0].equals("IntroClass")) {
-            switch (args[1]) {
-                case "crawl":
-                    edu.ncsu.introclass.Crawler.process();
-                    break;
-                case "store_objects":
-                    edu.ncsu.introclass.ClassStorage.main(args);
-                    break;
-                case "snip":
-                    edu.ncsu.introclass.Snipper.main(Arrays.copyOfRange(args, 2, args.length));
-                    break;
-                case "extract_primitive_args":
-                    edu.ncsu.introclass.Arguments.extractAndStorePrimitiveArguments();
-                    break;
-                case "extract_fuzzed_args":
-                    edu.ncsu.introclass.Arguments.storeFuzzedArguments(Boolean.parseBoolean(args[2]));
-                    break;
-                case "dead_code":
-                    edu.ncsu.introclass.Clean.eliminateDeadCode();
-                    break;
-                case "execute":
-                    edu.ncsu.introclass.Execute.main(Arrays.copyOfRange(args, 2, args.length));
-                    break;
-                case "execute_single":
-                    edu.ncsu.introclass.Execute.executeFunction(args[2], args[3]);
-                    break;
-                case "extract_metadata":
-                    edu.ncsu.introclass.Metadata.main(args);
-                    break;
-                default:
-                    LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal second argument '%s'", args[1]));
-                    break;
-            }
-        } else {
-            LOGGER.log(Level.SEVERE, String.format("WTF!! Illegal first argument '%s'", args[0]));
         }
-        System.exit(0);
     }
+
 }

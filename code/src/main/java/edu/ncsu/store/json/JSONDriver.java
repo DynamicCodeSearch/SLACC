@@ -70,6 +70,8 @@ public class JSONDriver {
 
     public static void deleteStore(String storePath) {
         File storeFile = new File(storePath);
+        if (!Utils.fileExists(storePath))
+            return;
         try {
             FileUtils.forceDelete(storeFile);
         } catch (IOException e) {

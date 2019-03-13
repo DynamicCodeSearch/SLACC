@@ -250,12 +250,30 @@ def connected_components(dataset, base_folder):
       n_clusters = networkx.number_connected_components(graph)
       contents.append("#### \# Functionalities = %d" % n_clusters)
       contents.append("```")
-      [contents.append("%d: %s" % (i, ",".join(map(str, sorted(map(int, component))))))
+      [contents.append("%d: %s" % (i, ",\n\t".join(component)))
        for i, component in enumerate(networkx.connected_components(graph))]
+      # [contents.append("%d: %s" % (i, ",".join(map(str, sorted(map(int, component))))))
+      #  for i, component in enumerate(networkx.connected_components(graph))]
       contents.append("```")
     LOGGER.info("For epsilon = %s, # clusters = %d" % (epsilon, n_clusters))
   write_file = os.path.join(base_folder_path, "components.md")
   cache.write_file(write_file, "\n".join(contents))
+
+
+def get_class_and_generate_functions(dataset, language="java_python", eps=0.01):
+  base_file = os.path.join(properties.META_RESULTS_FOLDER, dataset, "clusters", "cluster_testing",
+                           "eps_%0.2f" % eps, "%s.pkl" % language)
+  clusters = cache.load_pickle(base_file)
+  packages = set()
+  for label, functions in clusters.items():
+    if label == -1 or len(functions) == 1: continue
+    for func in functions:
+      if func.source == "java":
+        packages.add(func.package)
+  for package in sorted(list(packages)):
+    print(package)
+
+
 
 
 def _main():
@@ -294,10 +312,11 @@ def _main():
 
 def _test():
   # save_only_java_functions("codejam")
-  # connected_components("codejam", "HitoshiIO")
+  connected_components("codejam", "HitoshiIO")
   # cluster_source("codejam")
   # random_testing2("codejam")
   # validate("codejam")
+  # get_class_and_generate_functions("codejam")
   pass
 
 if __name__ == "__main__":

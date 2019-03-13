@@ -20,6 +20,7 @@ import properties
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
+DATASET = "CodeJam"
 BASE_URL = "http://www.go-hero.net/jam/"
 MATCH_STRING = "http://code.google.com/codejam/contest/scoreboard/do?cmd=GetSourceCode"
 
@@ -28,7 +29,7 @@ def crawl_link(url, key):
   LOGGER.info("Fetching URL: %s" % url)
   parsed_url = urlparse.urlparse(url)
   user_name = re.sub('[^a-zA-Z]+', '', urlparse.parse_qs(parsed_url.query)['username'][0])
-  user_name_path = os.path.join(properties.PYTHON_PROJECTS_HOME, key, user_name)
+  user_name_path = os.path.join(properties.PYTHON_PROJECTS_HOME, DATASET, key, user_name)
   cache.mk_package(user_name_path)
   file_handle, _ = urllib.urlretrieve(url)
   zip_file_object = zipfile.ZipFile(file_handle, 'r')
@@ -46,8 +47,10 @@ def crawl_link(url, key):
 
 
 def crawl(year, rnd, problem_id):
+  dataset_path = os.path.join(properties.PYTHON_PROJECTS_HOME, DATASET)
+  cache.mk_package(dataset_path)
   key = "Y%dR%dP%d" % (year, rnd, problem_id)
-  package_path = os.path.join(properties.PYTHON_PROJECTS_HOME, key)
+  package_path = os.path.join(properties.PYTHON_PROJECTS_HOME, DATASET, key)
   cache.delete_folder(package_path)
   LOGGER.info("Fetching for Year: %d, Round: %d, Problem: %d" % (year, rnd, problem_id))
   cache.mk_package(package_path)

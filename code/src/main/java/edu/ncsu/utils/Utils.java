@@ -363,6 +363,7 @@ public class Utils {
 
     public static void main(String[] args) {
 //        System.out.println(Utils.getFolderPath("/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Joshik/generated_class_d6e333fe2dfc41cfa56782e918726c8b.java"));
+        System.out.println(randomString());
     }
 
 }

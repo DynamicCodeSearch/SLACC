@@ -112,6 +112,7 @@ def get_function_args(dataset, arg_keys, is_test=False):
   if not arg_keys: return None
   func_key = create_func_key(arg_keys)
   arg_data = get_argument_store(dataset, is_test).load_args(func_key)
+
   if not arg_data:
     if DEBUG:
       LOGGER.warning("Arguments not found for key: '%s'." % func_key)
@@ -223,6 +224,7 @@ def execute_file(dataset, file_name):
     for func in helper.get_generated_functions(file_name):
       func_name = func.__name__
       valid, func_key = is_executable_function(dataset, func, False)
+      print(func.__name__, valid)
       n_totals += 1
       if valid:
         evaluated = evaluate_function(dataset, file_name, func_name)
@@ -236,7 +238,7 @@ def execute_file(dataset, file_name):
 
 
 def execute_problem(dataset, problem_id=None):
-  root_folder = properties.PYTHON_PROJECTS_HOME
+  root_folder = os.path.join(properties.PYTHON_PROJECTS_HOME, dataset)
   if problem_id:
     root_folder = os.path.join(root_folder, problem_id)
   for file_path in cache.list_files(root_folder, check_nest=True, is_absolute=True):
@@ -300,8 +302,8 @@ Metadata
 
 def extract_metadata_for_folder(dataset, problem_id=None):
   sys.path.append(properties.PYTHON_PROJECTS_HOME)
-  root_folder = properties.PYTHON_PROJECTS_HOME
   function_store = get_function_store(dataset)
+  root_folder = os.path.join(properties.PYTHON_PROJECTS_HOME, dataset)
   if problem_id:
     root_folder = os.path.join(root_folder, problem_id)
   for file_path in cache.list_files(root_folder, check_nest=True, is_absolute=True):
@@ -311,7 +313,8 @@ def extract_metadata_for_folder(dataset, problem_id=None):
     LOGGER.info("Processing '%s' ..." % helper.get_simple_name(file_path))
     for func in helper.get_generated_functions(file_path):
       function_name = func.__name__
-      valid, func_key = is_executable_function(dataset, func, True)
+      valid, func_key = is_executable_function(dataset, func, False)
+      print(function_name, func_key, valid)
       if valid:
         meta_data = {
           "name": function_name,

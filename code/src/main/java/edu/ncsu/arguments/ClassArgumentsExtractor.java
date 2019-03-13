@@ -19,17 +19,19 @@ public class ClassArgumentsExtractor {
 
     private String dataset;
 
+    private String datasetSourceFolder;
+
     private ClassStore classStore;
 
     public ClassArgumentsExtractor(String dataset) {
         this.dataset = dataset;
-        this.classStore = new ClassStore(dataset);
+        this.classStore = new ClassStore(this.dataset);
+        this.datasetSourceFolder = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, this.dataset);
     }
 
     private void storeClasses() {
-        String sourceFolder = Settings.getDatasetSourceFolder(this.dataset);
-        for (String problem: Utils.listDir(sourceFolder)) {
-            String problemDir = Utils.pathJoin(sourceFolder, problem);
+        for (String problem: Utils.listDir(datasetSourceFolder)) {
+            String problemDir = Utils.pathJoin(datasetSourceFolder, problem);
             for (String user: Utils.listDir(problemDir)) {
                 String userDir = Utils.pathJoin(problemDir, user);
                 for (String javaFile: Utils.listNonGeneratedJavaFiles(userDir)) {
@@ -160,7 +162,7 @@ public class ClassArgumentsExtractor {
     }
 
     public static void main(String[] args) {
-        testStore(CodejamUtils.DATASET);
+        store("IntroClassJava");
     }
 
 }

@@ -9,6 +9,7 @@ import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.Utils;
 
 import java.lang.reflect.Method;
+import java.util.Set;
 import java.util.logging.Logger;
 
 public class MetadataExtractor {
@@ -19,12 +20,12 @@ public class MetadataExtractor {
 
     private IMetadataStore metadataStore;
 
-    public MetadataExtractor(String dataset, String filePath) {
+    private MetadataExtractor(String dataset, String filePath) {
         classMethods = new ClassMethods(dataset, filePath);
         metadataStore = BaseStorage.loadMetadataStore();
     }
 
-    public void extract() {
+    private void extract() {
         LOGGER.info(String.format("Extracting metadata for class: %s.%s",
                 classMethods.getPackageName(), classMethods.getClassName()));
         JsonObject metadata = new JsonObject();
@@ -36,15 +37,15 @@ public class MetadataExtractor {
     }
 
     public static void extractForDataset(String dataset) {
-        String sourceFolder = Settings.getDatasetSourceFolder(dataset);
-        for (String problem: Utils.listDir(sourceFolder)) {
-            LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
-            String problemPath = Utils.pathJoin(sourceFolder, problem);
-            for(String javaFile: Utils.listGeneratedFiles(problemPath)) {
-                MetadataExtractor extractor = new MetadataExtractor(dataset, javaFile);
-                extractor.extract();
-            }
+        String sourceFolder = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
+        for(String javaFile: Utils.listGeneratedFiles(sourceFolder)) {
+            MetadataExtractor extractor = new MetadataExtractor(dataset, javaFile);
+            extractor.extract();
         }
+    }
+
+    public static void main(String[] args) {
+        extractForDataset("Example");
     }
 
 }
