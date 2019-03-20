@@ -1,0 +1,83 @@
+
+
+****** Cluster 0 ******
+def func_py_filter(df):
+  return df.query('col1 == 1 & col2 == 1')
+
+def func_py_and(df):
+  return df[(df.col1 == 1) & (df.col2 == 1)]
+
+gen_func_r_filter <- function(df) {
+    return(filter(df, col1 == 1, col2 == 1))
+}
+
+
+
+****** Cluster 1 ******
+def func_py_drop(df):
+  return df.drop(['col1', 'col2', 'col3'], axis=1)
+
+gen_func_r_drop <- function(df) {
+    return(select(df, -(col1:col3)));
+}
+
+
+
+****** Cluster 5 ******
+def func_py_select1(df):
+  return df[['col1', 'col2']]
+
+def func_py_distinct2(df):
+  return df[['col1', 'col2']].drop_duplicates()
+
+gen_func_r_select1 <- function(df) {
+    return(select(df, col1, col2));
+}
+
+gen_func_r_distinct2 <- function(df) {
+    return(distinct(select(df, col1, col2)));
+}
+
+
+
+****** Cluster 6 ******
+def func_py_slice(df):
+  return df.iloc[:10]
+
+gen_func_r_slice <- function(df) {
+    return(slice(df, 1:10))
+}
+
+
+
+****** Cluster 7 ******
+def func_py_3(df):
+  return df.iloc[:, 0:2]
+
+gen_func_r_4 <- function(df) {
+    return(select(df, 1:2))
+}
+
+gen_func_r_3 <- function(df) {
+    return(df[1:2]);
+}
+
+
+
+****** Cluster 8 ******
+def func_py_dim(df):
+  return df.shape
+
+gen_func_r_dim <- function(df) {
+    return(dim(df));
+}
+
+
+
+****** Cluster 10 ******
+def func_py_distinct1(df):
+  return df[['col1']].drop_duplicates()
+
+gen_func_r_distinct1 <- function(df) {
+    return(distinct(select(df, col1)));
+}

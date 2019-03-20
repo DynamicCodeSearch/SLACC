@@ -8,6 +8,7 @@ import edu.ncsu.config.Settings;
 import edu.ncsu.utils.InMemoryJavaCompiler;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.helpers.VisitorHelper;
+import org.apache.commons.lang3.StringUtils;
 
 
 public class DummyMethod {
@@ -136,17 +137,23 @@ public class DummyMethod {
         return builder.toString();
     }
 
+    public String makeUniqueFunctionDescriptor(String argStr, String body, String returnStmt) {
+        String retStmt = StringUtils.isEmpty(returnStmt) ? "" : returnStmt;
+        return String.format("@rg$tr:%s;b0dy:%s%s", argStr, body, retStmt).trim();
+    }
+
     /***
      * Make functions
      * @param isStatic: Is function static?
      * @return Entire function as string
      */
-    public List<String> makeFunctions(boolean isStatic) {
+    public List<String> makeFunctions(boolean isStatic, Set<String> exisitingFunctions) {
         List<String> functions = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         String functionBody = makeFunctionBody();
+        String argStr = makeArguments();
         String argAndBody = "(" +
-                makeArguments() + ") { \n" +
+                argStr + ") { \n" +
                 makeMetaComments() +
                 functionBody;
         StatementBlock lastStatementBlock = statementBlocks.get(statementBlocks.size() - 1);
@@ -155,11 +162,15 @@ public class DummyMethod {
         if (!isValid())
             return functions;
         if (isReturnStatement || returns.size() == 0) {
+            String functionDescriptor = makeUniqueFunctionDescriptor(argStr, functionBody, null);
+            if (exisitingFunctions.contains(functionDescriptor)) {
+                return functions;
+            }
+            exisitingFunctions.add(functionDescriptor);
             String funcName = Utils.randomString();
             builder.append(String.format(definitionFormat, parentMethodBlock.getReturnType(), funcName)).
                     append(argAndBody).
                     append("\n}\n\n");
-
             boolean status = isValidFunction(builder.toString());
             if (status) {
                 functions.add(builder.toString());
@@ -168,10 +179,20 @@ public class DummyMethod {
         }
         String returnFormat = "return %s;";
         for (Variable returnVariable: returns) {
+            String returnStatement = String.format(returnFormat, returnVariable.name);
+            String functionDescriptor = makeUniqueFunctionDescriptor(argStr, functionBody, returnStatement);
+            if (exisitingFunctions.contains(functionDescriptor)) {
+                continue;
+            }
+            exisitingFunctions.add(functionDescriptor);
             String funcName = Utils.randomString();
+            System.out.println("####");
+            System.out.println(funcName);
+            System.out.println(functionDescriptor);
+            System.out.println("\n\n");
             builder.append(String.format(definitionFormat, returnVariable.toTypeString(), funcName)).
                     append(argAndBody).
-                    append(String.format(returnFormat, returnVariable.name)).
+                    append(returnStatement).
                     append("\n}\n\n");
             boolean status = isValidFunction(builder.toString());
             if (status) {

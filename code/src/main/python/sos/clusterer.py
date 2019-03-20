@@ -69,8 +69,9 @@ class DBScanClusterer(O):
 
 
 class RepresentativeClusterer(O):
-  def __init__(self, functions, **kwargs):
+  def __init__(self, functions, distance_function=execution_distance, **kwargs):
     self.functions = functions
+    self.distance_function = distance_function
     self.union_find = uf.UnionFind(functions)
     O.__init__(self, **kwargs)
 
@@ -83,7 +84,7 @@ class RepresentativeClusterer(O):
         f_j = self.functions[j]
         if self.union_find.find(f_i) == self.union_find.find(f_j):
           continue
-        dist = execution_distance(f_i, f_j)
+        dist = self.distance_function(f_i, f_j)
         if dist <= clustering_error:
           self.union_find.union(f_i, f_j)
     clusters = {}

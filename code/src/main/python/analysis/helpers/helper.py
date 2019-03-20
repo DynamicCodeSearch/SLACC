@@ -35,9 +35,7 @@ def compile_py(file_name):
 
 
 def import_file(file_path):
-  print(file_path)
   python_name = file_path.split(properties.PYTHON_PROJECTS_HOME)[-1][1:].split(".")[0].replace(os.path.sep, ".")
-  print(python_name)
   module = __import__(python_name)
   parts = python_name.split(".")
   for part in parts[1:]:
@@ -73,6 +71,10 @@ def get_function(file_path, function_name):
 
 def get_func_arg_names(func):
   return inspect.getargspec(func).args
+
+
+def get_func_body(func):
+  return inspect.getsource(func)
 
 
 def get_family_name(type_name):

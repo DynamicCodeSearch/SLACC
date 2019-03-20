@@ -45,7 +45,7 @@ def _code_jam():
   Run coverage for codejam
   :return:
   """
-  codejam_format = r'Y\d+R\d+P\d+'
+  codejam_format = r'Y\d+rUtils\d+P\d+'
   total_coverage_percentages = []
   reports = []
   for project_name in sorted(cache.list_dir(properties.META_RESULTS_FOLDER, is_absolute=False)):

@@ -10,7 +10,7 @@ public class Interleave {
         }
         Integer[] remaining = a.length < b.length ? b : a;
         for (int j=i; j < remaining.length; j++) {
-            result += remaining.length;
+            result += remaining[j];
         }
         return result;
     }

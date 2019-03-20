@@ -305,6 +305,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     private List<String> generateMethods() {
         LOGGER.info(String.format("PROCESSING FOR %s", this.fileName));
         List<String> functions = new ArrayList<>();
+        Set<String> existingFunctions  = new HashSet<>();
         for (ClassBlock classBlock: this.getClassBlocks()) {
             for (MethodBlock methodBlock: classBlock.getMethodBlocks()) {
 //                LOGGER.info(String.format("*** %s.%s ***", classBlock.getName(), methodBlock.getName()));
@@ -314,7 +315,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
                 this.visit(methodBlock.getMethodNode(), visitorArg);
                 for (List<StatementBlock> statementBlocks: methodBlock.getStatementGroups()) {
                     DummyMethod method = this.makeFunction(statementBlocks, classBlock, methodBlock);
-                    List<String> thisFunctions = method.makeFunctions(true);
+                    List<String> thisFunctions = method.makeFunctions(true, existingFunctions);
 //                    System.out.println("\n**** Combination **** ");
 //                    for (StatementBlock statementBlock: statementBlocks) {
 //                        System.out.println(statementBlock.getStatementAST());
@@ -368,7 +369,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private static void testGenerateMethods() {
 //        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
-        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/aditsu/Cakes.java";
+        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Example/interleave/Interleave.java";
 //        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/stupid/Dummy.java";
         generateMethodsForJavaFile(fName);
     }
