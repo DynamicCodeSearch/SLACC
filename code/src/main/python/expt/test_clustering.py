@@ -13,7 +13,8 @@ import pandas as pd
 import numpy as np
 import re
 from pandas.testing import assert_frame_equal
-from sos.rUtils import generator
+from sos.rUtils import generator, dataframer
+from sos.rUtils.dataframer import DataFrameDiffMeta
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -29,6 +30,10 @@ def is_equal(val1, val2):
   t_1, t_2 = type(val1), type(val2)
   if t_1 == t_2 == pd.DataFrame:
     ret_val = val1.values == val2.values
+  elif t_1 == pd.DataFrame:
+    return val1.empty and not val2
+  elif t_2 == pd.DataFrame:
+    return val2.empty and not val1
   elif t_1 in LST_TYPES and t_2 in LST_TYPES:
     ret_val = val1 == val2
   elif type(val1) != type(val2):
@@ -114,7 +119,7 @@ def load_functions(functions_path, source):
     funct = Function(name=func_name, input_key=func_dict["inputKey"],
                      outputs=outputs, body=get_body(func_dict), source=source)
     functions.append(funct)
-  valid_functions = [funct for funct in functions if is_useful_function(funct)]
+  valid_functions = {funct.name: funct for funct in functions if is_useful_function(funct)}
   LOGGER.info("Valid Functions : %d / %d" % (len(valid_functions), len(functions)))
   return valid_functions
 
@@ -141,19 +146,44 @@ def cluster(clustering_error):
   cache.write_file(clusters_report_file, meta_data)
 
 
+def similar_matching(py_func_name, r_func_name):
+  args = generator.load_args([pd.DataFrame])
+  functions = load_functions(PD_FUNCTIONS_PATH, "pandas")
+  functions.update(load_functions(R_FUNCTIONS_PATH, "R"))
+  pd_function = functions[py_func_name]
+  r_function = functions[r_func_name]
+  metas = []
+  for i in xrange(len(pd_function.outputs.returns)):
+    pd_i = pd_function.outputs.returns[i]
+    r_i = r_function.outputs.returns[i]
+    df_meta = dataframer.difference(pd_i, r_i)
+    if df_meta.sim_score < 0.1:
+      print(args[i])
+      print(df_meta)
+      print(pd_i)
+      print(r_i)
+      print(dataframer.difference(pd_i, r_i))
+      print(df_meta)
+      exit()
+    metas.append(df_meta)
+  return DataFrameDiffMeta.aggregate(metas)
+
+
+def _similar():
+  py_func_name = "func_py_head"
+  r_func_name = "gen_func_r_head"
+  print(similar_matching(py_func_name, r_func_name))
+
+
+
 def _test():
   args = generator.load_args([pd.DataFrame])
-  pd_functions = load_functions(PD_FUNCTIONS_PATH, "pandas")
-  r_functions = load_functions(R_FUNCTIONS_PATH, "R")
-  pd_function, r_function = None, None
-  for f in pd_functions:
-    if f["name"] == "func_py_head":
-      pd_function = f
-      break
-  for f in r_functions:
-    if f["name"] == "gen_func_r_head":
-      r_function = f
-      break
+  functions = load_functions(PD_FUNCTIONS_PATH, "pandas")
+  functions.update(load_functions(R_FUNCTIONS_PATH, "R"))
+  pd_f_name = "func_py_select2"
+  r_f_name = "gen_func_r_select2"
+  pd_function = functions[pd_f_name]
+  r_function = functions[r_f_name]
   print(execution_distance(pd_function, r_function))
   for i in xrange(len(pd_function.outputs.returns)):
     pd_i = pd_function.outputs.returns[i]
@@ -165,9 +195,10 @@ def _test():
     # print(r_i)
     # print()
 
+    # if is_equal(pd_i, r_i) and r_i is not None and not r_i.empty:
     if not is_equal(pd_i, r_i):
       # print(pd_i, r_i)
-      # print(args[i])
+      print(args[i])
       print(pd_i)
       print(r_i)
       exit(0)
@@ -179,6 +210,7 @@ def _test():
     #   print(assert_frame_equal(pd_i, r_i, check_dtype=False))
     #   exit(0)
 
+
 def _cluster():
   args = sys.argv
   error = 0.01 if len(args) < 2 else float(args[1])
@@ -186,5 +218,6 @@ def _cluster():
 
 
 if __name__ == "__main__":
-  _cluster()
+  # _cluster()
   # _test()
+  _similar()

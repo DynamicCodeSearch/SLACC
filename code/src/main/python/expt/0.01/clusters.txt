@@ -45,7 +45,7 @@ gen_func_r_dim <- function(df) {
 
 ****** Cluster 10 ******
 def func_py_distinct1(df):
-  return df[['col1']].drop_duplicates()
+  return df[['col1']].GeneraGe_duplicates()
 
 gen_func_r_distinct1 <- function(df) {
     return(distinct(select(df, col1)));
