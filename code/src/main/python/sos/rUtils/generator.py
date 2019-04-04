@@ -9,6 +9,7 @@ __author__ = "bigfatnoob"
 
 import numpy as np
 import pandas as pd
+import random
 from rpy2.robjects import pandas2ri
 
 from utils import cache, logger
@@ -23,21 +24,35 @@ def generate_dataframe(n_rows, n_cols, make_col_names):
   data = np.random.randint(-100, 100, (n_rows, n_cols))
   col_names = None
   if make_col_names:
-    col_names = ["col%d" % (i + 1) for i in xrange(n_cols)]
+    col_names = ["SLAAC_col%d" % (i + 1) for i in xrange(n_cols)]
   df = pd.DataFrame(data, columns=col_names)
   return df
 
 
-def generate_R_dataframe(n_rows, n_cols, make_col_names):
-  df = generate_dataframe(n_rows, n_cols, make_col_names)
-  return pandas2ri.py2ri(df)
+def generate_named_dataframe(n_rows, n_cols, col_names):
+  data = np.random.randint(-100, 100, (n_rows, n_cols))
+  pd_col_names = col_names + ["SLAAC_col%d" % (i + 1) for i in xrange(n_cols - len(col_names))]
+  df = pd.DataFrame(data, columns=pd_col_names)
+  col_headers = df.columns.values
+  random.shuffle(col_headers)
+  df = df[col_headers]
+  return df
 
 
-def generate_random_dataframe():
+# def generate_R_dataframe(n_rows, n_cols, make_col_names):
+#   df = generate_dataframe(n_rows, n_cols, make_col_names)
+#   return pandas2ri.py2ri(df)
+
+
+def generate_random_dataframe(col_names=None):
+  delta = len(col_names) if col_names else 0
   n_rows = np.random.randint(1, 101)
-  n_cols = np.random.randint(1, 20)
-  make_col_names = np.random.choice([True, False])
-  return generate_dataframe(n_rows, n_cols, make_col_names)
+  n_cols = np.random.randint(1 + delta, 20 + delta)
+  if delta:
+    return generate_named_dataframe(n_rows, n_cols, col_names)
+  else:
+    make_col_names = np.random.choice([True, False])
+    return generate_dataframe(n_rows, n_cols, make_col_names)
 
 
 def is_dataframe_type(data_type):
@@ -48,9 +63,12 @@ def is_dataframe_type(data_type):
 def make_key(data_types):
   comps = []
   sep = "$|$"
-  for dt in data_types:
-    if is_dataframe_type(dt):
-      comps.append("DataFrame")
+  for name, props in data_types.items():
+    if is_dataframe_type(props["type"]):
+      if "col_names" in props:
+        comps.append("DataFrame[%s]" % "@|@".join(props["col_names"]))
+      else:
+        comps.append("DataFrame")
   return sep.join(comps)
 
 
@@ -68,9 +86,12 @@ def generate_args(data_types, n_args):
   args = []
   for _ in xrange(n_args):
     arg = []
-    for data_type in data_types:
-      if is_dataframe_type(data_type):
-        arg.append(generate_random_dataframe())
+    for arg_name, props in data_types.items():
+      if is_dataframe_type(props["type"]):
+        if "col_names" in props:
+          arg.append(generate_random_dataframe(props["col_names"]))
+        else:
+          arg.append(generate_random_dataframe())
       else:
         raise RuntimeError("Supports only dataframes")
     args.append(arg)
@@ -100,4 +121,5 @@ def load_args(data_types):
 if __name__ == "__main__":
   # print(len(load_args([type(generate_R_dataframe(4, 3, True))])))
   # print(type(generate_R_dataframe(4, 3, True)).__name__)
-  print(convert_py_object_to_r(generate_dataframe(4, 3, True)))
+  # print(convert_py_object_to_r(generate_dataframe(4, 3, True)))
+  print(generate_named_dataframe(3,5,["Hello", "World"]))

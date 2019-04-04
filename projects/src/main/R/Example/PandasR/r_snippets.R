@@ -13,12 +13,12 @@ gen_func_r_head <- function(df) {
     return(head(df));
 }
 
-gen_func_r_slice <- function(df) {
-    return(slice(df, 1:10))
+gen_func_r_slice <- function(df, a,b) {
+    return(slice(df, a:b))
 }
 
-gen_func_r_filter <- function(df) {
-    return(filter(df, col1 == 1, col2 == 1))
+gen_func_r_filter <- function(df, a, b) {
+    return(filter(df, col1 == a, col2 == b))
 }
 
 gen_func_r_and <- function(df) {
@@ -31,6 +31,10 @@ gen_func_r_select1 <- function(df) {
 
 gen_func_r_select2 <- function(df) {
     return(select(df, col1:col3));
+}
+
+gen_func_r_select3 <- function(df) {
+    return(df[, c("col1", "col2")])
 }
 
 gen_func_r_drop <- function(df) {
@@ -59,6 +63,11 @@ gen_func_r_3 <- function(df) {
 
 gen_func_r_4 <- function(df) {
     return(select(df, 1:2))
+}
+
+
+gen_func_r_0_1_index <- function(df) {
+    return(df[0:1])
 }
 
 

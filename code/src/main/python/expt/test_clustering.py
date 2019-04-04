@@ -125,14 +125,15 @@ def load_functions(functions_path, source):
 
 
 def cluster(clustering_error):
-  functions = load_functions(PD_FUNCTIONS_PATH, "pandas") + load_functions(R_FUNCTIONS_PATH, "R")
+  functions = load_functions(PD_FUNCTIONS_PATH, "pandas")
+  functions.update(load_functions(R_FUNCTIONS_PATH, "R"))
   file_name = "clusters"
   folder = os.path.join(BASE_CLUSTER_FOLDER, "%0.02f" % clustering_error)
   cache.mkdir(folder)
   clusters_txt_file = os.path.join(folder, "%s.txt" % file_name)
   clusters_pkl_file = os.path.join(folder, "%s.pkl" % file_name)
   clusters_report_file = os.path.join(folder, "%s.md" % file_name)
-  clusterer = RepresentativeClusterer(functions, distance_function=execution_distance)
+  clusterer = RepresentativeClusterer(functions.values(), distance_function=execution_distance)
   clusters = clusterer.cluster(clusters_txt_file, skip_singles=True, clustering_error=clustering_error)
   cache.save_pickle(clusters_pkl_file, clusters)
   n_clusters = len(clusters)
@@ -147,7 +148,7 @@ def cluster(clustering_error):
 
 
 def similar_matching(py_func_name, r_func_name):
-  args = generator.load_args([pd.DataFrame])
+  # args = generator.load_args([pd.DataFrame])
   functions = load_functions(PD_FUNCTIONS_PATH, "pandas")
   functions.update(load_functions(R_FUNCTIONS_PATH, "R"))
   pd_function = functions[py_func_name]
@@ -157,21 +158,21 @@ def similar_matching(py_func_name, r_func_name):
     pd_i = pd_function.outputs.returns[i]
     r_i = r_function.outputs.returns[i]
     df_meta = dataframer.difference(pd_i, r_i)
-    if df_meta.sim_score < 0.1:
-      print(args[i])
-      print(df_meta)
-      print(pd_i)
-      print(r_i)
-      print(dataframer.difference(pd_i, r_i))
-      print(df_meta)
-      exit()
+    # if df_meta.sim_score < 0.1:
+    #   print(args[i])
+    #   print(df_meta)
+    #   print(pd_i)
+    #   print(r_i)
+    #   print(dataframer.difference(pd_i, r_i))
+    #   print(df_meta)
+    #   exit()
     metas.append(df_meta)
   return DataFrameDiffMeta.aggregate(metas)
 
 
 def _similar():
-  py_func_name = "func_py_head"
-  r_func_name = "gen_func_r_head"
+  py_func_name = "func_py_0_1_index"
+  r_func_name = "gen_func_r_0_1_index"
   print(similar_matching(py_func_name, r_func_name))
 
 

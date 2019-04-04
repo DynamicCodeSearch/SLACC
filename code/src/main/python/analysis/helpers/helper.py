@@ -51,14 +51,16 @@ def is_valid_file(file_path):
     return False
 
 
-def get_generated_functions(file_path):
+def get_generated_functions(file_path, as_dict=False):
   sys.path.append(properties.PYTHON_PROJECTS_HOME)
   module = import_file(file_path)
   sys.path.remove(properties.PYTHON_PROJECTS_HOME)
-  functions = []
+  functions = {}
   for name in dir(module):
     if name.startswith(a_consts.FUNCTION_PREFIX):
-      functions.append(getattr(module, name))
+      functions[name] = getattr(module, name)
+  if not as_dict:
+    return functions.values()
   return functions
 
 
