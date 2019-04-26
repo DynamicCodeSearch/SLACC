@@ -224,16 +224,10 @@ def threaded_compare_values(q, result):
 def threaded_compare_returns(rets1, rets2):
   assert len(rets1) == len(rets2)
   q = Queue(maxsize=0)
-  num_threads = 50
   n_processes = multiprocessing.cpu_count()
   results = [{} for _ in xrange(len(rets1))]
   for i in xrange(len(rets1)):
     q.put((i, rets1[i], rets2[i]))
-  # for _ in xrange(num_threads):
-  #   worker = Thread(target=threaded_compare_values, args=(q, results,))
-  #   worker.setDaemon(True)
-  #   worker.start()
-  # q.join()
   processes = []
   for _ in xrange(n_processes):
     t = multiprocessing.Process(target=compare_values, args=(q, results,))
@@ -246,16 +240,6 @@ def threaded_compare_returns(rets1, rets2):
 
 def pooled_compare_values(index, val_1, val_2):
   return index, compare_values(val_1, val_2)
-  # while not q.empty():
-  #   work = q.get()
-  #   try:
-  #     diff = compare_values(work[1], work[2])
-  #     ret_que.put((work[0], diff))
-  #   except Exception as e:
-  #     LOGGER.error("Exception while comparing diff instance. Error '%s'" % e.message)
-  #     ret_que.put((work[0], None))
-  #   q.task_done()
-  # return True
 
 
 def pooled_compare_returns(rets1, rets2):
@@ -292,10 +276,10 @@ def test_similarity(limit=None):
   return r_scores
 
 
-def runner(skip_threshold=3500, max_wait_time=60, start=0, limit=500):
+def runner(skip_threshold=3500, start=0, end=None, limit=500):
+  LOGGER.info("Computing differences for R stmts b/w %d and %d" % (start, end if end else -1))
   log_interval = 100
   store = mongo_driver.MongoStore(props.DATASET)
-
   # Top R Statements
   r_cursor = store.load_raw_stmts(props.TYPE_R)
   r_stmts = {}
@@ -333,7 +317,7 @@ def runner(skip_threshold=3500, max_wait_time=60, start=0, limit=500):
   py_stmts = cleaned_py
 
   for i, r_stmt in enumerate(r_stmts):
-    if i < start:
+    if i < start or (end and i >= end):
       LOGGER.info("Skipping R Stmt: %d / %d !" % (i + 1, len(r_stmts)))
       continue
     existing_diffs = store.load_differences(r_id=r_stmt["_id"])
@@ -388,6 +372,17 @@ def runner(skip_threshold=3500, max_wait_time=60, start=0, limit=500):
     LOGGER.info("# Timed Out for %s = %d" % (r_stmt.mongo_id, took_too_long))
 
 
+def test_runner():
+  args = sys.argv
+  start, end = 0, None
+  if len(args) >= 3:
+    start = int(args[1])
+    end = int(args[2])
+  elif len(args) >= 2:
+    start = int(args[1])
+  runner(start=start, end=end)
+
+
 def _test_fetch():
   LOGGER.info("Fetching ... ")
   start = time.time()
@@ -427,5 +422,5 @@ def test_difference():
 
 
 if __name__ == "__main__":
-  runner(start=0)
-  # test_difference()
+  # runner(start=0)
+  test_runner()
