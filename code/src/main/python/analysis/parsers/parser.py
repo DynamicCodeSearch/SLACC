@@ -9,6 +9,8 @@ __author__ = "bigfatnoob"
 
 import ast
 
+NODE_CONST_KEYS = {'first_token', 'last_token', 'lineno', 'col_offset'}
+
 
 class Traveller(object):
   """
@@ -56,3 +58,11 @@ class Traveller(object):
 
 def parse_print(node, annotate_fields=True, include_attributes=True):
   print(ast.dump(node, annotate_fields, include_attributes))
+
+
+def get_child_nodes(node):
+  children = {}
+  for key in node.__dict__.keys():
+    if key not in NODE_CONST_KEYS:
+      children[key] = node.__dict__[key]
+  return children

@@ -53,7 +53,7 @@ class FunctionStore(base_store.FunctionStore):
   def update_function_arg_type(self, function_name, function_arg_types):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_arg_types")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "name")
+      mongo_driver.create_unique_index_for_collection(collection, "name")
     collection.insert({
       "name": function_name,
       "types": function_arg_types
@@ -71,7 +71,7 @@ class FunctionStore(base_store.FunctionStore):
     collection_name = "test_py_functions_executed" if self.is_test else "py_functions_executed"
     collection = mongo_driver.get_collection(self.dataset, collection_name)
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "name")
+      mongo_driver.create_unique_index_for_collection(collection, "name")
     try:
       collection.insert(function_json)
     except Exception:
@@ -90,7 +90,7 @@ class FunctionStore(base_store.FunctionStore):
     collection_name = "test_py_functions_failed" if self.is_test else "py_functions_failed"
     collection = mongo_driver.get_collection(self.dataset, collection_name)
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "name")
+      mongo_driver.create_unique_index_for_collection(collection, "name")
     collection.insert(function_json)
 
   def is_invalid_py_function(self, function_name):
@@ -106,7 +106,7 @@ class FunctionStore(base_store.FunctionStore):
   def save_py_metadata(self, func_json):
     collection = mongo_driver.get_collection(self.dataset, "py_functions_metadata")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "name")
+      mongo_driver.create_unique_index_for_collection(collection, "name")
     if mongo_driver.contains_document(collection, "name", func_json["name"]):
       mongo_driver.delete_document(collection, "name", func_json["name"])
     collection.insert(func_json)
@@ -144,7 +144,7 @@ class PyFileMetaStore(base_store.PyFileMetaStore):
   def save_meta(self, bson_dict):
     collection = mongo_driver.get_collection(self.dataset, "py_file_meta")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "file_path")
+      mongo_driver.create_unique_index_for_collection(collection, "file_path")
     collection.insert(bson_dict)
 
 
@@ -170,7 +170,7 @@ class ExecutionStore(base_store.ExecutionStore):
   def save_language_executed_function_names(self, language, names):
     collection = mongo_driver.get_collection(self.dataset, "language_executed_functions")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "language")
+      mongo_driver.create_unique_index_for_collection(collection, "language")
     if mongo_driver.contains_document(collection, "language", language):
       mongo_driver.delete_document(collection, "language", language)
     collection.insert({
@@ -181,7 +181,7 @@ class ExecutionStore(base_store.ExecutionStore):
   def save_cloned_function_names(self, name, clones):
     collection = mongo_driver.get_collection(self.dataset, "cloned_functions")
     if not mongo_driver.is_collection_exists(collection):
-      mongo_driver.create_index_for_collection(collection, "_function_name_")
+      mongo_driver.create_unique_index_for_collection(collection, "_function_name_")
     if mongo_driver.contains_document(collection, "_function_name_", name):
       mongo_driver.delete_document(collection, "_function_name_", name)
     clones["_function_name_"] = name

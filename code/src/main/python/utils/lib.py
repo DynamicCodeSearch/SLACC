@@ -8,6 +8,7 @@ __author__ = "bigfatnoob"
 import properties
 
 import warnings
+from collections import OrderedDict
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
@@ -63,6 +64,30 @@ class O(object):
     :param value: Value at key
     """
     self.has()[key] = value
+
+
+class O2(O):
+  def __init__(self, **d):
+    """
+    A cleaner base class.
+    1. Hides None values
+    :param d: kwargs for object
+    """
+    O.__init__(self, **d)
+
+  def __repr__(self):
+    """
+    Represent as string
+    :return:
+    """
+    show = [':%s %s' % (k, self.has()[k])
+            for k in sorted(self.has().keys())
+            if self.has()[k] is not None and k[0] is not "_"]
+    txt = ' '.join(show)
+    if len(txt) > 60:
+      show = map(lambda x: '\t' + x + '\n', show)
+    return '{' + ' '.join(show) + '}'
+
 
 
 def is_int(string):

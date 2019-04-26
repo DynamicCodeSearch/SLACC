@@ -17,5 +17,5 @@ gen_func_r_col_names <- function(df) {
 
 
 gen_func_r_select <- function(df) {
-    return(df[, c("col1", "col2")])
+ return(df[, c("col1", "col2")])
 }

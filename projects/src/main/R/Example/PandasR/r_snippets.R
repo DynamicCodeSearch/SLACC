@@ -13,8 +13,8 @@ gen_func_r_head <- function(df) {
     return(head(df));
 }
 
-gen_func_r_slice <- function(df, a,b) {
-    return(slice(df, a:b))
+gen_func_r_slice <- function(df) {
+    return(slice(df, 'col1':'col2'))
 }
 
 gen_func_r_filter <- function(df, a, b) {
@@ -26,7 +26,7 @@ gen_func_r_and <- function(df) {
 }
 
 gen_func_r_select1 <- function(df) {
-    return(select(df, col1, col2));
+    return(select(df, "col1", "col2"));
 }
 
 gen_func_r_select2 <- function(df) {
@@ -34,7 +34,7 @@ gen_func_r_select2 <- function(df) {
 }
 
 gen_func_r_select3 <- function(df) {
-    return(df[, c("col1", "col2")])
+    return(df[0:15, c("col1", "col2")])
 }
 
 gen_func_r_drop <- function(df) {
@@ -74,12 +74,12 @@ gen_func_r_0_1_index <- function(df) {
 #
 #
 # gen_func_r_x <- function() {
-#     n = c(2, 3, 5)
+#     abc = c(2, 3, 5)
 #     s = c("aa", "bb", "cc")
 #     b = c(TRUE, FALSE, TRUE)
-#     df = data.frame(n, s, b)
-#     print(df[1:2])
-#     print(select(df, 1:2))
+#     df = data.frame(abc, s, b)
+#     print(df$abc)
+#     # print(select(df, 1:2))
 # }
 #
 # gen_func_r_x()

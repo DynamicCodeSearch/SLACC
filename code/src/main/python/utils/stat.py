@@ -35,12 +35,16 @@ class Stat(lib.O):
     [q75, q25] = np.percentile(self.arr, [75, 25])
     return q75 - q25
 
+  def size(self):
+    return len(self.arr)
+
   def report(self):
     return "\n".join(["```",
                       "\n".join(["%10s : %0.4f" % ("Min", self.min()),
                                  "%10s : %0.4f" % ("Mean", self.mean()),
                                  "%10s : %0.4f" % ("Median", self.median()),
                                  "%10s : %0.4f" % ("Max", self.max()),
-                                 "%10s : %0.4f" % ("std", self.std()),
-                                 "%10s : %0.4f" % ("iqr", self.iqr())]),
+                                 "%10s : %0.4f" % ("Std. Dev.", self.std()),
+                                 "%10s : %0.4f" % ("IQR", self.iqr()),
+                                 "%10s : %d" % ("Size", self.size())]),
                       "```"])

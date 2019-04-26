@@ -59,14 +59,18 @@ def get_collection(dataset, collection_name):
 
 
 def is_collection_exists(collection):
-  return collection.count > 0
+  return collection.estimated_document_count() > 0
 
 
-def create_index_for_collection(collection, *fields):
+def create_unique_index_for_collection(collection, *fields):
   indices = []
   for field in fields:
     indices.append((field, pymongo.ASCENDING))
   collection.create_index(indices, unique=True)
+
+
+def create_index_for_collection(collection, field, order=pymongo.ASCENDING):
+  collection.create_index([(field, order)])
 
 
 def get_document(collection, key, value):

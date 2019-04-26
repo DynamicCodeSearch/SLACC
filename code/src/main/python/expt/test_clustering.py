@@ -6,15 +6,14 @@ sys.dont_write_bytecode = True
 
 __author__ = "bigfatnoob"
 
-from utils import cache, logger, lib, stat
+from utils import cache, logger, stat
 from sos.function import Function, Outputs
 from sos.clusterer import RepresentativeClusterer
 import pandas as pd
 import numpy as np
 import re
-from pandas.testing import assert_frame_equal
-from sos.rUtils import generator, dataframer
-from sos.rUtils.dataframer import DataFrameDiffMeta
+from misconceptions.rUtils import generator, dataframer
+from misconceptions.common.differences import DataFrameDiffMeta
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -23,7 +22,7 @@ R_FUNCTIONS_PATH = "/Users/panzer/Raise/ProgramRepair/CodeSeer/code/src/main/pyt
 BASE_CLUSTER_FOLDER = "/Users/panzer/Raise/ProgramRepair/CodeSeer/code/src/main/python/expt"
 
 
-LST_TYPES = set([tuple, list, np.ndarray])
+LST_TYPES = {tuple, list, np.ndarray}
 
 
 def is_equal(val1, val2):
@@ -174,7 +173,6 @@ def _similar():
   py_func_name = "func_py_0_1_index"
   r_func_name = "gen_func_r_0_1_index"
   print(similar_matching(py_func_name, r_func_name))
-
 
 
 def _test():

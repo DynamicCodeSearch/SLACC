@@ -7,7 +7,7 @@ sys.dont_write_bytecode = True
 __author__ = "bigfatnoob"
 
 
-from sos.rUtils import functions
+from misconceptions.rUtils import functions
 
 
 def process_file(file_path):
@@ -21,6 +21,14 @@ def process_file(file_path):
       n_valid += 1
       functions.save_function(evaluated)
   print("Valid functions: %d/%d" % (n_valid, len(r_functions)))
+
+
+def _test_extract_col_names():
+  file_name = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/R/Misconceptions/v0/generated_r_quiz.R"
+  func_name1 = "gen_func_r_q3"
+  # func_name2 = "gen_func_r_select"
+  print(func_name1, functions.parse_function_for_col_names(func_name1, file_name))
+  # print(func_name2, parse_function_for_col_names(func_name2, file_name))
 
 
 if __name__ == "__main__":

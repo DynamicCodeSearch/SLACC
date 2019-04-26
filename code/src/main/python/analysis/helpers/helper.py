@@ -34,8 +34,8 @@ def compile_py(file_name):
   # compile(source, file_name, 'exec')
 
 
-def import_file(file_path):
-  python_name = file_path.split(properties.PYTHON_PROJECTS_HOME)[-1][1:].split(".")[0].replace(os.path.sep, ".")
+def import_file(file_path, src_home=properties.PYTHON_PROJECTS_HOME):
+  python_name = file_path.split(src_home)[-1][1:].split(".")[0].replace(os.path.sep, ".")
   module = __import__(python_name)
   parts = python_name.split(".")
   for part in parts[1:]:
@@ -43,9 +43,9 @@ def import_file(file_path):
   return module
 
 
-def is_valid_file(file_path):
+def is_valid_file(file_path, src_home=properties.PYTHON_PROJECTS_HOME):
   try:
-    import_file(file_path)
+    import_file(file_path, src_home)
     return True
   except Exception:
     return False
@@ -64,10 +64,10 @@ def get_generated_functions(file_path, as_dict=False):
   return functions
 
 
-def get_function(file_path, function_name):
-  sys.path.append(properties.PYTHON_PROJECTS_HOME)
-  module = import_file(file_path)
-  sys.path.remove(properties.PYTHON_PROJECTS_HOME)
+def get_function(file_path, function_name, src_home=properties.PYTHON_PROJECTS_HOME):
+  sys.path.append(src_home)
+  module = import_file(file_path, src_home)
+  sys.path.remove(src_home)
   return getattr(module, function_name, None)
 
 

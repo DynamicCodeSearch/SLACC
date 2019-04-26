@@ -9,6 +9,7 @@ __author__ = "bigfatnoob"
 import inspect
 import signal
 import time
+import copy
 
 from analysis.helpers import helper
 from analysis.helpers import constants as a_consts
@@ -194,7 +195,9 @@ def evaluate_function(dataset, file_name, func, is_test=False):
 
 # signal.signal(signal.SIGALRM, timeout_handler)
 
+
 def execute_function(func, arg):
+  cloned = [copy.deepcopy(x) for x in arg]
   prev_signal = signal.getsignal(signal.SIGALRM)
   signal.signal(signal.SIGALRM, timeout_handler)
   signal.alarm(a_consts.METHOD_WAIT_TIMEOUT)
@@ -202,7 +205,7 @@ def execute_function(func, arg):
   return_variable, error_message = None, None
   try:
     start = time.time()
-    return_variable = func(*arg)
+    return_variable = func(*cloned)
     duration = (time.time() - start) * 1000
   except TimeoutException:
     error_message = "Method timed out after %d seconds" % a_consts.METHOD_WAIT_TIMEOUT
