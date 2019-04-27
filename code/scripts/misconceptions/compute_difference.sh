@@ -2,7 +2,7 @@
 
 #SBATCH --job-name cluster
 #SBATCH -N 1
-#SBATCH -p opteron
+#SBATCH -p diff
 # Use modules to set the software environment
 
 cd src/main/python

@@ -187,8 +187,6 @@ class ArrayDiffMeta(DiffMeta):
     n_cells = len(v1)
     if n_cells == 0:
       return 1.0
-    print(v1)
-    print(v2)
     matches = sum([1 if v_i == v_j else 0 for v_i, v_j in zip(v1, v2)])
     return matches / n_cells
 
