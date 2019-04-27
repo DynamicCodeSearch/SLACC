@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-#SBATCH --job-name cluster
+#SBATCH --job-name diff
 #SBATCH -N 1
-#SBATCH -p diff
+#SBATCH -p opteron
 # Use modules to set the software environment
 
 cd src/main/python
