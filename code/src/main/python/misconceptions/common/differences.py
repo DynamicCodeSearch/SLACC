@@ -234,6 +234,8 @@ class MatrixDiffMeta(DiffMeta):
   def compute_sim_score(v1, v2):
     assert v1.shape == v2.shape
     n_cells = float(v1.shape[0] * v1.shape[1])
+    if n_cells == 0:
+      return 1.0
     matches = 0
     for i in xrange(v1.shape[0]):
       for j in xrange(v1.shape[1]):
