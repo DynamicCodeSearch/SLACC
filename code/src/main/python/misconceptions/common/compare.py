@@ -174,9 +174,20 @@ def compare_values(val1, val2):
     return DiffMeta(sim_score=0.0, types=(t_1.__name__, t_2.__name__), message="Mismatched types")
 
 
+def is_empty(val):
+  t = type(val)
+  if t == pd.DataFrame:
+    return val.empty
+  elif t == np.ndarray:
+    return val.size == 0
+  elif val or val == 0 or val == "" or val is False:
+    return False
+  return True
+
+
 def is_all_none(lst):
   for x in lst:
-    if x or x == 0 or x == "":
+    if not is_empty(x):
       return False
   return True
 
@@ -341,6 +352,8 @@ def runner(skip_threshold=3500, start=0, end=None, limit=500):
       do_log = valid % log_interval == 0
       py_stmt = py_stmts[j]
       if py_stmt is None:
+        if do_log:
+          LOGGER.info("Empty py stmt: %d. Skipping ..." % valid)
         continue
       if not isinstance(py_stmt, Statement):
         py_stmts[j] = Statement(mongo_id=py_stmt["_id"], snippet=py_stmt["snippet"],
