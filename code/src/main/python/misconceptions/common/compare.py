@@ -361,6 +361,8 @@ def runner(skip_threshold=3500, start=0, end=None, limit=500):
                                 outputs=format_outputs(py_stmt["outputs"]))
         if py_stmts[j].is_all_none():
           py_stmts[j] = None
+          if do_log:
+            LOGGER.info("Empty py stmt: %d. Skipping ..." % valid)
           continue
         py_stmt = py_stmts[j]
       if py_stmt.mongo_id in processed:
