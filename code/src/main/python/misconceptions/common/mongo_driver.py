@@ -227,10 +227,14 @@ class MongoStore(lib.O):
       query.update(additional_queries)
     return collection.find(query, projection).limit(limit)
 
-  def update_difference(self, r_id, py_id, updates):
+  def update_difference(self, query, updates):
     collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)
-    query = {"r_id": r_id, "py_id": py_id}
     collection.update_many(query, {"$set": updates})
+
+  def create_semantic_indices(self, indices):
+    collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)
+    for index in indices:
+      mongo_driver.create_index_for_collection(collection, index)
 
 
 def to_mongo_format(obj):

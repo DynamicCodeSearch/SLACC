@@ -70,7 +70,22 @@ def create_unique_index_for_collection(collection, *fields):
 
 
 def create_index_for_collection(collection, field, order=pymongo.ASCENDING):
+  if does_index_exist(collection, field):
+    LOGGER.info("Index: '%s' exists for collection: '%s'. Not creating ..." % (field, collection.name))
+    return
+  LOGGER.info("Creating index: '%s' for collection: '%s' ..." % (field, collection.name))
   collection.create_index([(field, order)])
+
+
+def does_index_exist(collection, field):
+  index_info = collection.index_information()
+  if not index_info:
+    return False
+  for key, info in index_info.items():
+    for row in info['key']:
+      if row[0] == field:
+        return True
+  return False
 
 
 def get_document(collection, key, value):
@@ -87,5 +102,10 @@ def delete_document(collection, key, value):
   collection.delete_one({key: value})
 
 
+def _test_index_info():
+  print(does_index_exist(get_collection("Misconceptions", "differences"), "d_jaroq"))
+
+
 if __name__ == "__main__":
-  print(get_dataset_db("codejam"))
+  # print(get_dataset_db("codejam"))
+  _test_index_info()

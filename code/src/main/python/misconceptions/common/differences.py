@@ -8,8 +8,12 @@ __author__ = "bigfatnoob"
 
 import pandas as pd
 import numpy as np
+import warnings
 
 from utils import lib, stat
+
+
+warnings.filterwarnings("ignore")
 
 
 class CellIndex(lib.O):
@@ -104,6 +108,8 @@ class DiffMeta(lib.O):
     self.sim_score = None
     self.message = None
     self.types = None
+    self.is_val1_empty = False
+    self.is_val2_empty = False
     lib.O.__init__(self, **kwargs)
 
   def better(self, other):
@@ -115,7 +121,9 @@ class DiffMeta(lib.O):
     return {
       "sim_score": self.sim_score,
       "message": self.message,
-      "types": self.types
+      "types": self.types,
+      "is_val1_empty": self.is_val1_empty,
+      "is_val2_empty": self.is_val2_empty
     }
 
   @staticmethod
@@ -131,12 +139,13 @@ class DiffMeta(lib.O):
       types = None
       if "types" in d:
         types = (d["types"][0], d["types"][1])
-      return DiffMeta(sim_score=d["sim_score"], message=d["message"], types=types)
+      return DiffMeta(sim_score=d["sim_score"], message=d["message"], types=types,
+                      is_val1_empty=d["is_val1_empty"], is_val2_empty=d["is_val2_empty"])
 
 
 class ArrayDiffMeta(DiffMeta):
   def __init__(self, **kwargs):
-    self.size_diff = 0.0
+    self.size_diff = None
     self.diff_type = "array"
     self.indices = None
     DiffMeta.__init__(self, **kwargs)
@@ -153,7 +162,14 @@ class ArrayDiffMeta(DiffMeta):
   def difference(val1, val2):
     s1 = len(val1)
     s2 = len(val2)
-    if s1 == s2:
+    if val1.size == 0 or val2.size == 0:
+      is_val1_empty = val1.size == 0
+      is_val2_empty = val2.size == 0
+      score = 1.0 if is_val1_empty and is_val2_empty else 0.0
+      return ArrayDiffMeta(sim_score=score,
+                           is_val1_empty=is_val1_empty,
+                           is_val2_empty=is_val2_empty)
+    elif s1 == s2:
       return ArrayDiffMeta(sim_score=ArrayDiffMeta.compute_sim_score(val1, val2), size_diff=0)
     else:
       return ArrayDiffMeta.compute_size_diff(val1, val2)
@@ -199,7 +215,9 @@ class ArrayDiffMeta(DiffMeta):
       "message": self.message,
       "size_diff": self.size_diff,
       "diff_type": self.diff_type,
-      "indices": indices
+      "indices": indices,
+      "is_val1_empty": self.is_val1_empty,
+      "is_val2_empty": self.is_val2_empty
     }
 
   @staticmethod
@@ -208,13 +226,14 @@ class ArrayDiffMeta(DiffMeta):
     if d.get("indices", None):
       indices = [ArrayRange.from_dict(index) for index in d["indices"]]
     return ArrayDiffMeta(sim_score=d["sim_score"], message=d["message"], size_diff=d["size_diff"],
-                         diff_type=d["diff_type"], indices=indices)
+                         diff_type=d["diff_type"], indices=indices,
+                         is_val1_empty=d["is_val1_empty"], is_val2_empty=d["is_val2_empty"])
 
 
 class MatrixDiffMeta(DiffMeta):
   def __init__(self, **kwargs):
-    self.row_diff = 0.0
-    self.col_diff = 0.0
+    self.row_diff = None
+    self.col_diff = None
     self.diff_type = "matrix"
     self.indices = None
     DiffMeta.__init__(self, **kwargs)
@@ -247,7 +266,14 @@ class MatrixDiffMeta(DiffMeta):
   def difference(val1, val2):
     s1 = val1.shape
     s2 = val2.shape
-    if s1 == s2:
+    if val1.size == 0 and val2.size == 0:
+      is_val1_empty = val1.size == 0
+      is_val2_empty = val2.size == 0
+      score = 1.0 if is_val1_empty and is_val2_empty else 0.0
+      return MatrixDiffMeta(sim_score=score,
+                            is_val1_empty=is_val1_empty,
+                            is_val2_empty=is_val2_empty)
+    elif s1 == s2:
       return MatrixDiffMeta(sim_score=MatrixDiffMeta.compute_sim_score(val1, val2),
                             row_diff=0, col_diff=0)
     elif s1[0] == s2[0]:
@@ -360,7 +386,9 @@ class MatrixDiffMeta(DiffMeta):
       "row_diff": self.row_diff,
       "col_diff": self.col_diff,
       "diff_type": self.diff_type,
-      "indices": indices
+      "indices": indices,
+      "is_val1_empty": self.is_val1_empty,
+      "is_val2_empty": self.is_val2_empty
     }
 
   @staticmethod
@@ -370,13 +398,14 @@ class MatrixDiffMeta(DiffMeta):
       indices = [MatrixRange.from_dict(index) for index in d["indices"]]
     return MatrixDiffMeta(sim_score=d["sim_score"], message=d["message"],
                           row_diff=d["row_diff"], col_diff=d["col_diff"],
-                          diff_type=d["diff_type"], indices=indices)
+                          diff_type=d["diff_type"], indices=indices,
+                          is_val1_empty=d["is_val1_empty"], is_val2_empty=d["is_val2_empty"])
 
 
 class DataFrameDiffMeta(DiffMeta):
   def __init__(self, **kwargs):
-    self.row_diff = 0.0
-    self.col_diff = 0.0
+    self.row_diff = None
+    self.col_diff = None
     self.diff_type = "dataFrame"
     self.indices = None
     DiffMeta.__init__(self, **kwargs)
@@ -412,7 +441,14 @@ class DataFrameDiffMeta(DiffMeta):
   def difference(val1, val2):
     s1 = val1.shape
     s2 = val2.shape
-    if s1 == s2:
+    if val1.empty or val2.empty:
+      is_val1_empty = val1.empty
+      is_val2_empty = val2.empty
+      score = 1.0 if is_val1_empty and is_val2_empty else 0.0
+      return DataFrameDiffMeta(sim_score=score,
+                               is_val1_empty=is_val1_empty,
+                               is_val2_empty=is_val2_empty)
+    elif s1 == s2:
       return DataFrameDiffMeta(sim_score=DataFrameDiffMeta.compute_sim_score(val1, val2),
                                row_diff=0, col_diff=0)
     elif s1[0] == s2[0]:
@@ -537,7 +573,9 @@ class DataFrameDiffMeta(DiffMeta):
       "row_diff": self.row_diff,
       "col_diff": self.col_diff,
       "diff_type": self.diff_type,
-      "indices": indices
+      "indices": indices,
+      "is_val1_empty": self.is_val1_empty,
+      "is_val2_empty": self.is_val2_empty
     }
 
   @staticmethod
@@ -547,7 +585,8 @@ class DataFrameDiffMeta(DiffMeta):
       indices = [MatrixRange.from_dict(index) for index in d["indices"]]
     return DataFrameDiffMeta(sim_score=d["sim_score"], message=d["message"],
                              row_diff=d["row_diff"], col_diff=d["col_diff"],
-                             diff_type=d["diff_type"], indices=indices)
+                             diff_type=d["diff_type"], indices=indices,
+                             is_val1_empty=d["is_val1_empty"], is_val2_empty=d["is_val2_empty"])
 
 
 def _test_array_diff():
@@ -572,6 +611,14 @@ def _test_matrix_diff():
   print("####\n")
 
 
+def _test_df_diff():
+  x = pd.DataFrame([[1,2],[3,4]])
+  y = pd.DataFrame()
+  diff = DataFrameDiffMeta.difference(x, y)
+  print(DiffMeta.from_dict(diff.to_dict()))
+
+
 if __name__ == "__main__":
   _test_array_diff()
   _test_matrix_diff()
+  _test_df_diff()

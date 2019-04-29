@@ -154,7 +154,8 @@ def update_syntactic_distances():
         "d_jaro": jaro(r_stmt.normalized, py_stmt.normalized),
         "d_jaro_winkler": jaro_winkler(r_stmt.normalized, py_stmt.normalized)
       }
-      store.update_difference(r_stmt.mongo_id, py_stmt.mongo_id, updates)
+      query = {"r_id": r_stmt.mongo_id, "py_id": py_stmt.mongo_id}
+      store.update_difference(query, updates)
 
 
 def get_top_syntax():
@@ -176,5 +177,5 @@ def _test():
 
 if __name__ == "__main__":
   # test_distance_distribution()
-  # update_syntactic_distances()
-  get_top_syntax()
+  update_syntactic_distances()
+  # get_top_syntax()

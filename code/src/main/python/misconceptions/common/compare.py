@@ -176,7 +176,7 @@ def compare_values(val1, val2):
 
 def is_all_none(lst):
   for x in lst:
-    if x is not None:
+    if x or x == 0 or x == "":
       return False
   return True
 
@@ -394,8 +394,8 @@ def _test_fetch():
 
 
 def test_difference():
-  py_id = "5cafffd5e850c97e6a1fb612"
-  r_id = "5cb567d1e850c93c2bec107d"
+  py_id = "5cafffc1e850c97e6a1f9a70"
+  r_id = "5cb567d2e850c93c2bec1361"
   store = mongo_driver.MongoStore(props.DATASET)
   start = time.time()
   py_stmt = store.load_stmt(mongo_id=py_id)
@@ -415,7 +415,7 @@ def test_difference():
   # diffs = compare_returns(r_stmt.outputs[r_key].returns, py_stmt.outputs[py_key].returns)
   # diffs = threaded_compare_returns(r_stmt.outputs[r_key].returns[:4], py_stmt.outputs[py_key].returns[:4])
   diffs = pooled_compare_returns(r_stmt.outputs[r_key].returns, py_stmt.outputs[py_key].returns)
-  print(diffs[0])
+  print(DiffMeta.from_dict(diffs[0].to_dict()))
   end = time.time()
   print("Time Taken = %0.2f" % (end - r_time))
   exit()
@@ -424,3 +424,4 @@ def test_difference():
 if __name__ == "__main__":
   # runner(start=0)
   test_runner()
+  # test_difference()
