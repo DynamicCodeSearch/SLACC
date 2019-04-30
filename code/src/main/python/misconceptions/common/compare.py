@@ -256,8 +256,8 @@ def pooled_compare_values(index, val_1, val_2):
 def pooled_compare_returns(rets1, rets2):
   assert len(rets1) == len(rets2)
   results = [{} for _ in xrange(len(rets1))]
-  # n_processes = min(multiprocessing.cpu_count(), len(rets1))
-  n_processes = 3
+  n_processes = min(multiprocessing.cpu_count(), len(rets1))
+  # n_processes = 3
   pool = multiprocessing.Pool(processes=n_processes)
   pooled = [pool.apply_async(pooled_compare_values, args=(i, rets1[i], rets2[i])) for i in xrange(len(rets1))]
   for p in pooled:
