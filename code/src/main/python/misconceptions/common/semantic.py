@@ -19,15 +19,18 @@ LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 class SemanticSummary(O):
   def __init__(self, **kwargs):
     self.sim_score = None
-    self.n_mismatched = None
+    self.n_mismatched = 0
     self.size_diff = None
     self.row_diff = None
     self.col_diff = None
+    self.n_val1_empty = 0
+    self.n_val2_empty = 0
+    self.n_both_empty = 0
     O.__init__(self, **kwargs)
 
   def update_summary(self, diff):
     if diff.message == "Mismatched types":
-      self.n_mismatched = (0 if not self.n_mismatched else self.n_mismatched) + 1
+      self.n_mismatched += 1
       return
     elif isinstance(diff, differences.DataFrameDiffMeta) or isinstance(diff, differences.MatrixDiffMeta):
       if not self.row_diff: self.row_diff = []
@@ -37,6 +40,9 @@ class SemanticSummary(O):
     elif isinstance(diff, differences.ArrayDiffMeta):
       if not self.size_diff: self.size_diff = []
       self.size_diff.append(diff.size_diff)
+    self.n_both_empty += 1 if diff.is_val1_empty and diff.is_val2_empty else 0
+    self.n_val1_empty += 1 if diff.is_val1_empty else 0
+    self.n_val2_empty += 1 if diff.is_val2_empty else 0
     if not self.sim_score:
       self.sim_score = []
     self.sim_score.append(diff.sim_score)
@@ -45,13 +51,16 @@ class SemanticSummary(O):
     report = {}
     if self.sim_score:
       report["semantic_score"] = np.mean(self.sim_score)
-    report["n_mismatched"] = self.n_mismatched if self.n_mismatched else 0
+    report["n_mismatched"] = self.n_mismatched
     if self.row_diff:
       report["row_diff"] = np.mean(self.row_diff)
     if self.col_diff:
       report["col_diff"] = np.mean(self.col_diff)
     if self.size_diff:
       report["size_diff"] = np.mean(self.size_diff)
+    report["n_both_empty"] = self.n_both_empty
+    report["n_val1_empty"] = self.n_val1_empty
+    report["n_val2_empty"] = self.n_val2_empty
     return report
 
 
@@ -60,7 +69,8 @@ def update_semantic_scores(start=0, end=None, log_interval=100, limit=0):
   diff_records = store.load_differences(additional_queries={"n_mismatched": {"$exists": False}}, limit=limit)
   n_records = diff_records.count()
   LOGGER.info("Retrieved %d records ..." % n_records)
-  semantic_columns = ["semantic_score", "n_mismatched", "row_diff", "col_diff", "size_diff"]
+  semantic_columns = ["semantic_score", "n_mismatched", "row_diff", "col_diff", "size_diff",
+                      "n_both_empty", "n_val1_empty", "n_val2_empty"]
   store.create_semantic_indices(semantic_columns)
   for i, diff_record in enumerate(diff_records):
     if i < start or (end and i >= end):
