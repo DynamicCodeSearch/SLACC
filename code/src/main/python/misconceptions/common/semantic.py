@@ -33,13 +33,16 @@ class SemanticSummary(O):
       self.n_mismatched += 1
       return
     elif isinstance(diff, differences.DataFrameDiffMeta) or isinstance(diff, differences.MatrixDiffMeta):
-      if not self.row_diff: self.row_diff = []
-      self.row_diff.append(diff.row_diff)
-      if not self.col_diff: self.col_diff = []
-      self.col_diff.append(diff.col_diff)
+      if diff.row_diff is not None:
+        if not self.row_diff: self.row_diff = []
+        self.row_diff.append(diff.row_diff)
+      if diff.col_diff is not None:
+        if not self.col_diff: self.col_diff = []
+        self.col_diff.append(diff.col_diff)
     elif isinstance(diff, differences.ArrayDiffMeta):
-      if not self.size_diff: self.size_diff = []
-      self.size_diff.append(diff.size_diff)
+      if diff.size_diff is not None:
+        if not self.size_diff: self.size_diff = []
+        self.size_diff.append(diff.size_diff)
     self.n_both_empty += 1 if diff.is_val1_empty and diff.is_val2_empty else 0
     self.n_val1_empty += 1 if diff.is_val1_empty else 0
     self.n_val2_empty += 1 if diff.is_val2_empty else 0
