@@ -77,10 +77,17 @@ def format_outputs(outputs):
   formatted_outputs = {}
   for key, output in outputs.items():
     formatted = Outputs()
+    formatted.is_all_same = True
+    prev_vals = []
     for o in output:
-      formatted.returns.append(format_return(o["return"]) if "return" in o else None)
+      ret_formatted = format_return(o["return"]) if "return" in o else None
+      formatted.returns.append(ret_formatted)
       formatted.errors.append(o["errorMessage"] if "errorMessage" in o else None)
       formatted.durations.append(o["duration"] if "duration" in o else None)
+      if len(prev_vals) == 0:
+        prev_vals.append(ret_formatted)
+      elif formatted.is_all_same and not is_equal(ret_formatted, prev_vals[0]):
+        formatted.is_all_same = False
     formatted_outputs[key] = formatted
   return formatted_outputs
 
@@ -105,7 +112,11 @@ def is_equal(val1, val2):
   elif t_2 == pd.DataFrame:
     return val2.empty and not val1
   elif t_1 in LST_TYPES and t_2 in LST_TYPES:
-    ret_val = val1 == val2
+    f_val1 = np.array(val1)
+    f_val2 = np.array(val2)
+    if f_val1.shape != f_val2.shape:
+      return False
+    ret_val = f_val1 == f_val2
   elif type(val1) != type(val2):
     ret_val = False
   else:

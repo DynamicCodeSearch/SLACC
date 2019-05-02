@@ -133,6 +133,7 @@ class Outputs(O):
     self.returns = []
     self.errors = []
     self.durations = []
+    self.is_all_same = False
     if outputs_json is not None:
       for output_json in outputs_json:
         self.returns.append(output_json["return"] if "return" in output_json else None)
@@ -144,6 +145,7 @@ class Outputs(O):
     new.returns = self.returns[:]
     new.errors = self.errors[:]
     new.durations = self.durations[:]
+    new.is_all_same = self.is_all_same
     return new
 
   def subset(self, start, end):
@@ -151,4 +153,5 @@ class Outputs(O):
     new.returns = self.returns[start:end]
     new.errors = self.errors[start:end]
     new.durations = self.durations[start:end]
+    new.is_all_same = self.is_all_same
     return new

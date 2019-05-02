@@ -98,6 +98,10 @@ class MongoStore(lib.O):
        # pprint.pprint(outputs[outputs.keys()[0]])
         raise e
 
+  def update_stmt(self, stmt_id, updates):
+    collection = mongo_driver.get_collection(self.dataset, STMT_COLLECTION)
+    collection.update_one({"_id": stmt_id}, {"$set": updates})
+
   def load_stmts(self, language=None, is_valid=True, has_output=False, limit=None):
     if language:
       stmts = mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find({"language": language})
