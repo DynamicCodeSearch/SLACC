@@ -343,8 +343,7 @@ def runner(skip_threshold=3500, start=0, end=None):
                        variables=r_stmt["variables"], language=r_stmt["language"],
                        outputs=format_outputs(r_stmt["outputs"]))
     if r_stmt.is_all_same() or r_stmt.is_all_none():
-      if do_log:
-        LOGGER.info("Empty or singular R stmt: %d. Skipping ..." % valid)
+      LOGGER.info("Empty or singular R stmt: %d. Skipping ..." % valid)
       continue
     valid = 0
     took_too_long = 0
