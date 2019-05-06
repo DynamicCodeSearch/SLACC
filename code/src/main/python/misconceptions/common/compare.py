@@ -42,6 +42,12 @@ class Statement(lib.O):
         return False
     return True
 
+  def is_all_same(self):
+    for res, rets in self.outputs.items():
+      if not rets.is_all_same:
+        return False
+    return True
+
 
 def get_executed_stmts_pkl(language):
   return os.path.join(props.RESOURCES_HOME, "executed_%s.pkl" % language)
@@ -208,10 +214,10 @@ def difference(r_stmt, py_stmt, store=None, do_log=False):
   if store is None:
     store = mongo_driver.MongoStore(props.DATASET)
   for r_return, res1 in r_stmt.outputs.items():
-    if is_all_none(res1.returns):
+    if res1.is_all_same or is_all_none(res1.returns):
       continue
     for py_return, res2 in py_stmt.outputs.items():
-      if is_all_none(res2.returns):
+      if res2.is_all_same or is_all_none(res2.returns):
         continue
       # diffs = compare_returns(res1.returns, res2.returns)
       diffs = pooled_compare_returns(res1.returns, res2.returns)
@@ -298,45 +304,27 @@ def test_similarity(limit=None):
   return r_scores
 
 
-def runner(skip_threshold=3500, start=0, end=None, limit=500):
+def runner(skip_threshold=3500, start=0, end=None):
   LOGGER.info("Computing differences for R stmts b/w %d and %d" % (start, end if end else -1))
+  # log_interval = 100
   log_interval = 100
   store = mongo_driver.MongoStore(props.DATASET)
-  # Top R Statements
   r_cursor = store.load_raw_stmts(props.TYPE_R)
-  r_stmts = {}
+  r_stmts = []
   for r_stmt in r_cursor:
     if not r_stmt.get('variables', None) or not r_stmt.get('outputs', None):
       continue
-    r_stmts[r_stmt["snippet"]] = r_stmt
+    r_stmts.append(r_stmt)
   del r_cursor
-  cleaned_r = []
-  top_r_stmts = r_crawler.get_stmt_counts(limit*4)
-  for r_snippet, count in top_r_stmts.items():
-    if r_snippet in r_stmts:
-      cleaned_r.append(r_stmts[r_snippet])
-    if len(cleaned_r) == limit:
-      break
-  assert len(cleaned_r) == limit
-  r_stmts = cleaned_r
 
   # Top Py Statements
   py_cursor = store.load_raw_stmts(props.TYPE_PYTHON)
-  py_stmts = {}
+  py_stmts = []
   for py_stmt in py_cursor:
     if (not py_stmt.get('variables', None)) or (not py_stmt.get('outputs', None)):
       continue
-    py_stmts[py_stmt["snippet"]] = py_stmt
+    py_stmts.append(py_stmt)
   del py_cursor
-  cleaned_py = []
-  top_py_stmts = pd_crawler.get_stmt_counts(limit*4)
-  for py_snippet, count in top_py_stmts.items():
-    if py_snippet in py_stmts:
-      cleaned_py.append(py_stmts[py_snippet])
-    if len(cleaned_py) == limit:
-      break
-  assert len(cleaned_py) == limit
-  py_stmts = cleaned_py
 
   for i, r_stmt in enumerate(r_stmts):
     if i < start or (end and i >= end):
@@ -354,7 +342,9 @@ def runner(skip_threshold=3500, start=0, end=None, limit=500):
     r_stmt = Statement(mongo_id=r_stmt["_id"], snippet=r_stmt["snippet"],
                        variables=r_stmt["variables"], language=r_stmt["language"],
                        outputs=format_outputs(r_stmt["outputs"]))
-    if r_stmt.is_all_none():
+    if r_stmt.is_all_same() or r_stmt.is_all_none():
+      if do_log:
+        LOGGER.info("Empty or singular R stmt: %d. Skipping ..." % valid)
       continue
     valid = 0
     took_too_long = 0
@@ -364,16 +354,16 @@ def runner(skip_threshold=3500, start=0, end=None, limit=500):
       py_stmt = py_stmts[j]
       if py_stmt is None:
         if do_log:
-          LOGGER.info("Empty py stmt: %d. Skipping ..." % valid)
+          LOGGER.info("Empty or singular py stmt: %d. Skipping ..." % valid)
         continue
       if not isinstance(py_stmt, Statement):
         py_stmts[j] = Statement(mongo_id=py_stmt["_id"], snippet=py_stmt["snippet"],
                                 variables=py_stmt["variables"], language=py_stmt["language"],
                                 outputs=format_outputs(py_stmt["outputs"]))
-        if py_stmts[j].is_all_none():
+        if py_stmts[j].is_all_same() or py_stmts[j].is_all_none():
           py_stmts[j] = None
           if do_log:
-            LOGGER.info("Empty py stmt: %d. Skipping ..." % valid)
+            LOGGER.info("Empty or singular py stmt: %d. Skipping ..." % valid)
           continue
         py_stmt = py_stmts[j]
       if py_stmt.mongo_id in processed:

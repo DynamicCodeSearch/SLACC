@@ -30,6 +30,14 @@ def get_replace_variable_func():
   return _REPLACE_VARIABLE_FUNC
 
 
+def r_normalize(stmt):
+  return normalize_R_snippet(stmt["snippet"], str(stmt["variables"][0]))
+
+
+def py_normalize(stmt):
+  return PyVariableRenamer(stmt["snippet"], str(stmt["variables"][0])).parse()
+
+
 def normalize_R_snippet(snippet, variable):
   r_func = get_replace_variable_func()
   try:

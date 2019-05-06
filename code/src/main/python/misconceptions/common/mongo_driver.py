@@ -150,6 +150,9 @@ class MongoStore(lib.O):
     LOGGER.info("Deleting differences for query %s .... " % query)
     mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_many(query)
 
+  def delete_difference(self, mongo_id):
+    mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_one({"_id": mongo_id})
+
   # Inputs
 
   def save_inputs(self, inps):
@@ -229,6 +232,8 @@ class MongoStore(lib.O):
     if py_id: query["py_id"] = py_id
     if additional_queries:
       query.update(additional_queries)
+    if not limit:
+      limit = 0
     return collection.find(query, projection).limit(limit)
 
   def update_difference(self, query, updates):

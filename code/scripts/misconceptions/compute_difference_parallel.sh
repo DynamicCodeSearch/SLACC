@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
 
-sbatch scripts/misconceptions/compute_difference.sh 0 50
-sbatch scripts/misconceptions/compute_difference.sh 50 100
-sbatch scripts/misconceptions/compute_difference.sh 100 150
-sbatch scripts/misconceptions/compute_difference.sh 150 200
-sbatch scripts/misconceptions/compute_difference.sh 200 250
-sbatch scripts/misconceptions/compute_difference.sh 250 300
-sbatch scripts/misconceptions/compute_difference.sh 300 350
-sbatch scripts/misconceptions/compute_difference.sh 350 400
-sbatch scripts/misconceptions/compute_difference.sh 400 450
-sbatch scripts/misconceptions/compute_difference.sh 450 500
+sbatch scripts/misconceptions/compute_difference.sh 0 150
+sbatch scripts/misconceptions/compute_difference.sh 150 300
+sbatch scripts/misconceptions/compute_difference.sh 300 450
+sbatch scripts/misconceptions/compute_difference.sh 450 600
+sbatch scripts/misconceptions/compute_difference.sh 600 750
+sbatch scripts/misconceptions/compute_difference.sh 750 900
+sbatch scripts/misconceptions/compute_difference.sh 900 1050
+sbatch scripts/misconceptions/compute_difference.sh 1050 1200
+sbatch scripts/misconceptions/compute_difference.sh 1200 1350
+sbatch scripts/misconceptions/compute_difference.sh 1350 1500
+sbatch scripts/misconceptions/compute_difference.sh 1500 1700
