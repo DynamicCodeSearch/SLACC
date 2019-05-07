@@ -8,19 +8,14 @@ __author__ = "bigfatnoob"
 
 import numpy as np
 import pandas as pd
-import signal
 import time
 import multiprocessing
 from Queue import Queue
-from threading import Thread
 
 from utils import lib, cache, logger
 from sos.function import Outputs
 from misconceptions.common import mongo_driver, props
 from misconceptions.common.differences import DataFrameDiffMeta, ArrayDiffMeta, MatrixDiffMeta, DiffMeta
-from analysis import execute
-from misconceptions.pdUtils import crawler as pd_crawler
-from misconceptions.rUtils import crawler as r_crawler
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 LST_TYPES = {tuple, list, np.ndarray}
@@ -343,7 +338,7 @@ def runner(skip_threshold=3500, start=0, end=None):
                        variables=r_stmt["variables"], language=r_stmt["language"],
                        outputs=format_outputs(r_stmt["outputs"]))
     if r_stmt.is_all_same() or r_stmt.is_all_none():
-      LOGGER.info("Empty or singular R stmt: %d. Skipping ..." % valid)
+      LOGGER.info("Empty or singular R stmt: %d. Skipping ..." % (i + 1))
       continue
     valid = 0
     took_too_long = 0
