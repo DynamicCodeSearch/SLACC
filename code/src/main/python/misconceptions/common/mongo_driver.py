@@ -17,6 +17,7 @@ from misconceptions.common import helper, differences
 
 FILE_STMT_COLLECTION = "file_stmts"
 STMT_COLLECTION = "stmts"
+STMT_NORMALIZED_COLLECTION = "normalized_stmts"
 INPUTS_COLLECTIONS = "inputs"
 DIFFERENCES_COLLECTIONS = "differences"
 
@@ -102,11 +103,12 @@ class MongoStore(lib.O):
     collection = mongo_driver.get_collection(self.dataset, STMT_COLLECTION)
     collection.update_one({"_id": stmt_id}, {"$set": updates})
 
-  def load_stmts(self, language=None, is_valid=True, has_output=False, limit=None):
+  def load_stmts(self, language=None, is_valid=True, has_output=False, limit=None, use_normalized=False):
+    collection_name = STMT_NORMALIZED_COLLECTION if use_normalized else STMT_COLLECTION
     if language:
-      stmts = mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find({"language": language})
+      stmts = mongo_driver.get_collection(self.dataset, collection_name).find({"language": language})
     else:
-      stmts = mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find()
+      stmts = mongo_driver.get_collection(self.dataset, collection_name).find()
     formatted = {}
     for stmt in stmts:
       if (not is_valid or (is_valid and stmt.get('variables', None))) \
@@ -116,42 +118,42 @@ class MongoStore(lib.O):
         return formatted
     return formatted
 
-  def load_stmt(self, mongo_id, projections=None):
+  def load_stmt(self, mongo_id, projections=None, use_normalized=False):
+    collection_name = STMT_NORMALIZED_COLLECTION if use_normalized else STMT_COLLECTION
     if not isinstance(mongo_id, ObjectId):
       mongo_id = ObjectId(mongo_id)
-    return mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find_one({"_id": mongo_id}, projection=projections)
+    return mongo_driver.get_collection(self.dataset, collection_name).find_one({"_id": mongo_id}, projection=projections)
 
-  def load_raw_stmts(self, language=None):
+  def load_raw_stmts(self, language=None, use_normalized=False):
+    collection_name = STMT_NORMALIZED_COLLECTION if use_normalized else STMT_COLLECTION
     if language:
-      return mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find({"language": language})
+      return mongo_driver.get_collection(self.dataset, collection_name).find({"language": language})
     else:
-      return mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find()
+      return mongo_driver.get_collection(self.dataset, collection_name).find()
 
-  def load_valid_snippets(self, language=None):
+  def load_valid_snippets(self, language=None, use_normalized=False):
+    collection_name = STMT_NORMALIZED_COLLECTION if use_normalized else STMT_COLLECTION
     projection = {"outputs": False}
     if language:
-      stmts = mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find({"language": language}, projection)
+      stmts = mongo_driver.get_collection(self.dataset, collection_name).find({"language": language}, projection)
     else:
-      stmts = mongo_driver.get_collection(self.dataset, STMT_COLLECTION).find({}, projection)
+      stmts = mongo_driver.get_collection(self.dataset, collection_name).find({}, projection)
     valids = []
     for stmt in stmts:
       if stmt.get('variables', None):
         valids.append(stmt)
     return valids
 
-  def delete_differences(self, r_id=None, py_id=None):
-    query = {}
-    if r_id:
-      query["r_id"] = r_id
-    if py_id:
-      query["py_id"] = py_id
-    if not query:
-      raise Exception("Empty query. So use drop!")
-    LOGGER.info("Deleting differences for query %s .... " % query)
-    mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_many(query)
+  # Normalized Statements
 
-  def delete_difference(self, mongo_id):
-    mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_one({"_id": mongo_id})
+  def store_normalized_stmt(self, stmt_dict):
+    collection = mongo_driver.get_collection(self.dataset, STMT_NORMALIZED_COLLECTION)
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_unique_index_for_collection(collection, "snippet", "language")
+    try:
+      collection.insert(stmt_dict, continue_on_error=True)
+    except pymongo.errors.DuplicateKeyError as e:
+      pass
 
   # Inputs
 
@@ -239,6 +241,20 @@ class MongoStore(lib.O):
   def update_difference(self, query, updates):
     collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)
     collection.update_many(query, {"$set": updates})
+
+  def delete_differences(self, r_id=None, py_id=None):
+    query = {}
+    if r_id:
+      query["r_id"] = r_id
+    if py_id:
+      query["py_id"] = py_id
+    if not query:
+      raise Exception("Empty query. So use drop!")
+    LOGGER.info("Deleting differences for query %s .... " % query)
+    mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_many(query)
+
+  def delete_difference(self, mongo_id):
+    mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS).delete_one({"_id": mongo_id})
 
   def create_semantic_indices(self, indices):
     collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)

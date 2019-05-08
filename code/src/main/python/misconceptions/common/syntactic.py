@@ -30,6 +30,15 @@ def get_replace_variable_func():
   return _REPLACE_VARIABLE_FUNC
 
 
+def normalize(stmt):
+  if stmt["language"] == props.TYPE_R:
+    return r_normalize(stmt).strip()
+  elif stmt["language"] == props.TYPE_PYTHON:
+    return py_normalize(stmt).strip()
+  else:
+    raise RuntimeError("WTF! Unknown language: %s" % stmt["language"])
+
+
 def r_normalize(stmt):
   return normalize_R_snippet(stmt["snippet"], str(stmt["variables"][0]))
 
