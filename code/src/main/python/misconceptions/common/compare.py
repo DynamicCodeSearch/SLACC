@@ -299,12 +299,12 @@ def test_similarity(limit=None):
   return r_scores
 
 
-def runner(skip_threshold=3500, start=0, end=None):
-  LOGGER.info("Computing differences for R stmts b/w %d and %d" % (start, end if end else -1))
+def runner(skip_threshold=3500, start=0, end=None, use_normalized=False):
+  LOGGER.info("Computing differences for R stmts b/w %d and %d on %d processes" % (start, end if end else -1, multiprocessing.cpu_count()))
   # log_interval = 100
   log_interval = 100
   store = mongo_driver.MongoStore(props.DATASET)
-  r_cursor = store.load_raw_stmts(props.TYPE_R)
+  r_cursor = store.load_raw_stmts(props.TYPE_R, use_normalized=use_normalized)
   r_stmts = []
   for r_stmt in r_cursor:
     if not r_stmt.get('variables', None) or not r_stmt.get('outputs', None):
@@ -313,7 +313,7 @@ def runner(skip_threshold=3500, start=0, end=None):
   del r_cursor
 
   # Top Py Statements
-  py_cursor = store.load_raw_stmts(props.TYPE_PYTHON)
+  py_cursor = store.load_raw_stmts(props.TYPE_PYTHON, use_normalized=use_normalized)
   py_stmts = []
   for py_stmt in py_cursor:
     if (not py_stmt.get('variables', None)) or (not py_stmt.get('outputs', None)):
@@ -390,7 +390,7 @@ def test_runner():
     end = int(args[2])
   elif len(args) >= 2:
     start = int(args[1])
-  runner(start=start, end=end)
+  runner(start=start, end=end, use_normalized=True)
 
 
 def _test_fetch():
