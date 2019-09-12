@@ -3,6 +3,7 @@ package edu.ncsu.utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -229,6 +230,25 @@ public class Utils {
     }
 
     /***
+     * Read all lines from a file as a string
+     * @param fileName Complete path of the file.
+     * @return. Content of file as a list of strings
+     */
+    public static String readFromFile(String fileName) {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            while ((line = reader.readLine()) != null)
+                sb.append(line).append("\n");
+            reader.close();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        return sb.toString();
+    }
+
+    /***
      * Create a random string.
      * @return Random string
      */
@@ -359,6 +379,19 @@ public class Utils {
      */
     public static String packageToFolder(String packageName) {
         return packageName.replaceAll("\\.", File.separator);
+    }
+
+    /***
+     * Convert a hash map to a gson JsonObject
+     * @param map - Hash map
+     * @return - Hash map as a JsonObject
+     */
+    public static JsonObject toJson(Map map) {
+        JsonObject json = new JsonObject();
+        for (Object key: map.keySet()) {
+            json.addProperty(key.toString(), map.get(key).toString());
+        }
+        return json;
     }
 
     public static void main(String[] args) {

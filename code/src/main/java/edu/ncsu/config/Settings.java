@@ -69,6 +69,11 @@ public class Settings {
 
     public static String META_RESULTS_SLOC = Utils.pathJoin(META_RESULTS, "sloc");
 
+    /**
+     * Resources folder
+     */
+    public static String CODE_RESOURCES_FOLDER = Utils.pathJoin(CODE_HOME, "src", "main", "resources");
+
     public static String CONFIG_FILE_PATH = Utils.pathJoin(CODE_HOME, "src", "main", "resources", "config.properties");
 
 
@@ -81,6 +86,11 @@ public class Settings {
      * Minimum statement size to consider
      */
     public static int MIN_STATEMENT_SIZE = 2;
+
+    /***
+     * Maximum number of arguments per function.
+     */
+    public static int MAX_NUM_ARGS = 5;
 
     /**
      * Maximum array size

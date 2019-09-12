@@ -1,6 +1,7 @@
 package edu.ncsu.arguments;
 
 import edu.ncsu.config.Settings;
+import edu.ncsu.executors.helpers.FileHandler;
 import edu.ncsu.executors.models.*;
 import org.apache.commons.lang3.StringUtils;
 
@@ -268,6 +269,13 @@ public class ArgumentGenerator {
 //                 args.add(generateRandomArgument(variable.getPrimitive()));
                 // TODO: Uncomment line above and line below to consider for each argument type rather family
                 args.add(generateRandomArgumentForFamily(variable.getPrimitive()));
+            } else if (variable.isBuiltInType()) {
+                String fullName = variable.getFullName();
+                if (FileHandler.isInputClass(fullName)) {
+                    args.add(FileHandler.getRandomFileContent());
+                } else {
+                    args.add("");
+                }
             } else {
                 Constructor constructor = Constructor.getConstructor(dataset, variable.getPackageName(), variable.getDataType());
                 if (constructor == null || constructor.getParameters() == null)

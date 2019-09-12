@@ -173,6 +173,13 @@ def generate_for_file(dataset, file_name):
   return generated_functions
 
 
+def extract_method_names(dataset, file_name):
+  sys.path.append(properties.PYTHON_PROJECTS_HOME)
+  parent_folder = cache.get_parent_folder(file_name)
+
+
+
+
 def _test():
   generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/stupid/dummy.py")
   # generate_for_file("codejam", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/python/Y11R5P1/dozingcat/a.py")

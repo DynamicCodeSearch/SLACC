@@ -16,7 +16,7 @@ LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 def get_single_output_stmts(language, limit=None, log_interval=100):
   store = mongo_driver.MongoStore(props.DATASET)
-  mongo_stmts = store.load_stmts(language=language, is_valid=True, has_output=True, limit=limit).items()
+  mongo_stmts = store.load_stmts(language=language, is_valid=True, has_output=True, limit=limit, use_normalized=True).items()
   LOGGER.info("Fetched statements from mongo ... ")
   n_stmts = len(mongo_stmts)
   n_singular_output_stmts = 0

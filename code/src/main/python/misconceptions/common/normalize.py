@@ -33,5 +33,35 @@ def normalize(log_interval=100):
     store.store_normalized_stmt(stmt)
 
 
+def create_normalized_stmt_file_map():
+  store = mongo_driver.MongoStore(props.DATASET)
+  LOGGER.info("Fetching Stmts .... ")
+  valid_stmts = store.load_stmts(is_valid=True, has_output=True)
+  LOGGER.info("Fetching File Stmts .... ")
+  file_stmts = store.load_file_stmts()
+  back_pointers = {}
+  i, n_file_stmts = 0, file_stmts.count()
+  for file_stmt in file_stmts:
+    i += 1
+    LOGGER.info("Processing file %d / %d ... " % (i, n_file_stmts))
+    file_name = file_stmt['file_name'].split(props.PROJECTS_SRC)[-1].split("/", 2)[-1]
+    language = file_stmt['language']
+    for snippet in file_stmt['snippets']:
+      if (snippet, language) not in valid_stmts:
+        continue
+      normalized_snippet = syntactic.normalize(valid_stmts[(snippet, language)])
+      if normalized_snippet not in back_pointers:
+        back_pointers[normalized_snippet] = {
+          "language": language,
+          "file_names": set()
+        }
+      back_pointers[normalized_snippet]["file_names"].add(file_name)
+  LOGGER.info("Saving stmt to file pointers ... ")
+  for snippet, back_pointer in back_pointers.items():
+    back_pointer["file_names"] = list(back_pointer["file_names"])
+    store.create_stmt_file_map(snippet, back_pointer)
+
+
 if __name__ == "__main__":
-  normalize()
+  # normalize()
+  create_normalized_stmt_file_map()

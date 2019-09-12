@@ -9,6 +9,8 @@ __author__ = "bigfatnoob"
 import asttokens
 import astor
 import Levenshtein
+import tokenize
+import io
 from rpy2 import rinterface
 
 from utils import logger, stat
@@ -55,6 +57,70 @@ def normalize_R_snippet(snippet, variable):
     return None
 
 
+def gen_tokens(snippet):
+  tokens = []
+  for tok_type, tok, (srow, scol), (erow, ecol), line in tokenize.generate_tokens(io.BytesIO(snippet.encode('utf-8')).readline):
+    if tok_type == 0:
+      return tokens
+    tokens.append(tok)
+  return tokens
+
+
+def py_lexer(py_snippet):
+  return gen_tokens(py_snippet)
+
+
+def r_lexer(r_snippet):
+  r_tokens = []
+  for tok in gen_tokens(r_snippet):
+    if tok == '-' and r_tokens and r_tokens[-1] == '<':
+      r_tokens[-1] = '<-'
+    else:
+      r_tokens.append(tok)
+  return r_tokens
+
+
+def n_gram_distance(py_snippet, r_snippet):
+
+  def _n_gram_helper(p_toks, r_toks):
+    assert len(p_toks) == len(r_toks)
+    #
+    # def _get_num_mismatches(s):
+    #   num_mismatches = 0
+    #   for p, r in zip(p_toks[s:s+n], r_toks[s:s+n]):
+    #     if p != r:
+    #       num_mismatches += 1
+    #   return num_mismatches
+    # total_dist = 0
+    # for i in xrange(len(p_toks)):
+    #   total_dist += _get_num_mismatches(i)
+    # return total_dist
+    num_mismatches = 0
+    for p, r in zip(p_toks, r_toks):
+      if p != r:
+        num_mismatches += 1
+    return num_mismatches
+
+  py_tokens = py_lexer(py_snippet)
+  r_tokens = r_lexer(r_snippet)
+  is_reversed = False
+  if len(py_tokens) == len(r_tokens):
+    return _n_gram_helper(py_tokens, r_tokens) / float(len(py_tokens)), (0, len(py_tokens)), (0, len(r_tokens))
+  elif len(py_tokens) < len(r_tokens):
+    is_reversed = True
+    py_tokens, r_tokens = r_tokens, py_tokens
+  best_similarity, best_start = None, None
+  delta = len(py_tokens) - len(r_tokens)
+  for start in xrange(delta):
+    similarity = _n_gram_helper(py_tokens[start:len(r_tokens) + start], r_tokens)
+    if best_similarity is None or similarity < best_similarity:
+      best_similarity = similarity
+      best_start = start
+  if is_reversed:
+    return (best_similarity + delta) / float(len(py_tokens)), py_snippet, "".join(py_tokens[best_start:best_start+len(r_tokens)])
+  return (best_similarity + delta) / float(len(py_tokens)), "".join(py_tokens[best_start:best_start+len(r_tokens)]), r_snippet
+
+
 class PyVariableRenamer(parser.Traveller):
   def __init__(self, src, variable):
     self.src = src
@@ -72,10 +138,10 @@ class PyVariableRenamer(parser.Traveller):
       node.id = RENAMED_VARIABLE
 
 
-def fetch_snippets(language=None):
+def fetch_snippets(language=None, use_normalized=False):
   store = mongo_driver.MongoStore(props.DATASET)
   stmts = {}
-  mongo_stmts = store.load_valid_snippets(language=language)
+  mongo_stmts = store.load_valid_snippets(language=language, use_normalized=use_normalized)
   for mongo_stmt in mongo_stmts:
     stmt = compare.Statement(mongo_id=mongo_stmt["_id"], snippet=mongo_stmt["snippet"],
                              variables=mongo_stmt["variables"], language=language)
@@ -84,23 +150,22 @@ def fetch_snippets(language=None):
 
 
 def get_normalized_py_statements(debug=False):
-  stmts = fetch_snippets(language=props.TYPE_PYTHON)
+  stmts = fetch_snippets(language=props.TYPE_PYTHON, use_normalized=True)
   LOGGER.info("Retrieved %d python statements ... " % len(stmts))
-  top_py_stmts = crawler.get_stmt_counts(props.PY_STMT_LIMIT)
   normalized = []
   for i, (stmt_id, stmt) in enumerate(stmts.items()):
     assert stmt.variables and len(stmt.variables) == 1
-    if stmt.snippet not in top_py_stmts:
-      continue
     if debug and len(normalized) % 100 == 0:
       LOGGER.info("Processing %d py snippet ... " % len(normalized))
     stmt.normalized = PyVariableRenamer(stmt.snippet, stmt.variables[0]).parse()
+    if stmt.normalized:
+      stmt.normalized = stmt.normalized.replace("slacc", "df")
     normalized.append(stmt)
   return normalized
 
 
 def get_normalized_R_statements(debug=False):
-  stmts = fetch_snippets(language=props.TYPE_R)
+  stmts = fetch_snippets(language=props.TYPE_R, use_normalized=True)
   LOGGER.info("Retrieved %d R statements ... " % len(stmts))
   normalized = []
   for i, (stmt_id, stmt) in enumerate(stmts.items()):
@@ -108,6 +173,8 @@ def get_normalized_R_statements(debug=False):
       LOGGER.info("Processing %d / %d R snippet ... " % (i + 1, len(stmts)))
     assert stmt.variables and len(stmt.variables) == 1
     stmt.normalized = normalize_R_snippet(stmt.snippet, str(stmt.variables[0]))
+    if stmt.normalized:
+      stmt.normalized = stmt.normalized.replace("slacc", "df")
     normalized.append(stmt)
   return normalized
 
@@ -131,13 +198,23 @@ def jaro_winkler(r_snippet, py_snippet):
 def test_distance_distribution():
   r_stmts = get_normalized_R_statements()
   py_stmts = get_normalized_py_statements()
-  levenshteins, jaros, jaro_winklers = [], [], []
+  levenshteins, jaros, jaro_winklers, n_grams = [], [], [], []
   for i, r_stmt in enumerate(r_stmts):
+    if not r_stmt.normalized:
+      continue
     LOGGER.info("Processing %d / %d R snippet ... " % (i + 1, len(r_stmts)))
     for py_stmt in py_stmts:
+      if not py_stmt.normalized:
+        continue
+      try:
+        n_grams.append(n_gram_distance(r_stmt.normalized, py_stmt.normalized)[0])
+      except Exception:
+        n_grams.append(1.0)
       levenshteins.append(levenshtein(r_stmt.normalized, py_stmt.normalized))
       jaros.append(jaro(r_stmt.normalized, py_stmt.normalized))
       jaro_winklers.append(jaro_winkler(r_stmt.normalized, py_stmt.normalized))
+  print("### N Gram distance")
+  print(stat.Stat(n_grams).report())
   print("### Levenshtein distance")
   print(stat.Stat(levenshteins).report())
   print("### Jaro distance")
@@ -155,24 +232,34 @@ def update_syntactic_distances():
     if not start_found:
       all_r_cursor = store.load_differences(r_id=r_stmt.mongo_id, projection={"outputs": False})
       # n_processed = sum([1 if "d_jaro" in s else 0 for s in all_r_cursor])
-      all_r_filter_cursor = store.load_differences(r_id=r_stmt.mongo_id,
-                                                   additional_queries={"d_jaro": {"$exists": True}},
-                                                   projection={"outputs": False})
-      if all_r_cursor.count() == all_r_filter_cursor.count():
-        LOGGER.info("Processed %d / %d R snippet !" % (i + 1, len(r_stmts)))
-        continue
+      # all_r_filter_cursor = store.load_differences(r_id=r_stmt.mongo_id,
+      #                                              additional_queries={"d_n_gram": {"$exists": True}},
+      #                                              projection={"diff": False})
+      # if all_r_cursor.count() == all_r_filter_cursor.count():
+      #   LOGGER.info("Processed %d / %d R snippet !" % (i + 1, len(r_stmts)))
+      #   continue
       start_found = True
     LOGGER.info("Processing %d / %d R snippet ... " % (i + 1, len(r_stmts)))
     for j, py_stmt in enumerate(py_stmts):
-      updates = {
-        "r_snippet": r_stmt.snippet,
-        "py_snippet": py_stmt.snippet,
-        "d_levenshtein": levenshtein(r_stmt.normalized, py_stmt.normalized),
-        "d_jaro": jaro(r_stmt.normalized, py_stmt.normalized),
-        "d_jaro_winkler": jaro_winkler(r_stmt.normalized, py_stmt.normalized)
-      }
-      query = {"r_id": r_stmt.mongo_id, "py_id": py_stmt.mongo_id}
-      store.update_difference(query, updates)
+      if r_stmt.normalized and py_stmt.normalized:
+        updates = {
+          "r_snippet": r_stmt.snippet,
+          "py_snippet": py_stmt.snippet,
+          "d_levenshtein": levenshtein(r_stmt.normalized, py_stmt.normalized),
+          "d_jaro": jaro(r_stmt.normalized, py_stmt.normalized),
+          "d_jaro_winkler": jaro_winkler(r_stmt.normalized, py_stmt.normalized),
+        }
+        try:
+          updates["d_n_gram"] = n_gram_distance(r_stmt.normalized, py_stmt.normalized)[0]
+        except Exception as e:
+          updates["d_n_gram"] = 1.0
+        query = {"r_id": r_stmt.mongo_id, "py_id": py_stmt.mongo_id}
+        store.update_difference(query, updates)
+
+
+def update_ngram_distance():
+  store = mongo_driver.MongoStore(props.DATASET)
+  diffs = store.load_differences(projection={"diff": False})
 
 
 def get_top_syntax():
@@ -185,14 +272,22 @@ def get_top_syntax():
 
 
 def _test():
-  r_snippet = "select(df, A, B)"
-  py_snippet = "df[['A', 'B']]"
+  r_snippet = "mean(df)"
+  py_snippet = "numpy.mean(df, axis=0)"
   print("Levenshtein:", levenshtein(r_snippet, py_snippet))
   print("Jaro:", jaro(r_snippet, py_snippet))
   print("Jaro-Winkler:", jaro_winkler(r_snippet, py_snippet))
 
 
+def _test_tokenize():
+  py_snippet = "numpy.mean(df, axis==5.0)"
+  r_snippet = "mean(df)"
+  print(n_gram_distance(py_snippet, r_snippet))
+
+
 if __name__ == "__main__":
-  # test_distance_distribution()
-  update_syntactic_distances()
+  # _test()
+  # _test_tokenize()
+  test_distance_distribution()
+  # update_syntactic_distances()
   # get_top_syntax()

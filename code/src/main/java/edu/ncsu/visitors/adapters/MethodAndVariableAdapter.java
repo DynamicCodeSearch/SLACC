@@ -19,6 +19,7 @@ import edu.ncsu.visitors.helpers.StatementHelper;
 
 import edu.ncsu.visitors.blocks.*;
 import edu.ncsu.visitors.helpers.VisitorHelper;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.*;
@@ -322,7 +323,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 //                    }
 //                    System.out.println(thisFunctions.size());
 //                    System.out.println("***********************\n\n");
-                    if (thisFunctions != null && thisFunctions.size() > 0) {
+                    if (thisFunctions.size() > 0) {
                         linesCovered.addAll(getLinesCovered(method));
                         functions.addAll(thisFunctions);
                     }
@@ -367,9 +368,35 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         LOGGER.info(String.format("Saved %s.%s to '%s'", packageName, mainClassName, saveFile));
     }
 
+    public static List<Map<String, String>> extractMethodProps(String javaFile, boolean skipMain) {
+        MethodAndVariableAdapter adapter = new MethodAndVariableAdapter(javaFile);
+        List<Map<String, String>> methodNames = new ArrayList<>();
+        for (ClassBlock classBlock: adapter.getClassBlocks()) {
+            for (MethodBlock methodBlock: classBlock.getMethodBlocks()) {
+                Map<String, String> props = new HashMap<>();
+                if (skipMain && methodBlock.getName().equals("main"))
+                    continue;
+                props.put("Class", classBlock.getName());
+                props.put("Package", classBlock.getCompilationUnit().getPackage().getName().toString());
+                props.put("Method", methodBlock.getName());
+                List<String> params = new ArrayList<String>();
+                if (methodBlock.getMethodNode().getParameters() != null) {
+                    for (Parameter param: methodBlock.getMethodNode().getParameters()) {
+                        params.add(param.getType().toString() + " " + param.getId().getName());
+                    }
+                }
+                props.put("Args", String.format("\"%s\"", StringUtils.join(params, ";")));
+                props.put("Return", methodBlock.getReturnType());
+                methodNames.add(props);
+            }
+        }
+        return methodNames;
+    }
+
+
     private static void testGenerateMethods() {
 //        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
-        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Example/interleave/Interleave.java";
+        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Dummy/subtract/Dummy.java";
 //        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/stupid/Dummy.java";
         generateMethodsForJavaFile(fName);
     }
