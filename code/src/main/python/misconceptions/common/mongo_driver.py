@@ -20,6 +20,7 @@ STMT_COLLECTION = "stmts"
 STMT_NORMALIZED_COLLECTION = "normalized_stmts"
 INPUTS_COLLECTIONS = "inputs"
 DIFFERENCES_COLLECTIONS = "differences"
+STMT_FILE_COLLECTION = "stmts_file"
 
 PRIMITIVES = {int, float, str, bool, type(None), list, set, dict, tuple, unicode}
 DOT_ESCAPE_CHAR = "|@|"
@@ -181,6 +182,26 @@ class MongoStore(lib.O):
       inps.append(args)
     return inps
 
+  # Stmt File map
+
+  def create_stmt_file_map(self, stmt, stmt_file_map, do_log=True):
+    collection = mongo_driver.get_collection(self.dataset, STMT_FILE_COLLECTION)
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_index_for_collection(collection, "snippet")
+    try:
+      doc = {"snippet": stmt}
+      doc.update(stmt_file_map)
+      collection.insert(doc)
+    except pymongo.errors.DuplicateKeyError as e:
+      if do_log:
+        LOGGER.warning(e.message)
+        LOGGER.info("We continue ... ")
+
+  def load_stmt_file_map(self):
+    collection = mongo_driver.get_collection(self.dataset, STMT_FILE_COLLECTION)
+    return collection.find()
+
+
   # Differences
 
   def save_difference(self, r_id, py_id, r_return, py_return, diff, do_log=True):
@@ -190,6 +211,7 @@ class MongoStore(lib.O):
       mongo_driver.create_index_for_collection(collection, "d_levenshtein")
       mongo_driver.create_index_for_collection(collection, "d_jaro")
       mongo_driver.create_index_for_collection(collection, "d_jaro_winkler")
+      mongo_driver.create_index_for_collection(collection, "d_n_gram")
     try:
       collection.insert({
         "r_id": r_id,

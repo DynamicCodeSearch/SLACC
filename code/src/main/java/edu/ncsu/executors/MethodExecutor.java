@@ -9,6 +9,7 @@ import edu.ncsu.codejam.CodejamUtils;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
+import edu.ncsu.executors.models.FunctionVariable;
 import edu.ncsu.store.BaseStorage;
 import edu.ncsu.store.IArgumentStore;
 import edu.ncsu.store.IFunctionStore;
@@ -18,10 +19,7 @@ import edu.ncsu.utils.Utils;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Logger;
 
@@ -52,10 +50,10 @@ public class MethodExecutor {
         if (taskExecutor == null || taskExecutor.isShutdown())
             taskExecutor = Executors.newFixedThreadPool(Settings.getNumThreads());
 
-        System.setOut(new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) {}
-        }));
+//        System.setOut(new PrintStream(new OutputStream() {
+//            @Override
+//            public void write(int b) {}
+//        }));
     }
 
     private void initialize() {
@@ -267,8 +265,10 @@ public class MethodExecutor {
             return null;
         }
         JsonArray executions = new JsonArray();
+        int argCount = 0;
         for (Object[] executionArg: executionArgs) {
-            executions.add(profileMethod(function, executionArg));
+            executions.add(profileMethod(function, argCount, executionArg));
+            argCount += 1;
         }
         JsonObject functionData = new JsonObject();
         functionData.addProperty("name", function.getName());
@@ -288,7 +288,7 @@ public class MethodExecutor {
             return null;
         }
         JsonArray executions = new JsonArray();
-        executions.add(profileMethod(function, executionArgs.get(0)));
+        executions.add(profileMethod(function, 0, executionArgs.get(0)));
         JsonObject functionData = new JsonObject();
         functionData.addProperty("name", function.getName());
         functionData.addProperty("class", function.getClassName());
@@ -298,7 +298,7 @@ public class MethodExecutor {
     }
 
 
-    private synchronized JsonObject profileMethod(final Function function, final Object... executionArguments) {
+    private synchronized JsonObject profileMethod(final Function function, final int argSetIndex, final Object... executionArguments) {
         Callable<Object> methodCall = new Callable<Object>() {
             @Override
             public Object call() {
@@ -307,7 +307,6 @@ public class MethodExecutor {
                 } catch (InvocationTargetException e) {
                     throw new RuntimeException(e.getTargetException());
                 } catch (Exception e) {
-                    e.printStackTrace();
                     throw new RuntimeException(e);
                 }
             }
@@ -325,15 +324,17 @@ public class MethodExecutor {
         } catch (Exception e) {
             errorMessage = e.getMessage();
         }
-        return function.dumpReturnAsJSON(returnVariable, errorMessage, duration);
+        return function.dumpReturnAsJSON(returnVariable, errorMessage, duration, argSetIndex);
     }
 
 
     private List<Object[]> fetchFunctionExecutionArgs(Function function) {
         JsonArray arguments = argumentStore.loadFuzzedArguments(function.makeArgumentsKey());
         List<Object[]> functionArgs = new ArrayList<>();
+        int argCount = 0;
         for (Object arg: arguments) {
-            functionArgs.add(function.convertToFunctionArguments(arg).toArray());
+            functionArgs.add(function.convertToFunctionArguments(arg, argCount).toArray());
+            argCount += 1;
         }
         return functionArgs;
     }
@@ -351,7 +352,11 @@ public class MethodExecutor {
         LOGGER.info(String.format("Executing methods for dataset: %s. Here we go .... ", dataset));
         String datasetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
-        for (String javaFile: Utils.listGeneratedFiles(datasetPath)) {
+        List<String> javaFiles = Utils.listPermutatedFiles(datasetPath);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = Utils.listGeneratedFiles(datasetPath);
+        }
+        for (String javaFile: javaFiles) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile);
             functionTasks.addAll(executor.getFunctionTasks());
         }
@@ -362,7 +367,11 @@ public class MethodExecutor {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset, problem);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
-        for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
+        List<String> javaFiles = Utils.listPermutatedFiles(problemPath);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = Utils.listGeneratedFiles(problemPath);
+        }
+        for (String javaFile: javaFiles) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile);
             functionTasks.addAll(executor.getFunctionTasks());
         }
@@ -388,16 +397,65 @@ public class MethodExecutor {
         MethodExecutor.executeFunctionTasks(functionTasks);
     }
 
+    private static void testArgGen() {
+        String dataset = CodejamUtils.DATASET;
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Example/aditsu/generated_class_f70e39fe0ce54ddca9f8b5e72ebaa350.java";
+        String functionName = "func_ba7a218bebc34cbd843a7e3f59d1c4f3";
+        MethodExecutor executor = new MethodExecutor(dataset, sourceFile, false);
+        ClassMethods classMethods = executor.classMethods;
+        LOGGER.info(String.format("Processing function %s.%s.%s ... ",
+                classMethods.getPackageName(), classMethods.getClassName(), functionName));
+        Function function = null;
+        for (Method method: classMethods.getMethods()) {
+            if (method.getName().equals(functionName)) {
+                function = classMethods.getFunction(method);
+                break;
+            }
+        }
+        if (function != null) {
+//            int validArgIndex = 0;
+//            JsonArray arguments = executor.argumentStore.loadFuzzedArguments(function.makeArgumentsKey());
+//            Object arg = arguments.get(validArgIndex);
+//            Object[] converted = function.convertToFunctionArguments(arg, validArgIndex).toArray();
+//            JsonObject res = executor.profileMethod(function, validArgIndex, converted);
+//            System.out.println(res);
+            System.out.println(executor.processFunction(function));
+            executor.shutdown();
+
+//            System.out.println(res);
+
+//            for (Object arg: arguments) {
+//                System.out.println(arg);
+////                Object[] converted = function.convertToFunctionArguments(arg).toArray();
+//                i += 1;
+//                System.out.print(i);
+//                System.out.println("*******");
+//                if (i > 10)  {
+//                    break;
+//                }
+//                // TODO: delete reader/writer file on exit
+//            }
+//            List<Object[]> functionArgs = executor.fetchFunctionExecutionArgs(function);
+//            for (Object[] executionArg: functionArgs) {
+//                executor.profileMethod(function, executionArg);
+//            }
+
+        }
+
+
+    }
+
     private static void testExecution() {
         String dataset = CodejamUtils.DATASET;
-        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/Y11R5P1/Egor/generated_class_5645d9f32cee4da7942ec2779f8a009e.java";
-        String functionName = "func_4ee1ed6c56784ee6bc7d9d66cf292d99";
+        String sourceFile = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Example/aditsu/generated_class_f70e39fe0ce54ddca9f8b5e72ebaa350.java";
+        String functionName = "func_ba7a218bebc34cbd843a7e3f59d1c4f3";
         MethodExecutor.process(sourceFile, functionName, dataset, false);
 //        MethodExecutor executor = new MethodExecutor(dataset, sourceFile);
 //        MethodExecutor.executeFunctionTasks(executor.getFunctionTasks());
     }
 
     public static void main(String[] args) {
-        testExecution();
+        testArgGen();
+//        testExecution();
     }
 }

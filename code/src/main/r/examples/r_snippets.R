@@ -18,6 +18,6 @@ gen_func_r_3 <- function() {
     a = c(1.0, NaN, 3.0)
     b = c(4,5,6)
     df = data.frame(a, b)
-    return(df[0:1]);
+    return(df[, -2]);
 }
 print(gen_func_r_3())

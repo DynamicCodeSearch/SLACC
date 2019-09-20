@@ -105,10 +105,16 @@ public class DummyMethod {
      * @return Comments metadata as a string
      */
     private String makeMetaComments() {
-        return "// " + "source: " + this.parentClassBlock.getFileSource() +
-                "\n// " + "lines: " + Joiner.on(",").join(lineNumbers) +
-                "\n// " + "start_end: " + Joiner.on(",").join(getStatementSpan()) +
-                "\n";
+        return String.format("/**\n source:%s; lines:%s; start_end:%s\n*/",
+                this.parentClassBlock.getFileSource(),
+                Joiner.on(",").join(lineNumbers),
+                Joiner.on(",").join(getStatementSpan()));
+//
+//
+//        return "// " + "source: " + this.parentClassBlock.getFileSource() +
+//                "\n// " + "lines: " + Joiner.on(",").join(lineNumbers) +
+//                "\n// " + "start_end: " + Joiner.on(",").join(getStatementSpan()) +
+//                "\n";
     }
 
     /***
@@ -130,9 +136,8 @@ public class DummyMethod {
     private String makeArguments() {
         StringBuilder builder = new StringBuilder();
         for (Variable argument: arguments) {
-            String format = builder.length() == 0 ? "%s %s" : ", %s %s";
-
-            builder.append(String.format(format, argument.toTypeString(), argument.name));
+            String format = builder.length() == 0 ? "%s" : ", %s";
+            builder.append(String.format(format, argument.toFunctionParameter()));
         }
         return builder.toString();
     }
@@ -159,7 +164,7 @@ public class DummyMethod {
         StatementBlock lastStatementBlock = statementBlocks.get(statementBlocks.size() - 1);
         String definitionFormat = isStatic ? "public static %s func_%s" : "public %s func_%s";
         boolean isReturnStatement = lastStatementBlock.getStatementAST() instanceof ReturnStmt;
-        if (!isValid())
+        if (arguments.size() == 0)
             return functions;
         if (isReturnStatement || returns.size() == 0) {
             String functionDescriptor = makeUniqueFunctionDescriptor(argStr, functionBody, null);
@@ -186,10 +191,10 @@ public class DummyMethod {
             }
             exisitingFunctions.add(functionDescriptor);
             String funcName = Utils.randomString();
-            System.out.println("####");
-            System.out.println(funcName);
-            System.out.println(functionDescriptor);
-            System.out.println("\n\n");
+//            System.out.println("####");
+//            System.out.println(funcName);
+//            System.out.println(functionDescriptor);
+//            System.out.println("\n\n");
             builder.append(String.format(definitionFormat, returnVariable.toTypeString(), funcName)).
                     append(argAndBody).
                     append(returnStatement).

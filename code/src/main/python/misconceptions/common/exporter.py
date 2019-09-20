@@ -24,9 +24,9 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
   elif sim < 0:
     query["semantic_score"] = {"$lte": abs(sim)}
   if syn > 0:
-    query["d_levenshtein"] = {"$gte": abs(syn)}
+    query["d_n_gram"] = {"$gte": abs(syn)}
   elif syn < 0:
-    query["d_levenshtein"] = {"$lte": abs(syn)}
+    query["d_n_gram"] = {"$lte": abs(syn)}
   projections = {"py_id": 1,
                  "r_id": 1,
                  "r_snippet": 1,
@@ -36,11 +36,11 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
                  "_id": 0,
                  "row_diff": 1,
                  "col_diff": 1,
-                 "d_levenshtein": 1,
+                 "d_n_gram": 1,
                  "size_diff": 1,
                  "semantic_score": 1}
   store = mongo_driver.MongoStore(props.DATASET)
-  diffs = store.load_differences(additional_queries=query, projection=projections)
+  diffs = [d for d in store.load_differences(additional_queries=query, projection=projections)]
   r_stmts = []
   py_stmts = []
   syntactics = []
@@ -59,11 +59,11 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
     #   py_stmts.append("return %s" % diff["py_snippet"])
     # else:
     #   py_stmts.append("%s; return %s" % (diff["py_snippet"], diff["py_return"]))
-    r_stmt = syntactic.r_normalize(store.load_stmt(diff["r_id"])).replace(syntactic.RENAMED_VARIABLE, "df")
-    py_stmt = syntactic.py_normalize(store.load_stmt(diff["py_id"])).replace(syntactic.RENAMED_VARIABLE, "df")
+    r_stmt = syntactic.r_normalize(store.load_stmt(diff["r_id"], use_normalized=True)).replace(syntactic.RENAMED_VARIABLE, "df")
+    py_stmt = syntactic.py_normalize(store.load_stmt(diff["py_id"], use_normalized=True)).replace(syntactic.RENAMED_VARIABLE, "df")
     r_stmts.append(r_stmt)
     py_stmts.append(py_stmt)
-    syntactics.append(diff.get("d_levenshtein", None))
+    syntactics.append(diff.get("d_n_gram", None))
     semantics.append(diff.get("semantic_score", None))
     row_diffs.append(diff.get("row_diff", None))
     col_diffs.append(diff.get("col_diff", None))
@@ -71,7 +71,7 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
   d = OrderedDict()
   d["R"] = r_stmts
   d["Pandas"] = py_stmts
-  d["Levenshtein"] = syntactics
+  d["N-Gram Distance"] = syntactics
   d["Semantic Score"] = semantics
   d["row_diff"] = row_diffs
   d["col_diff"] = col_diffs
@@ -82,13 +82,34 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
 
 def export_runner(xl_path):
   writer = pd.ExcelWriter(xl_path, engine='xlsxwriter')
-  export_similar_differences(0.9, -19, writer, "HighSim-HighSyn")
-  export_similar_differences(0.9, 19, writer, "HighSim-LowSyn")
-  export_similar_differences(-0.1, -19, writer, "LowSim-HighSyn")
-  export_similar_differences(-0.1, 39, writer, "LowSim-LowSyn")
+  export_similar_differences(0.9, -0.91, writer, "HighSim-HighSyn")
+  export_similar_differences(0.9, 0.91, writer, "HighSim-LowSyn")
+  export_similar_differences(-0.1, -0.91, writer, "LowSim-HighSyn")
+  export_similar_differences(-0.1, 0.91, writer, "LowSim-LowSyn")
   writer.save()
   writer.close()
 
 
+def export_normalized_stmt_file_map(xl_path):
+  store = mongo_driver.MongoStore(props.DATASET)
+  writer = pd.ExcelWriter(xl_path, engine='xlsxwriter')
+  snippets = []
+  languages = []
+  file_names = []
+  for file_stmt in store.load_stmt_file_map():
+    snippet = file_stmt["snippet"].replace("slacc", "df")
+    empties = [''] * (len(file_stmt["file_names"]) - 1)
+    snippets += [snippet] + empties
+    languages += [file_stmt["language"]] + empties
+    file_names += file_stmt["file_names"]
+  d = OrderedDict()
+  d["snippet"] = snippets
+  d["languages"] = languages
+  d["file_names"] = file_names
+  df = pd.DataFrame(d, columns=d.keys())
+  df.to_excel(writer, sheet_name="Snippet File Map", index=False)
+
+
 if __name__ == "__main__":
   export_runner("misconceptions.xlsx")
+  # export_normalized_stmt_file_map("metadata.xlsx")

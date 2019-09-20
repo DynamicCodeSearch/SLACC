@@ -7,6 +7,7 @@ import com.github.javaparser.ast.type.Type;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import edu.ncsu.executors.helpers.FileHandler;
 import edu.ncsu.executors.helpers.PackageManager;
 import edu.ncsu.executors.helpers.UserDefinedObjects;
 import edu.ncsu.visitors.blocks.Imports;
@@ -14,9 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class FunctionVariable {
@@ -37,7 +36,10 @@ public class FunctionVariable {
 
     private boolean isFuzzable = true;
 
-    public static FunctionVariable getFunctionVariable(String dataset, Type type, String packageName) {
+    private boolean isBuiltInType = false;
+
+
+    static FunctionVariable getFunctionVariable(String dataset, Type type, String packageName) {
         if (type instanceof PrimitiveType) {
             return new FunctionVariable(dataset, (PrimitiveType) type);
         } else if (type instanceof ClassOrInterfaceType) {
@@ -48,7 +50,7 @@ public class FunctionVariable {
         throw new RuntimeException("Invalid type " + type.getClass().getName());
     }
 
-    public static FunctionVariable fromJSON(String dataset, JsonObject variableJSON) {
+    static FunctionVariable fromJSON(String dataset, JsonObject variableJSON) {
         FunctionVariable functionVariable = new FunctionVariable();
         functionVariable.dataset = dataset;
         String dataType = variableJSON.get("type").getAsString();
@@ -65,7 +67,7 @@ public class FunctionVariable {
 
     private FunctionVariable(){}
 
-    public FunctionVariable(String dataset, PrimitiveType type) {
+    private FunctionVariable(String dataset, PrimitiveType type) {
         this.dataset = dataset;
         this.primitive = Primitive.getPrimitive(type.toStringWithoutComments());
     }
@@ -78,14 +80,30 @@ public class FunctionVariable {
         this.packageName = functionVariable.packageName;
         this.arrayDimensions = functionVariable.arrayDimensions;
         this.isFuzzable = functionVariable.isFuzzable;
+        this.isBuiltInType = functionVariable.isBuiltInType;
     }
 
-    public FunctionVariable(String dataset, ClassOrInterfaceType type, String packageName) {
+    public static FunctionVariable clone(FunctionVariable functionVariable) {
+        FunctionVariable newFunctionVariable = new FunctionVariable();
+        newFunctionVariable.copy(functionVariable);
+        return newFunctionVariable;
+    }
+
+    private FunctionVariable(String dataset, ClassOrInterfaceType type, String packageName) {
         this.dataset = dataset;
         setType(type.toString(), packageName);
     }
 
-    public void setType(String type, String packageName) {
+    private FunctionVariable(String dataset, ReferenceType type, String packageName) {
+        if (type.getType() instanceof PrimitiveType) {
+            copy(new FunctionVariable(dataset, (PrimitiveType) type.getType()));
+        } else if (type.getType() instanceof ClassOrInterfaceType) {
+            copy(new FunctionVariable(dataset, (ClassOrInterfaceType) type.getType(), packageName));
+        }
+        this.arrayDimensions = type.getArrayCount();
+    }
+
+    private void setType(String type, String packageName) {
         UserDefinedObjects udo = UserDefinedObjects.getUserDefinedObjects(this.dataset);
         if (packageName != null && udo.canBeFuzzed(udo.getClassObject(packageName, type))) {
             this.dataType = type;
@@ -100,33 +118,31 @@ public class FunctionVariable {
             return;
         }
         // TODO: Uncomment lines below to support List, Set etc.
-//        String systemPackage = getSystemPackage(type);
-//        if (systemPackage != null) {
-//            this.packageName = systemPackage;
-//            return;
-//        }
+        String systemPackage = getSystemPackage(type);
+        if (systemPackage != null && isSupportedSystemClass(getFullName(systemPackage, type))) {
+            this.dataType = type;
+            this.packageName = systemPackage;
+            this.isBuiltInType = true;
+            return;
+        }
         this.dataType = type;
         this.isFuzzable = false;
     }
 
-    public FunctionVariable(String dataset, ReferenceType type, String packageName) {
-        if (type.getType() instanceof PrimitiveType) {
-            copy(new FunctionVariable(dataset, (PrimitiveType) type.getType()));
-        } else if (type.getType() instanceof ClassOrInterfaceType) {
-            copy(new FunctionVariable(dataset, (ClassOrInterfaceType) type.getType(), packageName));
-        }
-        this.arrayDimensions = type.getArrayCount();
-    }
-
-    public static String getSystemPackage(String className) {
+    private static String getSystemPackage(String className) {
         for (String packageName: Imports.getDefaultImportPackages()) {
             try {
                 PackageManager.findClass(packageName, className);
                 return packageName;
             } catch (RuntimeException e) {
+//                LOGGER.warning(String.format("System package not found: %s", packageName));
             }
         }
         return null;
+    }
+
+    private boolean isSupportedSystemClass(String className) {
+        return FileHandler.isSupportedFileClass(className);
     }
 
     public String getName() {
@@ -149,10 +165,6 @@ public class FunctionVariable {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
-        this.dataType = dataType;
-    }
-
     public int getArrayDimensions() {
         return arrayDimensions;
     }
@@ -161,12 +173,12 @@ public class FunctionVariable {
         this.arrayDimensions = arrayDimensions;
     }
 
-    public boolean isFuzzable() {
+    boolean isFuzzable() {
         return isFuzzable;
     }
 
-    public void setValid(boolean valid) {
-        isFuzzable = isFuzzable;
+    public boolean isBuiltInType() {
+        return isBuiltInType;
     }
 
     public String getPackageName() {
@@ -185,7 +197,7 @@ public class FunctionVariable {
             sb.append(primitive.getName());
         } else if (dataType != null){
             if (packageName != null) {
-                sb.append(String.format("%s.%s", packageName, dataType));
+                sb.append(getFullName());
             } else {
                 sb.append(dataType);
             }
@@ -201,11 +213,37 @@ public class FunctionVariable {
         return sb.toString();
     }
 
+    public String getFullName() {
+        return String.format("%s.%s", packageName, dataType);
+    }
+
+    public String getFullName(String packageName, String dataType) {
+        return String.format("%s.%s", packageName, dataType);
+    }
+
+    public String toFunctionParameter() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dataType);
+        if (arrayDimensions > 0) {
+            for (int i=0; i < arrayDimensions; i++)
+                sb.append("[]");
+        }
+        sb.append(" ").append(getName());
+        return sb.toString();
+    }
+
     public String makeKey() {
         String key;
         if (primitive != null) {
 //            key = primitive.getName();
             key = primitive.getFamily();
+        } else if (isBuiltInType) {
+            key = getFullName();
+            if (FileHandler.isInputClass(key)) {
+                key = FileHandler.FILE_INPUT_TYPE;
+            } else if  (FileHandler.isOutputClass(key)) {
+                key = FileHandler.FILE_OUTPUT_TYPE;
+            }
         } else {
             Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
             if (constructor == null || constructor.getParameters() == null)
@@ -251,23 +289,33 @@ public class FunctionVariable {
 //        return paramKeys;
 //    }
 
-    public Object convertToFunctionArgument(JsonArray arg) {
-        return convertToFunctionArgument(arg, arrayDimensions);
+    public Object convertToFunctionArgument(JsonArray arg, int funcUUID, int argSetIndex) {
+        return convertToFunctionArgument(arg, arrayDimensions, funcUUID, argSetIndex);
     }
 
-    private Object convertToFunctionArgument(JsonArray arg, int arraySize) {
+    private Object convertToFunctionArgument(JsonArray arg, int arraySize, int funcUUID, int argSetIndex) {
         if (arraySize == 0) {
             if (primitive != null) {
                 Object argVal = arg.get(0);
                 arg.remove(0);
                 return Primitive.convertToArgument(primitive, argVal.toString());
+            } else if (isBuiltInType) {
+                String key = getFullName();
+                Object argVal = arg.get(0);
+                arg.remove(0);
+                if (FileHandler.isInputClass(key)) {
+                    return FileHandler.convertFileInput(key, argVal.toString());
+                } else if (FileHandler.isOutputClass(key)) {
+                    return FileHandler.convertFileOutput(key, funcUUID, argSetIndex);
+                }
+                throw new RuntimeException(String.format("We do not support %s", key));
             } else {
                 Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
                 List<Object> argVals = new ArrayList<>();
                 if (constructor != null && constructor.getParameters() != null && constructor.getParameters().size() > 0) {
                     for (int i=0; i<constructor.getParameters().size(); i++) {
                         FunctionVariable parameter = constructor.getParameters().get(i);
-                        argVals.add(parameter.convertToFunctionArgument(arg));
+                        argVals.add(parameter.convertToFunctionArgument(arg, funcUUID, argSetIndex));
                     }
                 }
                 java.lang.reflect.Constructor classConstructor = getClassConstructor();
@@ -288,11 +336,11 @@ public class FunctionVariable {
             for (JsonElement argVal: arrayArg.getAsJsonArray()) {
                 try {
                     if (argVal.isJsonArray()) {
-                        vals.add(convertToFunctionArgument(argVal.getAsJsonArray(), arraySize - 1));
+                        vals.add(convertToFunctionArgument(argVal.getAsJsonArray(), arraySize - 1, funcUUID, argSetIndex));
                     } else {
                         JsonArray argValArray = new JsonArray();
                         argValArray.add(argVal);
-                        vals.add(convertToFunctionArgument(argValArray, arraySize - 1));
+                        vals.add(convertToFunctionArgument(argValArray, arraySize - 1, funcUUID, argSetIndex));
                     }
                 } catch (Exception e) {
                     System.out.println(argVal);
@@ -333,6 +381,7 @@ public class FunctionVariable {
         Class objClass = getClassInstantiation();
         List<Class> constructorClasses = new ArrayList<>();
         Constructor constructor = Constructor.getConstructor(this.dataset, packageName, dataType);
+        assert constructor != null;
         for (FunctionVariable parameter: constructor.getParameters()) {
             constructorClasses.add(parameter.getCompleteClassInstatiation());
         }

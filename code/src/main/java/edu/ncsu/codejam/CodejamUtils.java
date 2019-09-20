@@ -9,6 +9,6 @@ import java.util.regex.Pattern;
 
 public class CodejamUtils {
 
-    public static String DATASET = "codejam";
+    public static String DATASET = "CodeJam";
 
 }

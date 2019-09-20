@@ -192,6 +192,7 @@ def execute_stmts(stmts, limit=props.PY_STMT_LIMIT, do_log=False):
     if 'outputs' in stmt:
       LOGGER.info("Processed %d / %d. Moving on !" % (i + 1, n_stmts))
       continue
+    # To skip plotting functions.
     if ".hist(" in snippet:
       LOGGER.info("Snippet %d / %d contains a plot operation. Moving on !" % (i + 1, n_stmts))
       continue

@@ -9,5 +9,5 @@ if [ -z "$1" ]
 then
     echo "sh scripts/<dataset>/java/extract_fuzzed_arguments.sh <do_delete_old>"
 else
-    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar IntroClass extract_fuzzed_args $1
+    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar extract_fuzzed_args IntroClassJava $1
 fi

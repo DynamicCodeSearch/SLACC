@@ -9,9 +9,9 @@ if [ -z "$1" ]
 then
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/*/*/generated_class_*.java
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/*/*/temp_class_*.java
-    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam snip
+    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar snip CodeJam
 else
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/$1/*/generated_class_*.java
     rm ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/$1/*/temp_class_*.java
-    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar CodeJam snip $1
+    java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar snip CodeJam $1
 fi

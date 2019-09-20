@@ -96,11 +96,14 @@ public class Imports {
             sb.append("import java.util.WeakHashMap;").append("\n");
 //            INDIVIDUAL_IMPORT_HEADERS.put(key, sb.toString());
             INDIVIDUAL_IMPORT_HEADERS.put(key, "import java.util.*;\n");
+        } else {
+            INDIVIDUAL_IMPORT_HEADERS.put(key, "import java.io.*;\n");
         }
     }
 
     public static Set<String> getDefaultImportKeys(){
         Set<String> defaultImportKeys = new HashSet<>();
+        defaultImportKeys.add("java.io.");
         defaultImportKeys.add("java.lang.");
         defaultImportKeys.add("java.util.");
         return defaultImportKeys;
@@ -108,6 +111,7 @@ public class Imports {
 
     public static List<String> getDefaultImportPackages() {
         List<String> defaultImportPackages = new ArrayList<>();
+        defaultImportPackages.add("java.io");
         defaultImportPackages.add("java.lang");
         defaultImportPackages.add("java.util");
         return defaultImportPackages;

@@ -30,6 +30,15 @@ def execute_problem(dataset, problem):
   execute(dataset, root_folder)
 
 
+def export_methods(dataset):
+  root_folder = os.path.join(properties.PYTHON_PROJECTS_HOME, dataset, problem)
+  for file_path in cache.list_files(root_folder, check_nest=True, is_absolute=True):
+    file_name = cache.get_file_name(file_path)
+    if file_name == "__init__" or file_name.startswith(a_consts.GENERATED_PREFIX):
+      continue
+    generate.generate_for_file(dataset, file_path)
+
+
 if __name__ == "__main__":
   args = sys.argv
   if len(args) < 2:

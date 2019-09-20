@@ -3,6 +3,7 @@ package edu.ncsu.utils;
 import com.github.javaparser.JavaParser;
 import com.github.javaparser.ParseException;
 import com.github.javaparser.ast.CompilationUnit;
+import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -167,6 +168,22 @@ public class Utils {
      * @param folderPath - Path of the folder
      * @return - List of paths of generated files.
      */
+    public static List<String> listPermutatedFiles(String folderPath) {
+        List<String> generatedFiles = new ArrayList<>();
+        for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
+            String fileName = Utils.getFileName(javaFile);
+            if (fileName.startsWith(Settings.PERMUTATED_CLASS_PREFIX)) {
+                generatedFiles.add(javaFile);
+            }
+        }
+        return generatedFiles;
+    }
+
+    /**
+     * List generated files in folder
+     * @param folderPath - Path of the folder
+     * @return - List of paths of generated files.
+     */
     public static List<String> listGeneratedFiles(String folderPath) {
         List<String> generatedFiles = new ArrayList<>();
         for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
@@ -190,7 +207,9 @@ public class Utils {
         if (contents == null)
             return files;
         for (File file : contents) {
-            if (file.isFile() && !file.getName().startsWith(Settings.GENERATED_CLASS_PREFIX) && file.getName().endsWith(".java")) {
+            if (file.isFile() && !file.getName().startsWith(Settings.GENERATED_CLASS_PREFIX)
+                    && !file.getName().startsWith(Settings.PERMUTATED_CLASS_PREFIX)
+                    && file.getName().endsWith(".java")) {
                 files.add(file.getAbsolutePath());
             } else if (file.isDirectory()) {
                 files.addAll(listNonGeneratedJavaFiles(file.getAbsolutePath()));
@@ -226,6 +245,25 @@ public class Utils {
             return null;
         }
         return lines;
+    }
+
+    /***
+     * Read all lines from a file as a string
+     * @param fileName Complete path of the file.
+     * @return. Content of file as a list of strings
+     */
+    public static String readFromFile(String fileName) {
+        StringBuilder sb = new StringBuilder();
+        String line;
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(fileName));
+            while ((line = reader.readLine()) != null)
+                sb.append(line).append("\n");
+            reader.close();
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        }
+        return sb.toString();
     }
 
     /***
@@ -359,6 +397,19 @@ public class Utils {
      */
     public static String packageToFolder(String packageName) {
         return packageName.replaceAll("\\.", File.separator);
+    }
+
+    /***
+     * Convert a hash map to a gson JsonObject
+     * @param map - Hash map
+     * @return - Hash map as a JsonObject
+     */
+    public static JsonObject toJson(Map map) {
+        JsonObject json = new JsonObject();
+        for (Object key: map.keySet()) {
+            json.addProperty(key.toString(), map.get(key).toString());
+        }
+        return json;
     }
 
     public static void main(String[] args) {

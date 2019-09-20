@@ -108,7 +108,7 @@ def get_stmt_counts(limit=None):
 def _test():
   x = "train_df.head()"
   stmts = get_stmt_counts(10)
-  print(x in stmts)
+  print(stmts)
 
 
 if __name__ == "__main__":
