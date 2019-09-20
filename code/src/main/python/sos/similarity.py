@@ -170,7 +170,7 @@ def _main():
     print("""
     python sos/similiarity <dataset> <?language>
     dataset: codejam/introclass
-    language: java(default)/python/java_python
+    language: java/python/java_python(default)
     """)
     exit(0)
   language = args[2] if len(args) >= 3 else "java_python"
