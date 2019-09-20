@@ -25,6 +25,9 @@ public class Main {
                 case "snip":
                     Snipper.main(Arrays.copyOfRange(args, 1, args.length));
                     break;
+                case "permutate":
+                    Permutate.main(Arrays.copyOfRange(args, 1, args.length));
+                    break;
                 case "dead_code":
                     DeadCode.main(Arrays.copyOfRange(args, 1, args.length));
                     break;

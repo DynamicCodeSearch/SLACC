@@ -105,10 +105,16 @@ public class DummyMethod {
      * @return Comments metadata as a string
      */
     private String makeMetaComments() {
-        return "// " + "source: " + this.parentClassBlock.getFileSource() +
-                "\n// " + "lines: " + Joiner.on(",").join(lineNumbers) +
-                "\n// " + "start_end: " + Joiner.on(",").join(getStatementSpan()) +
-                "\n";
+        return String.format("/**\n source:%s; lines:%s; start_end:%s\n*/",
+                this.parentClassBlock.getFileSource(),
+                Joiner.on(",").join(lineNumbers),
+                Joiner.on(",").join(getStatementSpan()));
+//
+//
+//        return "// " + "source: " + this.parentClassBlock.getFileSource() +
+//                "\n// " + "lines: " + Joiner.on(",").join(lineNumbers) +
+//                "\n// " + "start_end: " + Joiner.on(",").join(getStatementSpan()) +
+//                "\n";
     }
 
     /***
@@ -130,9 +136,8 @@ public class DummyMethod {
     private String makeArguments() {
         StringBuilder builder = new StringBuilder();
         for (Variable argument: arguments) {
-            String format = builder.length() == 0 ? "%s %s" : ", %s %s";
-
-            builder.append(String.format(format, argument.toTypeString(), argument.name));
+            String format = builder.length() == 0 ? "%s" : ", %s";
+            builder.append(String.format(format, argument.toFunctionParameter()));
         }
         return builder.toString();
     }

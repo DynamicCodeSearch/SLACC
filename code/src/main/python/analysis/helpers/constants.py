@@ -29,4 +29,5 @@ TEMPORARY_PREFIX = "tmp_py_"
 
 FUNCTION_PREFIX = "func_"
 
+# In seconds
 METHOD_WAIT_TIMEOUT = 1

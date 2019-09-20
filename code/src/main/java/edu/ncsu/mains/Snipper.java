@@ -27,7 +27,9 @@ public class Snipper {
     private static void snipFolder(String folderPath) {
         for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
             String fileName = Utils.getFileName(javaFile);
-            if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX)) {
+            if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) &&
+                    !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX) &&
+                    !fileName.startsWith(Settings.PERMUTATED_CLASS_PREFIX)) {
                 MethodAndVariableAdapter.generateMethodsForJavaFile(javaFile);
             }
         }

@@ -25,7 +25,7 @@ java -jar jars/proguard.jar @resources/dead_code_remove.pro
 echo "\n Extracting jar"
 java -jar jars/cfr.jar cleaned/projects-1.0-SNAPSHOT-jar-with-dependencies.jar --outputdir extracted
 
-java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar IntroClass dead_code
+java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar dead_code IntroClassJava
 
 echo "Deleting extracted"
 rm -rf cleaned

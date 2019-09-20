@@ -168,6 +168,22 @@ public class Utils {
      * @param folderPath - Path of the folder
      * @return - List of paths of generated files.
      */
+    public static List<String> listPermutatedFiles(String folderPath) {
+        List<String> generatedFiles = new ArrayList<>();
+        for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
+            String fileName = Utils.getFileName(javaFile);
+            if (fileName.startsWith(Settings.PERMUTATED_CLASS_PREFIX)) {
+                generatedFiles.add(javaFile);
+            }
+        }
+        return generatedFiles;
+    }
+
+    /**
+     * List generated files in folder
+     * @param folderPath - Path of the folder
+     * @return - List of paths of generated files.
+     */
     public static List<String> listGeneratedFiles(String folderPath) {
         List<String> generatedFiles = new ArrayList<>();
         for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
@@ -191,7 +207,9 @@ public class Utils {
         if (contents == null)
             return files;
         for (File file : contents) {
-            if (file.isFile() && !file.getName().startsWith(Settings.GENERATED_CLASS_PREFIX) && file.getName().endsWith(".java")) {
+            if (file.isFile() && !file.getName().startsWith(Settings.GENERATED_CLASS_PREFIX)
+                    && !file.getName().startsWith(Settings.PERMUTATED_CLASS_PREFIX)
+                    && file.getName().endsWith(".java")) {
                 files.add(file.getAbsolutePath());
             } else if (file.isDirectory()) {
                 files.addAll(listNonGeneratedJavaFiles(file.getAbsolutePath()));

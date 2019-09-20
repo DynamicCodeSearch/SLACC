@@ -9,6 +9,7 @@ import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.Utils;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -38,14 +39,18 @@ public class MetadataExtractor {
 
     public static void extractForDataset(String dataset) {
         String sourceFolder = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
-        for(String javaFile: Utils.listGeneratedFiles(sourceFolder)) {
+        List<String> javaFiles = Utils.listPermutatedFiles(sourceFolder);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = Utils.listGeneratedFiles(sourceFolder);
+        }
+        for(String javaFile: javaFiles) {
             MetadataExtractor extractor = new MetadataExtractor(dataset, javaFile);
             extractor.extract();
         }
     }
 
     public static void main(String[] args) {
-        extractForDataset("Example");
+        extractForDataset("Dummy");
     }
 
 }

@@ -24,6 +24,8 @@ public class Function {
 
     private String filePath;
 
+    private String baseFilePath;
+
     private Method method;
 
     private MethodDeclaration ast;
@@ -151,19 +153,29 @@ public class Function {
     }
 
     private void processComments() {
-        for (Comment comment: ast.getAllContainedComments()) {
-            String commentString = comment.toString().trim();
-            int colonPos = commentString.indexOf(":");
-            if (commentString.startsWith("// lines: ")) {
-                this.linesTouched = new ArrayList<>();
-                for (String lineStr: commentString.substring(colonPos + 1).trim().split(","))
-                    this.linesTouched.add(Integer.parseInt(lineStr));
-                Collections.sort(this.linesTouched);
-            } else if (commentString.startsWith("// start_end: ")) {
-                this.span = new ArrayList<>();
-                for (String lineStr: commentString.substring(colonPos + 1).trim().split(","))
-                    this.span.add(Integer.parseInt(lineStr));
-                Collections.sort(this.span);
+        List<Comment> comments = ast.getAllContainedComments();
+        if (comments == null || comments.size() == 0)
+            return;
+        String comment = comments.get(0).getContent();
+        comment = comment.replaceAll("\\s", "").replace("*", "");
+        for (String m : comment.split(";")) {
+            String[] mSplits = m.split(":");
+            switch (mSplits[0]) {
+                case "source":
+                    this.baseFilePath = mSplits[1];
+                    break;
+                case "lines":
+                    this.linesTouched = new ArrayList<>();
+                    for (String lineStr : mSplits[1].split(","))
+                        this.linesTouched.add(Integer.parseInt(lineStr));
+                    Collections.sort(this.linesTouched);
+                    break;
+                case "start_end":
+                    this.span = new ArrayList<>();
+                    for (String lineStr : mSplits[1].split(","))
+                        this.span.add(Integer.parseInt(lineStr));
+                    Collections.sort(this.span);
+                    break;
             }
         }
     }
@@ -261,7 +273,7 @@ public class Function {
         return argComboKeyMap;
     }
 
-    private static List<List<Object>> getPermutations(List<Object> objects) {
+    public static List<List<Object>> getPermutations(List<Object> objects) {
         if (objects.size() == 0) {
             List<List<Object>> result = new ArrayList<List<Object>>();
             result.add(new ArrayList<Object>());
@@ -355,6 +367,7 @@ public class Function {
         metadata.addProperty("body", this.ast.toStringWithoutComments());
         metadata.addProperty("inputKey", this.makeArgumentsKey());
         metadata.addProperty("filePath", this.filePath);
+        metadata.addProperty("baseFilePath", this.baseFilePath);
         if (this.linesTouched != null && this.linesTouched.size() > 0) {
             JsonArray linesTouched = new JsonArray();
             for (Integer line: this.linesTouched)
@@ -368,7 +381,7 @@ public class Function {
             metadata.add("span", span);
         }
         metadata.add("return", returnVariable.getMetadata());
-        metadata.add("argNamesKeysMap", Utils.toJson(getArgComboKeyMap()));
+//        metadata.add("argNamesKeysMap", Utils.toJson(getArgComboKeyMap()));
         return metadata;
     }
 }

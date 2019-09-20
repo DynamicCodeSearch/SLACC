@@ -277,6 +277,10 @@ public class Variable {
         return typeString.toString();
     }
 
+    public String toFunctionParameter() {
+        return String.format("%s %s", toTypeString(), getName());
+    }
+
     public boolean isAssignedInRange(VariablePosition start, VariablePosition end) {
         if (assignPositions == null || assignPositions.size() == 0)
             return false;

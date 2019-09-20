@@ -141,6 +141,9 @@ def execute_stmts():
     store.update_stmt_outputs(stmt['_id'], outputs)
 
 
+def run_execute_stmts():
+  execute_stmts()
+
 def _main():
   # extract_variable_names()
   execute_stmts()

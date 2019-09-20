@@ -89,16 +89,24 @@ public class ArgumentExtractor {
             Function function = new Function(this.dataset, method, classMethods.getMethodBodies().get(method.getName()), javaFile);
             if (!function.isValidArgs() || function.shouldBeSkipped())
                 continue;
-            List<String> argKeys = function.makeAllArgumentsKeys();
-            for (String key: argKeys) {
-                if (!this.store.fuzzedKeyExists(key)) {
-                    LOGGER.info(String.format("Storing Key: %s", key));
-                    List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function, numArgs);
-                    if (arguments != null) {
-                        this.store.saveFuzzedArguments(key, arguments);
-                    }
+            String argKey = function.makeArgumentsKey();
+            if (!this.store.fuzzedKeyExists(argKey)) {
+                LOGGER.info(String.format("Storing Key: %s", argKey));
+                List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function, numArgs);
+                if (arguments != null) {
+                    this.store.saveFuzzedArguments(argKey, arguments);
                 }
             }
+//            List<String> argKeys = function.makeAllArgumentsKeys();
+//            for (String key: argKeys) {
+//                if (!this.store.fuzzedKeyExists(key)) {
+//                    LOGGER.info(String.format("Storing Key: %s", key));
+//                    List<Object> arguments = ArgumentGenerator.generateArgumentsForFunction(this.dataset, function, numArgs);
+//                    if (arguments != null) {
+//                        this.store.saveFuzzedArguments(key, arguments);
+//                    }
+//                }
+//            }
         }
     }
 

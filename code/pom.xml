@@ -57,6 +57,12 @@
             <version>3.2.2</version>
         </dependency>
         <dependency>
+            <groupId>org.antlr</groupId>
+            <artifactId>antlr4-runtime</artifactId>
+            <version>4.7.1</version>
+            <!--<scope>compile</scope>-->
+        </dependency>
+        <dependency>
             <groupId>edu.ncsu.codeseer</groupId>
             <artifactId>projects</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -129,7 +135,74 @@
                     </execution>
                 </executions>
             </plugin>
-
+            <!--<plugin>-->
+                <!--<groupId>com.googlecode.maven-download-plugin</groupId>-->
+                <!--<artifactId>download-maven-plugin</artifactId>-->
+                <!--<version>1.4.0</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<id>antlr-r-download</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>wget</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<url>https://raw.githubusercontent.com/antlr/grammars-v4/master/r/R.g4</url>-->
+                            <!--<outputFileName>R.g4</outputFileName>-->
+                            <!--<outputDirectory>src/main/antlr4/edu/ncsu/r</outputDirectory>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                    <!--<execution>-->
+                        <!--<id>antlr-py-download</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                        <!--<goals>-->
+                            <!--<goal>wget</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<url>https://raw.githubusercontent.com/antlr/grammars-v4/master/python3/Python3.g4</url>-->
+                            <!--<outputFileName>Python3.g4</outputFileName>-->
+                            <!--<outputDirectory>src/main/antlr4/edu/ncsu/python3</outputDirectory>-->
+                        <!--</configuration>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <plugin>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-maven-plugin</artifactId>
+                <version>4.7.1</version>
+                <executions>
+                    <execution>
+                        <id>R</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/antlr4/edu/ncsu/r</sourceDirectory>
+                            <outputDirectory>${basedir}/target/generated-sources/antlr4/edu/ncsu/r</outputDirectory>
+                            <grammars>R.g4</grammars>
+                            <includes>
+                                <include>R.g4</include>
+                                <include>RFilter.g4</include>
+                            </includes>
+                            <visitor>true</visitor>
+                            <listener>true</listener>v
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>Python</id>
+                        <goals>
+                            <goal>antlr4</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${basedir}/src/main/antlr4/edu/ncsu/python3</sourceDirectory>
+                            <outputDirectory>${basedir}/target/generated-sources/antlr4/edu/ncsu/python3</outputDirectory>
+                            <grammars>Python3.g4</grammars>
+                            <visitor>true</visitor>
+                            <listener>true</listener>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

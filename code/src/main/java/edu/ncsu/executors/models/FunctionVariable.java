@@ -221,6 +221,17 @@ public class FunctionVariable {
         return String.format("%s.%s", packageName, dataType);
     }
 
+    public String toFunctionParameter() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(dataType);
+        if (arrayDimensions > 0) {
+            for (int i=0; i < arrayDimensions; i++)
+                sb.append("[]");
+        }
+        sb.append(" ").append(getName());
+        return sb.toString();
+    }
+
     public String makeKey() {
         String key;
         if (primitive != null) {

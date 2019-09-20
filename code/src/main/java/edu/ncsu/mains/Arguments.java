@@ -25,6 +25,11 @@ public class Arguments {
         return Utils.listGeneratedFiles(datasetPath);
     }
 
+    private static List<String> listPermutatedFiles(String dataset) {
+        String datasetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
+        return Utils.listPermutatedFiles(datasetPath);
+    }
+
     public static void extractAndStorePrimitiveArguments(String... args) {
         String dataset = getDataset(args);
         List<String> javaFiles = listGeneratedFiles(dataset);
@@ -38,7 +43,10 @@ public class Arguments {
         if (args.length > 1) {
             deleteOld = Boolean.parseBoolean(args[1].toLowerCase().trim());
         }
-        List<String> javaFiles = listGeneratedFiles(dataset);
+        List<String> javaFiles = listPermutatedFiles(dataset);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = listGeneratedFiles(dataset);
+        }
         ArgumentExtractor extractor = new ArgumentExtractor(dataset);
         extractor.storeFuzzedArguments(javaFiles, Settings.FUZZ_ARGUMENT_SIZE, deleteOld);
     }

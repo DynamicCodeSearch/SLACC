@@ -352,7 +352,11 @@ public class MethodExecutor {
         LOGGER.info(String.format("Executing methods for dataset: %s. Here we go .... ", dataset));
         String datasetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
-        for (String javaFile: Utils.listGeneratedFiles(datasetPath)) {
+        List<String> javaFiles = Utils.listPermutatedFiles(datasetPath);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = Utils.listGeneratedFiles(datasetPath);
+        }
+        for (String javaFile: javaFiles) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile);
             functionTasks.addAll(executor.getFunctionTasks());
         }
@@ -363,7 +367,11 @@ public class MethodExecutor {
         LOGGER.info(String.format("Executing methods for problem: %s. Here we go .... ", problem));
         String problemPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset, problem);
         List<Callable<Map<String, String>>> functionTasks = new ArrayList<>();
-        for (String javaFile: Utils.listGeneratedFiles(problemPath)) {
+        List<String> javaFiles = Utils.listPermutatedFiles(problemPath);
+        if (javaFiles == null || javaFiles.size() == 0) {
+            javaFiles = Utils.listGeneratedFiles(problemPath);
+        }
+        for (String javaFile: javaFiles) {
             MethodExecutor executor = new MethodExecutor(dataset, javaFile);
             functionTasks.addAll(executor.getFunctionTasks());
         }

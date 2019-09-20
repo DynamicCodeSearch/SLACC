@@ -90,7 +90,7 @@ public class Settings {
     /***
      * Maximum number of arguments per function.
      */
-    public static int MAX_NUM_ARGS = 5;
+    public static int MAX_NUM_ARGS = 3;
 
     /**
      * Maximum array size
@@ -115,6 +115,11 @@ public class Settings {
      * Generated class prefix
      */
     public static String GENERATED_CLASS_PREFIX = "generated_class_";
+
+    /**
+     * Generated class prefix
+     */
+    public static String PERMUTATED_CLASS_PREFIX = "permutated_class_";
 
     /**
      * Generated function prefix
