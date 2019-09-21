@@ -31,7 +31,7 @@ public class MethodExtractor {
             for (String javaFile: Utils.listFilesWithExtension(problemPath, ".java", true, true)) {
                 String fileName = Utils.getFileName(javaFile);
                 if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) && !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX)) {
-                    List<Map<String, String>> methodMetas = MethodAndVariableAdapter.extractMethodProps(javaFile, true);
+                    List<Map<String, String>> methodMetas = MethodAndVariableAdapter.extractMethodProps(dataset, javaFile, true);
                     for (Map<String, String> methodMeta :methodMetas) {
                         builder.append(methodMeta.get("Class")).append(",");
                         builder.append(methodMeta.get("Package")).append(",");

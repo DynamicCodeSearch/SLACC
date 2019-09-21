@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import com.mongodb.client.MongoCollection;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.store.IMetadataStore;
+import edu.ncsu.visitors.blocks.GeneratedFunction;
 import org.bson.Document;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class MetadataStore implements IMetadataStore {
@@ -28,6 +30,28 @@ public class MetadataStore implements IMetadataStore {
                 MongoDriver.deleteDocument(collection, "name", functionName);
             collection.insertOne(document);
         }
+    }
+
+    @Override
+    public void saveClassFunctionsMetadata(String dataset, List<JsonObject> generatedFunctions) {
+        LOGGER.info("Writing metadata in Mongo Database ... ");
+        MongoCollection<Document> collection = MongoDriver.getCollection(dataset, FUNCTION_METADATA_COLLECTION);
+        if (!MongoDriver.collectionExists(collection))
+            MongoDriver.createIndexForCollection(collection, "name");
+        for (JsonObject generatedFunction: generatedFunctions) {
+            String functionName = generatedFunction.get("name").getAsString();
+            Document document = MongoDriver.parseAsDocument(generatedFunction);
+            if (MongoDriver.containsDocument(collection, "name", functionName))
+                MongoDriver.deleteDocument(collection, "name", functionName);
+            collection.insertOne(document);
+        }
+    }
+
+    @Override
+    public JsonObject getFunctionMetadata(String dataset, String functionName) {
+        MongoCollection<Document> collection = MongoDriver.getCollection(dataset, FUNCTION_METADATA_COLLECTION);
+        Document document = MongoDriver.getDocument(collection, "name", functionName);
+        return MongoDriver.parseAsJson(document);
     }
 
     @Override

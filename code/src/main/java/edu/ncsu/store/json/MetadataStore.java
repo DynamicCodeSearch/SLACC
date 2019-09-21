@@ -5,8 +5,10 @@ import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.Utils;
+import edu.ncsu.visitors.blocks.GeneratedFunction;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class MetadataStore implements IMetadataStore {
@@ -21,6 +23,16 @@ public class MetadataStore implements IMetadataStore {
         Utils.mkdir(writeFolder);
         String writeFile = Utils.pathJoin(writeFolder, String.format("%s.json", classMethods.getClassName()));
         JSONDriver.saveJsonObject(metadata, writeFile, true);
+    }
+
+    @Override
+    public void saveClassFunctionsMetadata(String dataset, List<JsonObject> generatedFunctions) {
+        throw new RuntimeException("This method is not implemented for JSON. Check out Mongo.");
+    }
+
+    @Override
+    public JsonObject getFunctionMetadata(String dataset, String functionName) {
+        throw new RuntimeException("This method is not implemented for JSON. Check out Mongo.");
     }
 
     @Override

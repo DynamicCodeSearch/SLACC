@@ -79,6 +79,7 @@ class RepresentativeClusterer(O):
     LOGGER.info("Clustering using Representative Sampling with tolerance '%0.2f'" % clustering_error)
     n = len(self.functions)
     for i in xrange(n - 1):
+      LOGGER.info("Processing function %d / %d " % (i + 1, n - 1))
       for j in xrange(i+1, n):
         f_i = self.functions[i]
         f_j = self.functions[j]

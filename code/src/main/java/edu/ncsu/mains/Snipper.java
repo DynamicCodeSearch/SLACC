@@ -14,23 +14,23 @@ public class Snipper {
     private static void snipDataset(String dataset) {
         LOGGER.info(String.format("Processing for Dataset: %s", dataset));
         String datasetPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset);
-        snipFolder(datasetPath);
+        snipFolder(dataset, datasetPath);
     }
 
 
     private static void snipProblem(String dataset, String problem) {
         LOGGER.info(String.format("Processing for Dataset: %s and Problem: %s", dataset, problem));
         String problemPath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, dataset, problem);
-        snipFolder(problemPath);
+        snipFolder(dataset, problemPath);
     }
 
-    private static void snipFolder(String folderPath) {
+    private static void snipFolder(String dataset, String folderPath) {
         for (String javaFile: Utils.listFilesWithExtension(folderPath, ".java", true, true)) {
             String fileName = Utils.getFileName(javaFile);
             if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX) &&
                     !fileName.startsWith(Settings.TEMPORARY_CLASS_PREFIX) &&
                     !fileName.startsWith(Settings.PERMUTATED_CLASS_PREFIX)) {
-                MethodAndVariableAdapter.generateMethodsForJavaFile(javaFile);
+                MethodAndVariableAdapter.generateMethodsForJavaFile(dataset, javaFile);
             }
         }
     }

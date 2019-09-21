@@ -39,7 +39,7 @@ public class FunctionVariable {
     private boolean isBuiltInType = false;
 
 
-    static FunctionVariable getFunctionVariable(String dataset, Type type, String packageName) {
+    public static FunctionVariable getFunctionVariable(String dataset, Type type, String packageName) {
         if (type instanceof PrimitiveType) {
             return new FunctionVariable(dataset, (PrimitiveType) type);
         } else if (type instanceof ClassOrInterfaceType) {

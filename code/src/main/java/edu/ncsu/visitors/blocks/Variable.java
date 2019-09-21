@@ -41,6 +41,11 @@ public class Variable {
     protected String type;
 
     /**
+     * AST Type of variable
+     */
+    protected Type astType;
+
+    /**
      * Name of package
      */
     protected String packageName;
@@ -86,7 +91,14 @@ public class Variable {
     protected int modifierCode = -1;
 
     /**
-     * @return Type of variable
+     * @return Type(AST) of variable
+     */
+    public Type getAstType() {
+        return astType;
+    }
+
+    /**
+     * @return Type(String) of variable
      */
     public String getType() {
         return type;
@@ -145,6 +157,7 @@ public class Variable {
         this.uuid = UUID.randomUUID().toString();
         this.name = name;
         this.scope = scope;
+        this.astType = type;
         if (type instanceof ReferenceType) {
             ReferenceType refType = (ReferenceType) type;
             this.type = refType.getType().toStringWithoutComments();
@@ -209,6 +222,7 @@ public class Variable {
     public Variable(String name, Type type, Integer lineNumber, Integer columnNumber, Expression initValue,
                     Node parentNode) {
         this(name, type.toStringWithoutComments(), lineNumber, columnNumber, initValue, parentNode);
+        this.astType = type;
         if (type instanceof ReferenceType) {
             ReferenceType refType = (ReferenceType) type;
             this.type = refType.getType().toStringWithoutComments();

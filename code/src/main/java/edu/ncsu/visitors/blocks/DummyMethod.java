@@ -4,7 +4,9 @@ import java.util.*;
 
 import com.github.javaparser.ast.stmt.ReturnStmt;
 import com.google.common.base.Joiner;
+import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
+import edu.ncsu.executors.models.FunctionVariable;
 import edu.ncsu.utils.InMemoryJavaCompiler;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.helpers.VisitorHelper;
@@ -12,6 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 
 
 public class DummyMethod {
+
+    private String dataset;
 
     private List<StatementBlock> statementBlocks;
 
@@ -27,8 +31,9 @@ public class DummyMethod {
 
     private ClassBlock parentClassBlock;
 
-    public DummyMethod(ClassBlock parentClassBlock, MethodBlock parentMethodBlock, List<StatementBlock> statementBlocks,
+    public DummyMethod(String dataset, ClassBlock parentClassBlock, MethodBlock parentMethodBlock, List<StatementBlock> statementBlocks,
                        Collection<Variable> arguments, Collection<Variable> returns) {
+        this.dataset = dataset;
         this.parentClassBlock = parentClassBlock;
         this.parentMethodBlock = parentMethodBlock;
         this.statementBlocks = statementBlocks;
@@ -152,17 +157,19 @@ public class DummyMethod {
      * @param isStatic: Is function static?
      * @return Entire function as string
      */
-    public List<String> makeFunctions(boolean isStatic, Set<String> exisitingFunctions) {
-        List<String> functions = new ArrayList<>();
+    public List<GeneratedFunction> makeFunctions(boolean isStatic, Set<String> exisitingFunctions) {
+        // TODO: return an object that contains method and associated meta data which is stored in comments
+        List<GeneratedFunction> functions = new ArrayList<>();
         StringBuilder builder = new StringBuilder();
         String functionBody = makeFunctionBody();
         String argStr = makeArguments();
         String argAndBody = "(" +
                 argStr + ") { \n" +
-                makeMetaComments() +
+//                makeMetaComments() +
                 functionBody;
+        Set<Integer> span = getStatementSpan();
         StatementBlock lastStatementBlock = statementBlocks.get(statementBlocks.size() - 1);
-        String definitionFormat = isStatic ? "public static %s func_%s" : "public %s func_%s";
+        String definitionFormat = isStatic ? "public static %s %s" : "public %s %s";
         boolean isReturnStatement = lastStatementBlock.getStatementAST() instanceof ReturnStmt;
         if (arguments.size() == 0)
             return functions;
@@ -172,25 +179,33 @@ public class DummyMethod {
                 return functions;
             }
             exisitingFunctions.add(functionDescriptor);
-            String funcName = Utils.randomString();
+            String funcName = "func_" + Utils.randomString();
             builder.append(String.format(definitionFormat, parentMethodBlock.getReturnType(), funcName)).
                     append(argAndBody).
                     append("\n}\n\n");
             boolean status = isValidFunction(builder.toString());
             if (status) {
-                functions.add(builder.toString());
+                GeneratedFunction genFunc = new GeneratedFunction();
+                genFunc.setName(funcName);
+                genFunc.setBody(builder.toString());
+                genFunc.setLinesTouched(lineNumbers);
+                genFunc.setSpan(span);
+                FunctionVariable retVariable = FunctionVariable.getFunctionVariable(dataset, parentMethodBlock.getMethodNode().getType(), packageName);
+                genFunc.setReturnMeta(retVariable.getMetadata());
+                functions.add(genFunc);
             }
             return functions;
         }
         String returnFormat = "return %s;";
         for (Variable returnVariable: returns) {
+            FunctionVariable retVariable = FunctionVariable.getFunctionVariable(dataset, returnVariable.getAstType(), packageName);
             String returnStatement = String.format(returnFormat, returnVariable.name);
             String functionDescriptor = makeUniqueFunctionDescriptor(argStr, functionBody, returnStatement);
             if (exisitingFunctions.contains(functionDescriptor)) {
                 continue;
             }
             exisitingFunctions.add(functionDescriptor);
-            String funcName = Utils.randomString();
+            String funcName = "func_" + Utils.randomString();
 //            System.out.println("####");
 //            System.out.println(funcName);
 //            System.out.println(functionDescriptor);
@@ -201,7 +216,13 @@ public class DummyMethod {
                     append("\n}\n\n");
             boolean status = isValidFunction(builder.toString());
             if (status) {
-                functions.add(builder.toString());
+                GeneratedFunction genFunc = new GeneratedFunction();
+                genFunc.setName(funcName);
+                genFunc.setBody(builder.toString());
+                genFunc.setLinesTouched(lineNumbers);
+                genFunc.setSpan(span);
+                genFunc.setReturnMeta(retVariable.getMetadata());
+                functions.add(genFunc);
             }
             builder = new StringBuilder();
         }

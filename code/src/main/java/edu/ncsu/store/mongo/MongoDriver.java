@@ -3,6 +3,7 @@ package edu.ncsu.store.mongo;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
@@ -28,6 +29,8 @@ public class MongoDriver {
     private static Gson GSON = new GsonBuilder().serializeSpecialFloatingPointValues().create();
 
     private static MongoClient client = null;
+
+    private final static JsonParser jsonParser = new JsonParser();
 
     static {
          mongoLogger.setLevel(Level.OFF);
@@ -118,6 +121,11 @@ public class MongoDriver {
     public static Document parseAsDocument(JsonObject result) {
         String jsonString = GSON.toJson(result).trim().replaceAll("(-)?Infinity", "NaN");
         return new Document((Map<String, Object>) JSON.parse(jsonString));
+    }
+
+    public static JsonObject parseAsJson(Document document) {
+        String jsonString = document.toJson();
+        return jsonParser.parse(jsonString).getAsJsonObject();
     }
 
     public static void main(String[] args) {

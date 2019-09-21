@@ -11,8 +11,11 @@ import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
 import com.google.common.collect.Sets;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import edu.ncsu.config.Settings;
+import edu.ncsu.store.BaseStorage;
+import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.JavaFormatter;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.helpers.StatementHelper;
@@ -31,6 +34,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private static final Gson GSON = new GsonBuilder().create();
 
+    private String dataset;
+
     private CompilationUnit compilationUnit;
 
     private String fileName;
@@ -45,7 +50,8 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         return classBlocks;
     }
 
-    private MethodAndVariableAdapter(String javaFile){
+    private MethodAndVariableAdapter(String dataset, String javaFile){
+        this.dataset = dataset;
         this.linesCovered = new HashSet<>();
         this.fileName = javaFile;
         this.compilationUnit = VisitorHelper.loadCompilationUnit(fileName);
@@ -257,7 +263,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 
     private DummyMethod makeFunction(List<StatementBlock> statementBlocks, ClassBlock classBlock, MethodBlock methodBlock) {
         Map<String, Collection<Variable>> methodVariables = StatementHelper.getUndeclaredVariables(statementBlocks, classBlock, methodBlock);
-        return new DummyMethod(classBlock, methodBlock, statementBlocks, methodVariables.get("undeclared"), methodVariables.get("declared"));
+        return new DummyMethod(dataset, classBlock, methodBlock, statementBlocks, methodVariables.get("undeclared"), methodVariables.get("declared"));
     }
 
     private Set<Integer> getLinesCovered(DummyMethod method) {
@@ -273,7 +279,13 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         return null;
     }
 
-    private void saveMetaData(int numFunctions) {
+    private void saveMetaData(List<GeneratedFunction> generatedFunctions) {
+        IMetadataStore metadataStore = BaseStorage.loadMetadataStore();
+        List<JsonObject> genFuncsAsJson = new ArrayList<>();
+        for (GeneratedFunction generatedFunction: generatedFunctions)
+            genFuncsAsJson.add(generatedFunction.toJson());
+        metadataStore.saveClassFunctionsMetadata(dataset, genFuncsAsJson);
+
         String packageName = compilationUnit.getPackage().getPackageName();
         String metaFolder = Utils.pathJoin(Settings.META_RESULTS_SLOC, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(metaFolder);
@@ -293,7 +305,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         Map<String, Object> stats = new HashMap<>();
         stats.put("sloc", sloc);
         stats.put("linesCovered", linesCovered);
-        stats.put("numFunctions", numFunctions);
+        stats.put("numFunctions", generatedFunctions.size());
         slocMap.put(fileName, stats);
         try(Writer writer = new FileWriter(file)) {
             Gson gson = new GsonBuilder().create();
@@ -303,9 +315,10 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         }
     }
 
-    private List<String> generateMethods() {
+    private List<GeneratedFunction> generateMethods() {
+        // TODO: Make this return a bunch of functions;
         LOGGER.info(String.format("PROCESSING FOR %s", this.fileName));
-        List<String> functions = new ArrayList<>();
+        List<GeneratedFunction> functions = new ArrayList<>();
         Set<String> existingFunctions  = new HashSet<>();
         for (ClassBlock classBlock: this.getClassBlocks()) {
             for (MethodBlock methodBlock: classBlock.getMethodBlocks()) {
@@ -316,7 +329,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
                 this.visit(methodBlock.getMethodNode(), visitorArg);
                 for (List<StatementBlock> statementBlocks: methodBlock.getStatementGroups()) {
                     DummyMethod method = this.makeFunction(statementBlocks, classBlock, methodBlock);
-                    List<String> thisFunctions = method.makeFunctions(true, existingFunctions);
+                    List<GeneratedFunction> thisFunctions = method.makeFunctions(true, existingFunctions);
 //                    System.out.println("\n**** Combination **** ");
 //                    for (StatementBlock statementBlock: statementBlocks) {
 //                        System.out.println(statementBlock.getStatementAST());
@@ -334,42 +347,45 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
         return functions;
     }
 
-    private String saveMethods(List<String> functions) {
+    private String saveMethods(List<GeneratedFunction> functions) {
+        // TODO: Accept list of functions or a new object. Save metadata as well
         String className = Settings.GENERATED_CLASS_PREFIX + Utils.randomString();
         String packageName = VisitorHelper.getPackage(compilationUnit);
         String writePath = Utils.pathJoin(Settings.PROJECTS_JAVA_FOLDER, packageName.replaceAll("\\.", File.separator));
         Utils.mkdir(writePath);
+        String writeFilePath = Utils.pathJoin(writePath, className + ".java");
         StringBuilder javaContent = new StringBuilder();
         javaContent.append("package ").append(packageName).append(";\n\n").
                 append(Imports.defaultImports()).
                 append("public class ").append(className).append(" {\n");
-        for (String function: functions) {
-            javaContent.append(function).append("\n");
+        for (GeneratedFunction function: functions) {
+            function.setSourceFile(fileName);
+            function.setGeneratedFile(writeFilePath);
+            javaContent.append(function.getBody()).append("\n");
         }
         javaContent.append("}");
-        String fileName = Utils.pathJoin(writePath, className + ".java");
-        File writeFile = new File(fileName);
+        File writeFile = new File(writeFilePath);
         try (PrintWriter out = new PrintWriter(writeFile)) {
             out.println(javaContent.toString());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        JavaFormatter.formatAndSave(fileName);
-        return fileName;
+        JavaFormatter.formatAndSave(writeFilePath);
+        return writeFilePath;
     }
 
-    public static void generateMethodsForJavaFile(String javaFile) {
-        MethodAndVariableAdapter adapter = new MethodAndVariableAdapter(javaFile);
-        List<String> functions = adapter.generateMethods();
+    public static void generateMethodsForJavaFile(String dataset, String javaFile) {
+        MethodAndVariableAdapter adapter = new MethodAndVariableAdapter(dataset, javaFile);
+        List<GeneratedFunction> functions = adapter.generateMethods();
         String saveFile = adapter.saveMethods(functions);
         String packageName = adapter.compilationUnit.getPackage().getPackageName();
         String mainClassName = adapter.getMainClassName();
-        adapter.saveMetaData(functions.size());
+        adapter.saveMetaData(functions);
         LOGGER.info(String.format("Saved %s.%s to '%s'", packageName, mainClassName, saveFile));
     }
 
-    public static List<Map<String, String>> extractMethodProps(String javaFile, boolean skipMain) {
-        MethodAndVariableAdapter adapter = new MethodAndVariableAdapter(javaFile);
+    public static List<Map<String, String>> extractMethodProps(String dataset, String javaFile, boolean skipMain) {
+        MethodAndVariableAdapter adapter = new MethodAndVariableAdapter(dataset, javaFile);
         List<Map<String, String>> methodNames = new ArrayList<>();
         for (ClassBlock classBlock: adapter.getClassBlocks()) {
             for (MethodBlock methodBlock: classBlock.getMethodBlocks()) {
@@ -398,7 +414,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
 //        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
         String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Dummy/subtract/Dummy.java";
 //        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/CodeJam/stupid/Dummy.java";
-        generateMethodsForJavaFile(fName);
+        generateMethodsForJavaFile("Dummy", fName);
     }
 
     public static void main(String[] args) {

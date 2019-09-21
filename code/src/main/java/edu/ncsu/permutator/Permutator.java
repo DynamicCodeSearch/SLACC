@@ -1,10 +1,13 @@
 package edu.ncsu.permutator;
 
+import com.google.gson.JsonObject;
 import edu.ncsu.config.Settings;
 import edu.ncsu.executors.models.ClassMethods;
 import edu.ncsu.executors.models.Function;
 import edu.ncsu.executors.models.FunctionVariable;
 import edu.ncsu.mains.Snipper;
+import edu.ncsu.store.BaseStorage;
+import edu.ncsu.store.IMetadataStore;
 import edu.ncsu.utils.JavaFormatter;
 import edu.ncsu.utils.Utils;
 import edu.ncsu.visitors.blocks.Imports;
@@ -23,6 +26,7 @@ public class Permutator {
     private static Logger LOGGER = Logger.getLogger(Snipper.class.getName());
 
     public static void permutateFile(String dataset, String generated_file) {
+        IMetadataStore metadataStore = BaseStorage.loadMetadataStore();
         String fileName = Utils.getFileName(generated_file);
         if (!fileName.startsWith(Settings.GENERATED_CLASS_PREFIX)) {
             LOGGER.info(String.format("%s is not a generated file. Not permutating!", generated_file));
@@ -33,30 +37,43 @@ public class Permutator {
 
         String className = Settings.PERMUTATED_CLASS_PREFIX + suffix.split(".java")[0];
         String permutatedFile = Utils.pathJoin(parentFolder, className + ".java");
-        if (Utils.fileExists(permutatedFile)) {
-            LOGGER.info(String.format("Processed file: %s. Moving on ...", generated_file));
-            return;
-        }
+//        if (Utils.fileExists(permutatedFile)) {
+//            LOGGER.info(String.format("Processed file: %s. Moving on ...", generated_file));
+//            return;
+//        }
         ClassMethods classMethods = new ClassMethods(dataset, generated_file);
         List<String> functionsAsString = new ArrayList<>();
+        List<JsonObject> functionsMetadata = new ArrayList<>();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
-            if (function.shouldBeSkipped() || (function.getReturnVariable() == null)) {
-                continue;
-            }
+            JsonObject metadata = metadataStore.getFunctionMetadata(dataset, function.getName());
+            metadata.remove("_id");
+            assert metadata != null;
             String body = function.getAst().getBody().toString();
             String returnType = function.getReturnVariable().getDataType();
             if (returnType == null) {
                 returnType = method.getReturnType().getName();
             }
-            List<Object> functionParameters = new ArrayList<>();
-            for (FunctionVariable variable: function.getArguments()) {
-                functionParameters.add(variable.toFunctionParameter());
-            }
+            List<Object> functionParameters = new ArrayList<Object>(function.getArguments());
             List<List<Object>> argPermutations = Function.getPermutations(functionParameters);
             for(List<Object> argPermutation : argPermutations) {
-                String argStr = StringUtils.join(argPermutation, ", ");
-                String functionAsString = String.format("public static %s func_%s(%s)%s", returnType, Utils.randomString(), argStr, body);
+                JsonObject cloned = metadata.deepCopy();
+                List<FunctionVariable> permutatedArgs = new ArrayList<>();
+                List<String> permutatedArgsAsStr = new ArrayList<>();
+                for (Object argObj: argPermutation) {
+                    FunctionVariable arg = (FunctionVariable) argObj;
+                    permutatedArgs.add(arg);
+                    permutatedArgsAsStr.add(arg.toFunctionParameter());
+                }
+                String inputKey = Function.constructArgumentTypesKey(permutatedArgs);
+                String argStr = StringUtils.join(permutatedArgsAsStr, ", ");
+                String functionName = "func_" + Utils.randomString();
+                String functionAsString = String.format("public static %s %s(%s)%s", returnType, functionName, argStr, body);
+                cloned.addProperty("name", functionName);
+                cloned.addProperty("body", functionAsString);
+                cloned.addProperty("inputKey", inputKey);
+                cloned.addProperty("filePath", permutatedFile);
+                functionsMetadata.add(cloned);
                 functionsAsString.add(functionAsString);
             }
         }
@@ -74,6 +91,11 @@ public class Permutator {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        JavaFormatter.formatAndSave(permutatedFile);
+        metadataStore.saveClassFunctionsMetadata(dataset, functionsMetadata);
+//        JavaFormatter.formatAndSave(permutatedFile);
+    }
+
+    public static void main(String[] args) {
+        permutateFile("Dummy", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Dummy/subtract/generated_class_ee362ba7ab1049668f9a4964111f9e7e.java");
     }
 }
