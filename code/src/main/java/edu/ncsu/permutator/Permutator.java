@@ -46,9 +46,12 @@ public class Permutator {
         List<JsonObject> functionsMetadata = new ArrayList<>();
         for (Method method: classMethods.getMethods()) {
             Function function = classMethods.getFunction(method);
+            if (function.shouldBeSkipped()) {
+                continue;
+            }
             JsonObject metadata = metadataStore.getFunctionMetadata(dataset, function.getName());
-            metadata.remove("_id");
             assert metadata != null;
+            metadata.remove("_id");
             String body = function.getAst().getBody().toString();
             String returnType = function.getReturnVariable().getDataType();
             if (returnType == null) {
@@ -96,6 +99,6 @@ public class Permutator {
     }
 
     public static void main(String[] args) {
-        permutateFile("Dummy", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Dummy/subtract/generated_class_ee362ba7ab1049668f9a4964111f9e7e.java");
+        permutateFile("IntroClassJava", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/digits/digits_65e02c1a_015/generated_class_7dfb0e91f5f64432814ecd68964bc88e.java");
     }
 }

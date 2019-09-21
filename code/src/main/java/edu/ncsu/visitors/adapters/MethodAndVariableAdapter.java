@@ -413,7 +413,7 @@ public class MethodAndVariableAdapter extends VoidVisitorAdapter{
     private static void testGenerateMethods() {
 //        String fName = String.format("%s/CodeJam/Y11R5P1/aditsu/Example.java", Settings.getDatasetSourceFolder(CodejamUtils.DATASET));
 //        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/Dummy/subtract/Dummy.java";
-        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/syllables/syllables_ca505766_003/syllables_ca505766_003.java";
+        String fName = "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/digits/digits_65e02c1a_015/digits_65e02c1a_015.java";
         generateMethodsForJavaFile("IntroClassJava", fName);
     }
 
