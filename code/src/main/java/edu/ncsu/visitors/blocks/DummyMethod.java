@@ -173,7 +173,7 @@ public class DummyMethod {
         boolean isReturnStatement = lastStatementBlock.getStatementAST() instanceof ReturnStmt;
         if (arguments.size() == 0)
             return functions;
-        if (isReturnStatement || returns.size() == 0) {
+        if (isReturnStatement) {
             String functionDescriptor = makeUniqueFunctionDescriptor(argStr, functionBody, null);
             if (exisitingFunctions.contains(functionDescriptor)) {
                 return functions;
@@ -196,6 +196,8 @@ public class DummyMethod {
             }
             return functions;
         }
+        if (returns.size() == 0)
+            return functions;
         String returnFormat = "return %s;";
         for (Variable returnVariable: returns) {
             FunctionVariable retVariable = FunctionVariable.getFunctionVariable(dataset, returnVariable.getAstType(), packageName);
