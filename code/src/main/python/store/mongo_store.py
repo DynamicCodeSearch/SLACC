@@ -8,7 +8,7 @@ __author__ = "bigfatnoob"
 
 
 from store import base_store, mongo_driver
-from utils import logger
+from utils import logger, lib
 import properties
 import re
 
@@ -190,3 +190,23 @@ class ExecutionStore(base_store.ExecutionStore):
   def load_cloned_function_names(self, name):
     collection = mongo_driver.get_collection(self.dataset, "cloned_functions")
     return mongo_driver.get_document(collection, "_function_name_", name)
+
+
+class ClusterStore(base_store.ClusterStore):
+  def __init__(self, dataset, **kwargs):
+    base_store.ClusterStore.__init__(self, dataset,  **kwargs)
+
+  def save_clusters(self, clusters, suffix):
+    collection_name = "clusters_%s" % suffix
+    collection = mongo_driver.get_collection(self.dataset, collection_name)
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_unique_index_for_collection(collection, "cluster_id")
+    for cluster_id, functions in clusters.items():
+      LOGGER.info("Saving cluster: '%d', with %d functions"  % (cluster_id, len(functions)))
+      cluster = {
+        "cluster_id": cluster_id,
+        "functions": [lib.to_json(f) for f in functions]
+      }
+      collection.insert(cluster)
+
+

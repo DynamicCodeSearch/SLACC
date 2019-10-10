@@ -10,8 +10,9 @@ from collections import defaultdict
 from sklearn.cluster import DBSCAN
 import numpy as np
 
-from utils import cache, logger, uf
+from utils import cache, logger, uf, lib
 from utils.lib import O
+from store import mongo_store
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -38,6 +39,32 @@ def execution_distance(func1, func2):
   return 1.0 - execution_similarity(func1, func2)
 
 
+def save_clusters_to_txt(clusters, file_name):
+  file_contents = []
+  for label, func_cluster in clusters.items():
+    if label == -1: continue
+    cluster_str = "\n\n****** Cluster %d ******" % label
+    file_contents.append(cluster_str)
+    for func in func_cluster:
+      file_contents.append(func.body)
+  cache.write_file(file_name, "\n".join(file_contents))
+
+
+def save_clusters_to_db(dataset, clusters, suffix):
+  store = mongo_store.ClusterStore(dataset)
+  store.save_clusters(clusters, suffix)
+
+
+def load_clusters_from_pkl(file_name):
+  return cache.load_pickle(file_name)
+
+
+def _transfer_clusters(dataset):
+  file_name = os.path.join(lib.get_clusters_folder(dataset), "java.pkl")
+  clusters = load_clusters_from_pkl(file_name)
+  save_clusters_to_db(dataset, clusters, "base")
+
+
 class DBScanClusterer(O):
   def __init__(self, functions, **kwargs):
     self.functions = functions
@@ -57,14 +84,7 @@ class DBScanClusterer(O):
       if skip_singles and label == -1:
         continue
       clusters[label].append(func)
-    file_contents = []
-    for label, func_cluster in clusters.items():
-      if label == -1: continue
-      cluster_str = "\n\n****** Cluster %d ******" % label
-      if file_name is not None: file_contents.append(cluster_str)
-      for func in func_cluster:
-        if file_name is not None: file_contents.append(func.body)
-    cache.write_file(file_name, "\n".join(file_contents))
+    save_clusters_to_txt(clusters, file_name)
     return clusters
 
 
@@ -93,13 +113,9 @@ class RepresentativeClusterer(O):
       if skip_singles and len(functions) == 1:
         continue
       clusters[cluster_id] = functions
-    file_contents = []
-    for label, func_cluster in clusters.items():
-      if len(func_cluster) == 1: continue
-      cluster_str = "\n\n****** Cluster %d ******" % label
-      if file_name is not None: file_contents.append(cluster_str)
-      for func in func_cluster:
-        if file_name is not None: file_contents.append(func.body)
-      cache.write_file(file_name, "\n".join(file_contents))
+    save_clusters_to_txt(clusters, file_name)
     return clusters
 
+
+if __name__ == "__main__":
+  _transfer_clusters("IntroClassJava")

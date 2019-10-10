@@ -9,6 +9,8 @@ __author__ = "bigfatnoob"
 
 import pickle as c_pickle
 import json
+import openpyxl
+from openpyxl.reader import excel
 from utils import logger
 import shutil
 
@@ -241,3 +243,14 @@ def list_files_with_extension(folder, extension, check_nest=False, is_absolute=F
       else:
         files.append(f)
   return files
+
+
+def read_excel(path, read_only=False):
+  """
+  Read excel file and return workbook object.
+  Look up docs in https://www.datacamp.com/community/tutorials/python-excel-tutorial
+  :param path: Path of the excel file
+  :param read_only: If set to true, this would make the read faster and for better optimization
+  :return: Workbook object
+  """
+  return openpyxl.load_workbook(path,  read_only=read_only)

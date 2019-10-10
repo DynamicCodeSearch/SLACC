@@ -128,6 +128,7 @@ def compute_similarity(dataset, language=None, functions=None, base_folder=None,
   clusters_report_file = os.path.join(base_folder, "%s.md" % file_name)
   clusters = get_clusterer()(functions).cluster(clusters_txt_file, skip_singles=skip_singles, clustering_error=clustering_error)
   cache.save_pickle(clusters_pkl_file, clusters)
+  clusterer.save_clusters_to_db(dataset, clusters, "base")
   n_clusters = len(clusters)
   sizes = [len(cluster_funcs) for label, cluster_funcs in clusters.items() if label != -1]
   meta_data = "## Cluster sizes\n"

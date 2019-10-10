@@ -13,6 +13,7 @@ import networkx
 from sos import similarity, clusterer
 from store import mongo_store
 from utils import lib, cache, logger
+from utils.stat import Stat
 import properties
 
 
@@ -274,6 +275,63 @@ def get_class_and_generate_functions(dataset, language="java_python", eps=0.01):
     print(package)
 
 
+def overlaps(func_a_meta, func_b_meta):
+  if func_a_meta['baseFilePath'] != func_b_meta['baseFilePath']:
+    return False
+  a_span = set(func_a_meta['span'])
+  b_span = set(func_b_meta['span'])
+  return len(a_span.intersection(b_span)) > 0
+
+
+def is_more_succinct(func_a_meta, func_b_meta):
+  a_span = set(func_a_meta['span'])
+  b_span = set(func_b_meta['span'])
+  return a_span < b_span
+
+
+def remove_overlapping_clusters(dataset, language="java_python"):
+  # TODO: Think about how to remove syntactic equivalence
+  store = mongo_store.FunctionStore(dataset)
+  base_file = os.path.join(properties.META_RESULTS_FOLDER, dataset, "clusters", "%s.pkl" % language)
+  clusters = cache.load_pickle(base_file)
+  non_overlapping_clusters = {}
+  for label, functions in clusters.items():
+    if label == -1 or len(functions) == 1: continue
+    non_overlapping_funcs = []
+    metas = {}
+    for func in functions:
+      meta = store.load_metadata({"name": func.base_name})
+      metas[func.base_name] = meta
+      if len(non_overlapping_funcs) == 0:
+        non_overlapping_funcs.append(func)
+        continue
+      is_non_overlapping_funcs_updated = False
+      for i, existing_func in enumerate(non_overlapping_funcs):
+        existing_meta = metas[existing_func.base_name]
+        if overlaps(meta, existing_meta):
+          is_non_overlapping_funcs_updated = True
+          if is_more_succinct(meta, existing_meta):
+            non_overlapping_funcs[i] = func
+          break
+      if not is_non_overlapping_funcs_updated:
+        non_overlapping_funcs.append(func)
+    if len(non_overlapping_funcs) > 1:
+      non_overlapping_clusters[label] = non_overlapping_funcs
+  write_folder = os.path.join(properties.META_RESULTS_FOLDER, dataset, "clusters", "non_overlapping")
+  cache.mkdir(write_folder)
+  clusters_txt_file = os.path.join(write_folder, "%s.txt" % language)
+  clusters_pkl_file = os.path.join(write_folder, "%s.pkl" % language)
+  clusters_report_file = os.path.join(write_folder, "%s.md" % language)
+  cache.save_pickle(clusters_pkl_file, non_overlapping_clusters)
+  clusterer.save_clusters_to_db(dataset, non_overlapping_clusters, "non_overlapping")
+  clusterer.save_clusters_to_txt(non_overlapping_clusters, clusters_txt_file)
+  sizes = [len(cluster_funcs) for label, cluster_funcs in non_overlapping_clusters.items() if label != -1]
+  meta_data = "## Cluster sizes\n"
+  meta_data += "* Number of clusters: %d\n" % len(non_overlapping_clusters)
+  meta_data += "* Number of functions clustered: %d\n" % sum(sizes)
+  meta_data += "## REPORT\n"
+  meta_data += Stat(sizes).report()
+  cache.write_file(clusters_report_file, meta_data)
 
 
 def _main():
@@ -312,13 +370,15 @@ def _main():
 
 def _test():
   # save_only_java_functions("codejam")
-  connected_components("codejam", "HitoshiIO")
+  # connected_components("codejam", "HitoshiIO")
   # cluster_source("codejam")
   # random_testing2("codejam")
   # validate("codejam")
   # get_class_and_generate_functions("codejam")
+  remove_overlapping_clusters("IntroClassJava", "java")
   pass
 
+
 if __name__ == "__main__":
-  _main()
-  # _test()
+  # _main()
+  _test()

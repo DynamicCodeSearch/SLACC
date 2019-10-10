@@ -16,8 +16,8 @@ from rpy2 import rinterface
 from utils import logger, stat
 from analysis.parsers import parser
 from misconceptions.common import compare, mongo_driver, props, datatypes
-from misconceptions.pdUtils import crawler
 from misconceptions.rUtils import functions
+from misconceptions.syntactics.distances import tree_edit_distance
 
 R_PARSER_PATH = os.path.join(props.CODE_SRC, "r", "parser", "r_parser.R")
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -195,6 +195,10 @@ def jaro_winkler(r_snippet, py_snippet):
   return 1.0 - Levenshtein.jaro_winkler(r_snippet, py_snippet)
 
 
+def ast_dist(r_snippet, py_snippet):
+  return tree_edit_distance(py_snippet, r_snippet)
+
+
 def test_distance_distribution():
   r_stmts = get_normalized_R_statements()
   py_stmts = get_normalized_py_statements()
@@ -248,6 +252,7 @@ def update_syntactic_distances():
           "d_levenshtein": levenshtein(r_stmt.normalized, py_stmt.normalized),
           "d_jaro": jaro(r_stmt.normalized, py_stmt.normalized),
           "d_jaro_winkler": jaro_winkler(r_stmt.normalized, py_stmt.normalized),
+          "d_ast": ast_dist(r_stmt.normalized, py_stmt.normalized)
         }
         try:
           updates["d_n_gram"] = n_gram_distance(r_stmt.normalized, py_stmt.normalized)[0]
@@ -288,6 +293,6 @@ def _test_tokenize():
 if __name__ == "__main__":
   # _test()
   # _test_tokenize()
-  test_distance_distribution()
-  # update_syntactic_distances()
+  # test_distance_distribution()
+  update_syntactic_distances()
   # get_top_syntax()

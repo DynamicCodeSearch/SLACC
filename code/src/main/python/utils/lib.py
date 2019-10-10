@@ -12,6 +12,21 @@ from collections import OrderedDict
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
+def to_json(val):
+  if isinstance(val, list):
+    return [to_json(v) for v in val]
+  elif isinstance(val, set):
+    return [to_json(v) for v in list(val)]
+  elif isinstance(val, tuple):
+    return [to_json(v) for v in list(val)]
+  elif isinstance(val, dict):
+    return {k: to_json(v) for k, v in val.items()}
+  elif isinstance(val, O):
+    return {k: to_json(v) for k, v in val.has().items()}
+  else:
+    return val
+
+
 class O(object):
   def __init__(self, **d):
     """

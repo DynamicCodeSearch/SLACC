@@ -139,3 +139,12 @@ class ExecutionStore(O):
   def __init__(self, dataset, **kwargs):
     O.__init__(self, **kwargs)
     self.dataset = dataset
+
+
+class ClusterStore(O):
+  def __init__(self, dataset, **kwargs):
+    O.__init__(self, **kwargs)
+    self.dataset = dataset
+
+  def save_clusters(self, cluster, suffix):
+    raise NotImplementedError("Should be implemented in subclass")

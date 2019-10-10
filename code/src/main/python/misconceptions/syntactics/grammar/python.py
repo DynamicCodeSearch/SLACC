@@ -9,47 +9,45 @@ __author__ = "bigfatnoob"
 from lark import Lark, Visitor, Transformer, Tree
 
 PD_GRAMMAR = """
-  start: value (assignment_operator (value | values))?
-  expr: value ( indexer | value | attribute)+
-  //  expr: value+
-  binary_expr: value binary_operator value
-  unary_expr: unary_operator value
-  indexer: ("." ("loc" | "iloc" | "ix" | "iy"))? "[" indexer_args "]"
-  attribute: "." NAME
+  start: value (ASSIGNMENT_OPERATOR value)?
+  binary_expr: value BINARY_OPERATOR value
+  unary_expr: UNARY_OPERATOR value
+  indexer: value ("." ("loc" | "iloc" | "ix" | "iy"))? "[" value "]"
+  attribute: value "." value
   
-  value: dict
+  value: unary_expr
+        | binary_expr
+        | dict
         | array
         | tuple
-        | bracketed
         | slice_range
         | QUOTED_STRING
         | NUMBER
-        | bool
-        | null
+        | BOOL
+        | NULL
         | NAME
         | lambda
         | func_call
-        | array_access
+        | attribute
+        | indexer
+        | values
         | if_else
-        | expr
-        | unary_expr
-        | binary_expr
-  values: [value ("," value)+]
+  values: value? ("," value?)+
   array: "[" [value ("," value)*] "]"
-  tuple: "(" [value ("," value)+] ")"
+  tuple: "(" [value ("," value)*] ")"
   dict: "{" [pair ("," pair)*] "}"
   pair: value ":" value
   slice_range: value? ":" value?
-  bracketed: "(" value ")"
-  null: "None"
-  bool: "True" | "False"
+  // bracketed: "(" value ")"
+  NULL: "None"
+  BOOL: "True" | "False"
   lambda: "lambda" NAME ":" value
   if_else: value "if" value "else" value
   QUOTED_STRING : DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
   DOUBLE_QUOTED_STRING  : /"[^"]*"/
   SINGLE_QUOTED_STRING  : /'[^']*'/
   NAME: ("_"|LETTER) ("_"|LETTER|DIGIT)*
-  assignment_operator: "="
+  ASSIGNMENT_OPERATOR: "="
                        | "+="
                        | "-="
                        | "*="
@@ -57,41 +55,39 @@ PD_GRAMMAR = """
                        | "**="
                        | "%="
                        | "//="
-  binary_operator: "+" 
+  BINARY_OPERATOR: "+" 
                    | "-"
-                   | "*"
                    | "**"
-                   | "/"
+                   | "*"
                    | "//"
+                   | "/"
                    | "%"
                    | "=="
                    | "!="
-                   | ">"
                    | ">="
-                   | "<"
+                   | ">>"
+                   | ">"
                    | "<="
+                   | "<<"
+                   | "<"
                    | "&"
                    | "|"
                    | "^"
-                   | "<<"
-                   | ">>"
                    | "and"
                    | "or"
                    | "is"
                    | "in"
-  unary_operator: "not"
+  UNARY_OPERATOR: "not"
                   | "del"
                   | "~"
   
   func_name: NAME
-  func_args: indexer_args ("," indexer_args)*
-  func_kwarg: NAME "=" indexer_args
+  func_args: value ("," value)*
+  func_kwarg: NAME "=" value
   func_kwargs: func_kwarg ("," func_kwarg)*
-  args: (func_args | func_kwargs | (func_args "," func_kwargs))
-  indexer_args: (value | values | func_name)
-  func_call: "."? func_name "(" args? ")"
-  
-  array_access: value "[" indexer_args "]"
+  args: (func_args | func_kwargs | (func_args "," func_kwargs))  
+  func_call: (value ".")? func_name "(" args? ")"
+
   
   
   
@@ -129,22 +125,31 @@ def pandas_parser():
 def _test():
   parser = pandas_parser()
   # print(parser.parse("df.iloc[1:2, df[[2]]]"))
-  # print(parser.parse("df.set_value(axis=8.05)"))
-  print(parser.parse("df = df.groupby(['Title_cat'])['Age'].median().to_dict()"))
+
+  # print(parser.parse("df = df.groupby(['Title_cat'])['Age'].median().to_dict()"))
+  # print(parser.parse("df.loc[(30 <= df['Age']), 'Age_cat']"))
+  print(parser.parse("df.drop(['Ticket', 'Cabin'], axis=1)"))
+  # print(parser.parse("df['Cabin'].apply(lambda x: 0 if pd.isnull(x) else 1)"))
 
 
 def verify():
   from utils import cache
   misconceptions_path = "/Users/panzer/Raise/ProgramRepair/CodeSeer/code/src/main/python/misconceptions.xlsx"
   wb = cache.read_excel(misconceptions_path, read_only=True)
-  sheet = wb.get_sheet_by_name('HighSim-HighSyn')
+  # sheet = wb.get_sheet_by_name('HighSim-HighSyn')
+  sheet = wb.get_sheet_by_name('LowSim-LowSyn')
   parser = pandas_parser()
+  seen = set()
   for i, row in enumerate(sheet.iter_rows()):
     if i == 0:
       continue
-    if i >= 1:
-      print(i, row[1].value)
-      parser.parse(row[1].value)
+    snippet = row[1].value
+    if i >= 1 and snippet not in seen:
+      print(i, snippet)
+      seen.add(snippet)
+      parser.parse(snippet)
+    elif i % 100 == 0:
+      print("Dont worry I'm running", i)
 
 
 if __name__ == "__main__":
