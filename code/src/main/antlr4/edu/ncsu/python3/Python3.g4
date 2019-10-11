@@ -146,7 +146,7 @@ async_funcdef: ASYNC funcdef;
 funcdef: 'def' NAME parameters ('->' test)? ':' suite;
 
 parameters: '(' (typedargslist)? ')';
-typedargslist: (tfpdef ('=' test)? (',' tfpdef ('=' test)?)* (',' (
+typedargslist: (tfpdef ('=' test)? ( ',' tfpdef ('=' test)?)* (',' (
         '*' (tfpdef)? (',' tfpdef ('=' test)?)* (',' ('**' tfpdef (',')?)?)?
       | '**' tfpdef (',')?)?)?
   | '*' (tfpdef)? (',' tfpdef ('=' test)?)* (',' ('**' tfpdef (',')?)?)?

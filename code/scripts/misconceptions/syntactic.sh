@@ -6,4 +6,4 @@
 # Use modules to set the software environment
 
 cd src/main/python
-python misconceptions/common/syntactic.py
+python misconceptions/common/syntactic.py $1 $2

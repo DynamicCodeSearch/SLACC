@@ -227,12 +227,15 @@ def test_distance_distribution():
   print(stat.Stat(jaro_winklers).report())
 
 
-def update_syntactic_distances():
+def update_syntactic_distances(start=None, end=None):
   store = mongo_driver.MongoStore(props.DATASET)
   r_stmts = get_normalized_R_statements()
   py_stmts = get_normalized_py_statements()
   start_found = False
+  LOGGER.info("Running between the range start: %d and end: %d" % (start, end))
   for i, r_stmt in enumerate(r_stmts):
+    if (start is not None and i < start) or (end is not None and i > end):
+      continue
     if not start_found:
       all_r_cursor = store.load_differences(r_id=r_stmt.mongo_id, projection={"outputs": False})
       # n_processed = sum([1 if "d_jaro" in s else 0 for s in all_r_cursor])
@@ -298,9 +301,16 @@ def _test_tokenize():
   print(n_gram_distance(py_snippet, r_snippet))
 
 
+def _update_syntactic_distances():
+  args = sys.argv
+  end = int(args[2]) if len(args) >= 3 else None
+  start = int(args[1]) if len(args) >= 2 else None
+  update_syntactic_distances(start=start, end = end)
+
+
 if __name__ == "__main__":
   # _test()
   # _test_tokenize()
   # test_distance_distribution()
-  update_syntactic_distances()
+  _update_syntactic_distances()
   # get_top_syntax()

@@ -66,8 +66,13 @@
             <groupId>edu.ncsu.codeseer</groupId>
             <artifactId>projects</artifactId>
             <version>1.0-SNAPSHOT</version>
-            <!--<scope>system</scope>-->
-            <!--<systemPath>${project.basedir}/jars/projects-1.0-SNAPSHOT-jar-with-dependencies.jar</systemPath>-->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/jars/projects-1.0-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>fr.inria.gforge.spoon.labs</groupId>
+            <artifactId>gumtree-spoon-ast-diff</artifactId>
+            <version>1.20</version>
         </dependency>
     </dependencies>
 
@@ -90,8 +95,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
             <plugin>

@@ -57,4 +57,13 @@ public class BaseStorage {
         }
     }
 
+    public static IClusterStore loadClusterStore(String dataset) {
+        switch (STORAGE) {
+            case Settings.MONGO_STORAGE:
+                return new edu.ncsu.store.mongo.ClusterStore(dataset);
+            default:
+                throw new RuntimeException("Test storage supported only for mongo");
+        }
+    }
+
 }

@@ -1,4 +1,9 @@
 package edu.ncsu.store;
 
-public class IClusterStore {
+import com.google.gson.JsonArray;
+
+public interface IClusterStore {
+
+    public JsonArray getClusters(String suffix);
+
 }
