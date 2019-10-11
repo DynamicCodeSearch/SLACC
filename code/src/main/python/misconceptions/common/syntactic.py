@@ -17,7 +17,7 @@ from utils import logger, stat
 from analysis.parsers import parser
 from misconceptions.common import compare, mongo_driver, props, datatypes
 from misconceptions.rUtils import functions
-from misconceptions.syntactics.distances import tree_edit_distance
+from misconceptions.syntactics import distances as ast_distances
 
 R_PARSER_PATH = os.path.join(props.CODE_SRC, "r", "parser", "r_parser.R")
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
@@ -243,16 +243,24 @@ def update_syntactic_distances():
       #   LOGGER.info("Processed %d / %d R snippet !" % (i + 1, len(r_stmts)))
       #   continue
       start_found = True
+    if not r_stmt.normalized:
+      continue
+    r_tree = ast_distances.r_parse(r_stmt.normalized)
     LOGGER.info("Processing %d / %d R snippet ... " % (i + 1, len(r_stmts)))
+    py_trees = {}
     for j, py_stmt in enumerate(py_stmts):
       if r_stmt.normalized and py_stmt.normalized:
+        py_tree = py_trees.get(j, None)
+        if not py_tree:
+          py_tree = ast_distances.py_parse(py_stmt.normalized)
+          py_trees[j] = py_tree
         updates = {
           "r_snippet": r_stmt.snippet,
           "py_snippet": py_stmt.snippet,
           "d_levenshtein": levenshtein(r_stmt.normalized, py_stmt.normalized),
           "d_jaro": jaro(r_stmt.normalized, py_stmt.normalized),
           "d_jaro_winkler": jaro_winkler(r_stmt.normalized, py_stmt.normalized),
-          "d_ast": ast_dist(r_stmt.normalized, py_stmt.normalized)
+          "d_ast": ast_distances.edit_distance(py_tree, r_tree)
         }
         try:
           updates["d_n_gram"] = n_gram_distance(r_stmt.normalized, py_stmt.normalized)[0]
