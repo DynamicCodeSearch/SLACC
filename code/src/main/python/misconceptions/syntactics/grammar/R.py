@@ -35,14 +35,15 @@ R_GRAMMAR = """
         | indexer
         | values
   values: value? ("," value?)+
-  array: "c" "(" [value ("," value)*] ")"
+  array: ("c" "(" [value ("," value)*] ")") | ("[" value? ("," value?)* "]")
   list: "list" "(" [value ("," value)*] ")"
   matrix: "matrix" "(" args ")"
   data_frame: "data.frame" "(" args ")"
   tuple: "(" [value ("," value)*] ")"
-  QUOTED_STRING : DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING
+  QUOTED_STRING : DOUBLE_QUOTED_STRING | SINGLE_QUOTED_STRING | TILDE_QUOTED_STRING
   DOUBLE_QUOTED_STRING  : /"[^"]*"/
   SINGLE_QUOTED_STRING  : /'[^']*'/
+  TILDE_QUOTED_STRING   : /`[^']*`/
   NAME: ("_"|LETTER) ("_"|LETTER|DIGIT|".")*
   BOOL: "TRUE" | "FALSE"
   if_else: "ifelse" "(" value "," value "," value")"
@@ -69,7 +70,7 @@ R_GRAMMAR = """
   UNARY_OPERATOR: "!"
                   | "-"
   
-  func_name: NAME
+  func_name: NAME | TILDE_QUOTED_STRING
   func_args: value ("," value)*
   func_kwarg: NAME "=" value
   func_kwargs: func_kwarg ("," func_kwarg)*
@@ -97,7 +98,7 @@ def _test():
   # print(parser.parse("df.iloc[1:2, df[[2]]]"))
   # print(parser.parse("df.set_value(dfaxis=8.05)"))
   # print(parser.parse('table(df$Parch, df$Survived)'))
-  print(parser.parse('-c(62, 830)'))
+  print(parser.parse('df$byClass[["F1"]]'))
 
 
 
@@ -122,5 +123,5 @@ def verify():
 
 
 if __name__ == "__main__":
-  verify()
-  # _test()
+  # verify()
+  _test()

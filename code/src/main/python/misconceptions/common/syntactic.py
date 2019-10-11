@@ -195,10 +195,6 @@ def jaro_winkler(r_snippet, py_snippet):
   return 1.0 - Levenshtein.jaro_winkler(r_snippet, py_snippet)
 
 
-def ast_dist(r_snippet, py_snippet):
-  return tree_edit_distance(py_snippet, r_snippet)
-
-
 def test_distance_distribution():
   r_stmts = get_normalized_R_statements()
   py_stmts = get_normalized_py_statements()
@@ -308,9 +304,28 @@ def _update_syntactic_distances():
   update_syntactic_distances(start=start, end = end)
 
 
+def test_normalized_asts_R():
+  r_stmts = get_normalized_R_statements()
+  for i, r_stmt in enumerate(r_stmts):
+    if not r_stmt.normalized:
+      continue
+    print(i, r_stmt.normalized)
+    r_tree = ast_distances.r_parse(r_stmt.normalized)
+
+
+def test_normalized_asts_py():
+  py_stmts = get_normalized_py_statements()
+  for i, py_stmt in enumerate(py_stmts):
+    if not py_stmt.normalized:
+      continue
+    print(i, py_stmt.normalized)
+    py_tree = ast_distances.py_parse(py_stmt.normalized)
+
 if __name__ == "__main__":
   # _test()
   # _test_tokenize()
   # test_distance_distribution()
   _update_syntactic_distances()
+  # test_normalized_asts_R()
+  # test_normalized_asts_py()
   # get_top_syntax()
