@@ -90,9 +90,9 @@ def export_runner_n_gram(xl_path):
   cache.mkdir(props.EXPORT_HOME)
   writer = pd.ExcelWriter(os.path.join(props.EXPORT_HOME, xl_path), engine='xlsxwriter')
   export_similar_differences(0.9, -0.91, writer, "HighSim-HighSyn", "d_n_gram")
-  # export_similar_differences(0.9, 0.91, writer, "HighSim-LowSyn", "d_n_gram")
-  # export_similar_differences(-0.1, -0.91, writer, "LowSim-HighSyn", "d_n_gram")
-  # export_similar_differences(-0.1, 0.91, writer, "LowSim-LowSyn", "d_n_gram")
+  export_similar_differences(0.9, 0.91, writer, "HighSim-LowSyn", "d_n_gram")
+  export_similar_differences(-0.1, -0.91, writer, "LowSim-HighSyn", "d_n_gram")
+  export_similar_differences(-0.1, 0.91, writer, "LowSim-LowSyn", "d_n_gram")
   writer.save()
   writer.close()
 
