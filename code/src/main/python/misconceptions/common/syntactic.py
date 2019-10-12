@@ -196,23 +196,48 @@ def jaro_winkler(r_snippet, py_snippet):
 
 
 def test_distance_distribution():
-  r_stmts = get_normalized_R_statements()
-  py_stmts = get_normalized_py_statements()
-  levenshteins, jaros, jaro_winklers, n_grams = [], [], [], []
-  for i, r_stmt in enumerate(r_stmts):
-    if not r_stmt.normalized:
-      continue
-    LOGGER.info("Processing %d / %d R snippet ... " % (i + 1, len(r_stmts)))
-    for py_stmt in py_stmts:
-      if not py_stmt.normalized:
-        continue
-      try:
-        n_grams.append(n_gram_distance(r_stmt.normalized, py_stmt.normalized)[0])
-      except Exception:
-        n_grams.append(1.0)
-      levenshteins.append(levenshtein(r_stmt.normalized, py_stmt.normalized))
-      jaros.append(jaro(r_stmt.normalized, py_stmt.normalized))
-      jaro_winklers.append(jaro_winkler(r_stmt.normalized, py_stmt.normalized))
+  projections = {"py_id": 1,
+                 "r_id": 1,
+                 "r_snippet": 1,
+                 "r_return": 1,
+                 "py_return": 1,
+                 "py_snippet": 1,
+                 "_id": 0,
+                 "row_diff": 1,
+                 "col_diff": 1,
+                 "d_n_gram": 1,
+                 "d_jaro": 1,
+                 "d_jaro_winkler": 1,
+                 "d_ast": 1,
+                 "d_levenshtein": 1,
+                 "size_diff": 1,
+                 "semantic_score": 1}
+  store = mongo_driver.MongoStore(props.DATASET)
+  asts, levenshteins, jaros, jaro_winklers, n_grams = [], [], [], [], []
+  semantics = []
+  i = 0
+  for diff in store.load_differences(projection=projections):
+    i += 1
+    if i % 10000 == 0:
+      LOGGER.info("Processing diff : %d", i)
+    levenstein = diff.get("d_levenshtein", None)
+    ast = diff.get("d_ast", None)
+    jaro = diff.get("d_jaro", None)
+    jaro_winkler = diff.get("d_jaro_winkler", None)
+    n_gram = diff.get("d_n_gram", None)
+    semantic = diff.get("semantic_score", None)
+    if levenstein is not None:
+      levenshteins.append(levenstein)
+    if ast is not None:
+      asts.append(ast)
+    if jaro is not None:
+      jaros.append(jaro)
+    if jaro_winkler is not None:
+      jaro_winklers.append(jaro_winkler)
+    if n_gram is not None:
+      n_grams.append(n_gram)
+    if semantic is not None:
+      semantics.append(semantic)
   print("### N Gram distance")
   print(stat.Stat(n_grams).report())
   print("### Levenshtein distance")
@@ -221,6 +246,10 @@ def test_distance_distribution():
   print(stat.Stat(jaros).report())
   print("### Jaro-Winkler distance")
   print(stat.Stat(jaro_winklers).report())
+  print("### AST distance")
+  print(stat.Stat(asts).report())
+  print("### Semantics")
+  print(stat.Stat(semantics).report())
 
 
 def update_syntactic_distances(start=None, end=None):
@@ -321,11 +350,12 @@ def test_normalized_asts_py():
     print(i, py_stmt.normalized)
     py_tree = ast_distances.py_parse(py_stmt.normalized)
 
+
 if __name__ == "__main__":
   # _test()
   # _test_tokenize()
-  # test_distance_distribution()
-  _update_syntactic_distances()
+  test_distance_distribution()
+  # _update_syntactic_distances()
   # test_normalized_asts_R()
   # test_normalized_asts_py()
   # get_top_syntax()

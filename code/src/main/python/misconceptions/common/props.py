@@ -11,6 +11,7 @@ PROJECTS_SRC = os.path.join(os.getenv("HOME"), "Raise/ProgramRepair/CodeSeer/pro
 PYTHON_SRC = os.path.join(CODE_SRC, "python")
 MISCONCEPTIONS_HOME = os.path.join(PYTHON_SRC, "misconceptions")
 RESOURCES_HOME = os.path.join(MISCONCEPTIONS_HOME, "resources")
+EXPORT_HOME = os.path.join(os.getenv("HOME"), "Raise/ProgramRepair/CodeSeer/code/meta_results/Misconceptions/exports")
 DATASET = "Misconceptions"
 TYPE_PYTHON = "py"
 TYPE_R = "R"

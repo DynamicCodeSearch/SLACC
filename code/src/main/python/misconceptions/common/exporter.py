@@ -10,13 +10,13 @@ from collections import OrderedDict
 import pandas as pd
 
 from misconceptions.common import mongo_driver, props, syntactic
-from utils import logger, stat
+from utils import logger, cache
 
 
 LOGGER = logger.get_logger(os.path.basename(__file__.split(".")[0]))
 
 
-def export_similar_differences(sim, syn, xl_writer, sheet_name):
+def export_similar_differences(sim, syn, xl_writer, sheet_name, syn_key):
   LOGGER.info("Running for %s ... " % sheet_name)
   query = {"n_both_empty": {"$eq": 0}}
   if sim > 0:
@@ -24,9 +24,9 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
   elif sim < 0:
     query["semantic_score"] = {"$lte": abs(sim)}
   if syn > 0:
-    query["d_n_gram"] = {"$gte": abs(syn)}
+    query[syn_key] = {"$gte": abs(syn)}
   elif syn < 0:
-    query["d_n_gram"] = {"$lte": abs(syn)}
+    query[syn_key] = {"$lte": abs(syn)}
   projections = {"py_id": 1,
                  "r_id": 1,
                  "r_snippet": 1,
@@ -37,13 +37,17 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
                  "row_diff": 1,
                  "col_diff": 1,
                  "d_n_gram": 1,
+                 "d_ast": 1,
+                 "d_levenshtein": 1,
                  "size_diff": 1,
                  "semantic_score": 1}
   store = mongo_driver.MongoStore(props.DATASET)
   diffs = [d for d in store.load_differences(additional_queries=query, projection=projections)]
   r_stmts = []
   py_stmts = []
-  syntactics = []
+  n_grams = []
+  levenshteins = []
+  asts = []
   semantics = []
   row_diffs = []
   col_diffs = []
@@ -63,7 +67,9 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
     py_stmt = syntactic.py_normalize(store.load_stmt(diff["py_id"], use_normalized=True)).replace(syntactic.RENAMED_VARIABLE, "df")
     r_stmts.append(r_stmt)
     py_stmts.append(py_stmt)
-    syntactics.append(diff.get("d_n_gram", None))
+    n_grams.append(diff.get("d_n_gram", None))
+    levenshteins.append(diff.get("d_levenshtein", None))
+    asts.append(diff.get("d_ast", None))
     semantics.append(diff.get("semantic_score", None))
     row_diffs.append(diff.get("row_diff", None))
     col_diffs.append(diff.get("col_diff", None))
@@ -71,7 +77,7 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
   d = OrderedDict()
   d["R"] = r_stmts
   d["Pandas"] = py_stmts
-  d["N-Gram Distance"] = syntactics
+  d["N-Gram Distance"] = n_grams
   d["Semantic Score"] = semantics
   d["row_diff"] = row_diffs
   d["col_diff"] = col_diffs
@@ -80,12 +86,35 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name):
   df.to_excel(xl_writer, sheet_name=sheet_name, index=False)
 
 
-def export_runner(xl_path):
-  writer = pd.ExcelWriter(xl_path, engine='xlsxwriter')
-  export_similar_differences(0.9, -0.91, writer, "HighSim-HighSyn")
-  export_similar_differences(0.9, 0.91, writer, "HighSim-LowSyn")
-  export_similar_differences(-0.1, -0.91, writer, "LowSim-HighSyn")
-  export_similar_differences(-0.1, 0.91, writer, "LowSim-LowSyn")
+def export_runner_n_gram(xl_path):
+  cache.mkdir(props.EXPORT_HOME)
+  writer = pd.ExcelWriter(os.path.join(props.EXPORT_HOME, xl_path), engine='xlsxwriter')
+  export_similar_differences(0.9, -0.91, writer, "HighSim-HighSyn", "d_n_gram")
+  # export_similar_differences(0.9, 0.91, writer, "HighSim-LowSyn", "d_n_gram")
+  # export_similar_differences(-0.1, -0.91, writer, "LowSim-HighSyn", "d_n_gram")
+  # export_similar_differences(-0.1, 0.91, writer, "LowSim-LowSyn", "d_n_gram")
+  writer.save()
+  writer.close()
+
+
+def export_runner_levenshtein(xl_path):
+  cache.mkdir(props.EXPORT_HOME)
+  writer = pd.ExcelWriter(os.path.join(props.EXPORT_HOME, xl_path), engine='xlsxwriter')
+  export_similar_differences(0.9, -28, writer, "HighSim-HighSyn", "d_levenshtein")
+  export_similar_differences(0.9, 47, writer, "HighSim-LowSyn", "d_levenshtein")
+  export_similar_differences(-0.1, -28, writer, "LowSim-HighSyn", "d_levenshtein")
+  export_similar_differences(-0.1, 47, writer, "LowSim-LowSyn", "d_levenshtein")
+  writer.save()
+  writer.close()
+
+
+def export_runner_ast(xl_path):
+  cache.mkdir(props.EXPORT_HOME)
+  writer = pd.ExcelWriter(os.path.join(props.EXPORT_HOME, xl_path), engine='xlsxwriter')
+  export_similar_differences(0.9, -9, writer, "HighSim-HighSyn", "d_ast")
+  export_similar_differences(0.9, 22, writer, "HighSim-LowSyn", "d_ast")
+  export_similar_differences(-0.1, -9, writer, "LowSim-HighSyn", "d_ast")
+  export_similar_differences(-0.1, 22, writer, "LowSim-LowSyn", "d_ast")
   writer.save()
   writer.close()
 
@@ -111,5 +140,7 @@ def export_normalized_stmt_file_map(xl_path):
 
 
 if __name__ == "__main__":
-  export_runner("misconceptions.xlsx")
+  export_runner_n_gram("misconceptions_n_gram.xlsx")
+  export_runner_levenshtein("misconceptions_levenshtein.xlsx")
+  export_runner_ast("misconceptions_ast.xlsx")
   # export_normalized_stmt_file_map("metadata.xlsx")

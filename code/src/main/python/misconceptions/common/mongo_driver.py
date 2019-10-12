@@ -212,6 +212,7 @@ class MongoStore(lib.O):
       mongo_driver.create_index_for_collection(collection, "d_jaro")
       mongo_driver.create_index_for_collection(collection, "d_jaro_winkler")
       mongo_driver.create_index_for_collection(collection, "d_n_gram")
+      mongo_driver.create_index_for_collection(collection, "d_ast")
     try:
       collection.insert({
         "r_id": r_id,
