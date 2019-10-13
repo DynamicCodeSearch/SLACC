@@ -77,6 +77,7 @@ def export_similar_differences(sim, syn, xl_writer, sheet_name, syn_key):
   d = OrderedDict()
   d["R"] = r_stmts
   d["Pandas"] = py_stmts
+  d["AST Distance"] = asts
   d["N-Gram Distance"] = n_grams
   d["Semantic Score"] = semantics
   d["row_diff"] = row_diffs
