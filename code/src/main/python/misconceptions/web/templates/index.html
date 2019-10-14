@@ -1,0 +1,63 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}SLACC{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-inverse">
+    <a class="navbar-brand" href="/">
+        <b>Home</b>
+    </a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <form action="/search" method="post" class="form">
+        <div class="col-sm-5 col-sm-offset-1">
+            <h2> Syntactic </h2>
+            <div class="form-group">
+                <label for="syn_measure">Syntactic Measure</label>
+                <select class="form-control" id="syn_measure" name="syn_measure">
+                    <option value="d_ast"> AST </option>
+                    <option value="d_levenshtein"> Levenshtein </option>
+                    <option value="d_n_gram"> n-Gram </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="syn_min">Min</label>
+                <input type="text" class="form-control" id="syn_min" name="syn_min">
+            </div>
+            <div class="form-group">
+                <label for="syn_max">Max</label>
+                <input type="text" class="form-control" id="syn_max" name="syn_max">
+            </div>
+        </div>
+
+        <div class="col-sm-5 col-sm-offset-1">
+            <h2> Semantic </h2>
+            <div class="form-group">
+                <label for="sim_min">Min</label>
+                <input type="text" class="form-control" id="sim_min" name="sim_min">
+            </div>
+            <div class="form-group">
+                <label for="sim_max">Max</label>
+                <input type="text" class="form-control" id="sim_max" name="sim_max">
+            </div>
+            <div class="form-group">
+                <label for="limit">Limit</label>
+                <input type="text" class="form-control" id="limit" name="limit" value="100">
+            </div>
+            <div class="form-group form-inline">
+                <label for="size_diff">Allow size differences</label>
+                <input type="checkbox" class="form-control" id="size_diff" name="size_diff">
+            </div>
+        </div>
+
+        <div class="col-sm-4 col-sm-offset-4 text-center">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+
+    </form>
+</div>
+
+
+{% endblock %}

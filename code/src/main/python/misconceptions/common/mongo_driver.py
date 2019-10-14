@@ -284,6 +284,45 @@ class MongoStore(lib.O):
     for index in indices:
       mongo_driver.create_index_for_collection(collection, index)
 
+  def load_differences_for_web(self, syn_key, syn_low, syn_high, sim_low, sim_high, limit, allow_size_diff):
+    query = {"n_both_empty": {"$eq": 0},
+             "semantic_score": {"$gte": sim_low, "$lte": sim_high},
+             syn_key: {"$gte": syn_low, "$lte": syn_high}}
+    if not allow_size_diff:
+      query["$and"] = [{"$or":
+                          [{"row_diff": {"$exists": False}}, {"row_diff": {"$eq": 0}}]},
+                            {"$or": [{"col_diff": {"$exists": False}}, {"col_diff": {"$eq": 0}}]},
+                            {"$or": [{"size_diff": {"$exists": False}}, {"size_diff": {"$eq": 0}}]}]
+    print(query)
+    diffs = []
+    projections = {"py_id": 1,
+                   "r_id": 1,
+                   "r_snippet": 1,
+                   "r_return": 1,
+                   "py_return": 1,
+                   "py_snippet": 1,
+                   "_id": 0,
+                   "row_diff": 1,
+                   "col_diff": 1,
+                   "d_n_gram": 1,
+                   "d_ast": 1,
+                   "d_levenshtein": 1,
+                   "size_diff": 1,
+                   "semantic_score": 1}
+    for d in self.load_differences(additional_queries=query, projection=projections, limit=limit):
+      diffs.append({
+        "r_stmt": d["r_snippet"].replace("slacc", "df"),
+        "py_stmt": d["py_snippet"].replace("slacc", "df"),
+        "d_n_gram": d.get("d_n_gram", None),
+        "d_levenshtein": d.get("d_levenshtein", None),
+        "d_ast": d.get("d_ast", None),
+        "semantic_score": d.get("semantic_score", None),
+        "row_diff": d.get("row_diff", None),
+        "col_diff": d.get("col_diff", None),
+        "size_diff": d.get("size_diff", None)
+      })
+    return diffs
+
 
 def to_mongo_format(obj):
   if isinstance(obj, pd.DataFrame):
