@@ -20,6 +20,7 @@ STMT_COLLECTION = "stmts"
 STMT_NORMALIZED_COLLECTION = "normalized_stmts"
 INPUTS_COLLECTIONS = "inputs"
 DIFFERENCES_COLLECTIONS = "differences"
+SELF_SYNTACTIC_DIFFERENCES_COLLECTION = "self_syntactic_differences"
 STMT_FILE_COLLECTION = "stmts_file"
 
 PRIMITIVES = {int, float, str, bool, type(None), list, set, dict, tuple, unicode}
@@ -202,7 +203,41 @@ class MongoStore(lib.O):
     return collection.find()
 
 
-  # Differences
+  # Self Differences
+
+  def save_self_syntactic_difference(self, record, do_log=True):
+    collection = mongo_driver.get_collection(self.dataset, SELF_SYNTACTIC_DIFFERENCES_COLLECTION)
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_unique_index_for_collection(collection, "id_1", "id_2", "language")
+      mongo_driver.create_index_for_collection(collection, "d_levenshtein")
+      mongo_driver.create_index_for_collection(collection, "d_jaro")
+      mongo_driver.create_index_for_collection(collection, "d_jaro_winkler")
+      mongo_driver.create_index_for_collection(collection, "d_n_gram")
+      mongo_driver.create_index_for_collection(collection, "d_ast")
+    try:
+      collection.insert(record)
+    except pymongo.errors.DuplicateKeyError as e:
+      if do_log:
+        LOGGER.warning(e.message)
+        LOGGER.info("We continue ... ")
+
+  def save_self_syntactic_differences(self, records, do_log=True):
+    collection = mongo_driver.get_collection(self.dataset, SELF_SYNTACTIC_DIFFERENCES_COLLECTION)
+    if not mongo_driver.is_collection_exists(collection):
+      mongo_driver.create_unique_index_for_collection(collection, "id_1", "id_2", "language")
+      mongo_driver.create_index_for_collection(collection, "d_levenshtein")
+      mongo_driver.create_index_for_collection(collection, "d_jaro")
+      mongo_driver.create_index_for_collection(collection, "d_jaro_winkler")
+      mongo_driver.create_index_for_collection(collection, "d_n_gram")
+      mongo_driver.create_index_for_collection(collection, "d_ast")
+    try:
+      collection.insert_many(records)
+    except pymongo.errors.DuplicateKeyError as e:
+      if do_log:
+        LOGGER.warning(e.message)
+        LOGGER.info("We continue ... ")
+
+  # Cross Differencs
 
   def save_difference(self, r_id, py_id, r_return, py_return, diff, do_log=True):
     collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)

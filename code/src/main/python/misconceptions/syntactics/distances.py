@@ -101,10 +101,10 @@ def verify():
 
 def _test():
   py_snippet = "df['Cabin'].apply(lambda x: str(x)[0])"
-  r_snippet = "tapply(df$Cabin, df$Cabin, first)"
+  r_snippet = "mean(df$Fare)"
   print(tree_edit_distance(py_snippet, r_snippet))
 
 
 if __name__ == "__main__":
-  # _test()
-  verify()
+  _test()
+  # verify()

@@ -13,7 +13,7 @@ from misconceptions.common import props
 from misconceptions.common.mongo_driver import MongoStore
 
 
-TEMPLATE_FOLDER = '/Users/panzer/Raise/ProgramRepair/CodeSeer/code/src/main/python/misconceptions/web/templates'
+TEMPLATE_FOLDER = os.path.join(os.getenv("HOME"), 'Raise/ProgramRepair/CodeSeer/code/src/main/python/misconceptions/web/templates')
 app = Flask(__name__, template_folder=TEMPLATE_FOLDER)
 Bootstrap(app)
 
@@ -43,4 +43,4 @@ def search():
 
 
 if __name__ == "__main__":
-  app.run(host='0.0.0.0', port='80')
+  app.run(host='0.0.0.0', port=5000)

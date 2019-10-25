@@ -18,7 +18,8 @@ __MONGO_CLIENT = None
 
 
 def get_default_hostname():
-  return socket.gethostname()
+  # return socket.gethostname()
+  return 'localhost'
 
 
 def get_hostname():

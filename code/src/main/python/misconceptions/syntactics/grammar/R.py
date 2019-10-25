@@ -98,7 +98,7 @@ def _test():
   # print(parser.parse("df.iloc[1:2, df[[2]]]"))
   # print(parser.parse("df.set_value(dfaxis=8.05)"))
   # print(parser.parse('table(df$Parch, df$Survived)'))
-  print(parser.parse('df$byClass[["F1"]]'))
+  print(parser.parse('mean(df$Fare)'))
 
 
 
