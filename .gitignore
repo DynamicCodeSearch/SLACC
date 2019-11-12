@@ -138,10 +138,6 @@ hs_err_pid*
 
 # Local
 IntroClassJava
-projects/src/main/java/CodeJam
-projects/src/main/java/IntroClassJava
-projects/src/main/python
-projects/src/main/R
 python-projects
 code/meta_store
 code/meta_results
@@ -150,3 +146,5 @@ SLACC_FSE
 Readme.txt
 code/src/main/python/expt/*.pkl
 code/src/main/python/misconceptions.xlsx
+projects
+subjects/

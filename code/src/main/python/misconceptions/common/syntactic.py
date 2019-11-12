@@ -12,7 +12,6 @@ import Levenshtein
 import tokenize
 import io
 from rpy2 import rinterface
-from scipy.stats.stats import pearsonr
 
 from utils import logger, stat
 from analysis.parsers import parser
@@ -314,11 +313,19 @@ def get_top_syntax():
 
 
 def _test():
-  r_snippet = "mean(df)"
-  py_snippet = "numpy.mean(df, axis=0)"
+  r_snippet = """
+  static String join_j(String delimiter, List<String> arr) { 
+    return delimiter.join("", arr);
+  }
+  """
+  py_snippet = """
+  def join_p(delimiter, arr):
+    return delimiter.join(arr)
+  """
   print("Levenshtein:", levenshtein(r_snippet, py_snippet))
   print("Jaro:", jaro(r_snippet, py_snippet))
   print("Jaro-Winkler:", jaro_winkler(r_snippet, py_snippet))
+  x = 'ASASD DADsa Adasdsad'
 
 
 def _test_tokenize():
@@ -352,37 +359,10 @@ def test_normalized_asts_py():
     py_tree = ast_distances.py_parse(py_stmt.normalized)
 
 
-def check_correlation():
-  store = mongo_driver.MongoStore(props.DATASET)
-  diffs = store.load_differences(projection={"diff": False})
-  asts = []
-  ngrams = []
-  levenshteins = []
-  for i, diff in enumerate(diffs):
-    if i % 1000 == 0:
-      print(i)
-    # if i == 5000:
-    #   break
-    ast = diff.get('d_ast', None)
-    ngram = diff.get('d_n_gram', None)
-    lev = diff.get('d_levenshtein', None)
-    if ast is None or ngram is None or levenshtein is None:
-      continue
-    asts.append(ast)
-    ngrams.append(ngram)
-    levenshteins.append(lev)
-  print("## Pearson Correlation")
-  print("AST-Ngram", pearsonr(asts, ngrams))
-  print("AST-Levenshtein", pearsonr(asts, levenshteins))
-  print("Ngram-Levenshtein", pearsonr(ngrams, levenshteins))
-
-
-
 if __name__ == "__main__":
-  # _test()
+  _test()
   # _test_tokenize()
   # test_distance_distribution()
-  check_correlation()
   # _update_syntactic_distances()
   # test_normalized_asts_R()
   # test_normalized_asts_py()

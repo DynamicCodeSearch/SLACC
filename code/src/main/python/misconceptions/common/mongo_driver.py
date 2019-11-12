@@ -202,7 +202,6 @@ class MongoStore(lib.O):
     collection = mongo_driver.get_collection(self.dataset, STMT_FILE_COLLECTION)
     return collection.find()
 
-
   # Self Differences
 
   def save_self_syntactic_difference(self, record, do_log=True):
@@ -237,7 +236,20 @@ class MongoStore(lib.O):
         LOGGER.warning(e.message)
         LOGGER.info("We continue ... ")
 
-  # Cross Differencs
+  def load_self_syntactic_differences(self, language=None, id_1=None, id_2=None,
+                                      additional_queries=None, projection=None, limit=0):
+    collection = mongo_driver.get_collection(self.dataset, SELF_SYNTACTIC_DIFFERENCES_COLLECTION)
+    query = {}
+    if id_1: query["id_1"] = id_1
+    if id_2: query["id_2"] = id_2
+    if language: query["language"] = language
+    if additional_queries:
+      query.update(additional_queries)
+    if not limit:
+      limit = 0
+    return collection.find(query, projection).limit(limit)
+
+  # Cross Differences
 
   def save_difference(self, r_id, py_id, r_return, py_return, diff, do_log=True):
     collection = mongo_driver.get_collection(self.dataset, DIFFERENCES_COLLECTIONS)

@@ -24,4 +24,9 @@ executor <- function(snippet) {
 # executor("mean(df)")
 # executor("df$Age")
 # executor("prop.table(table(df$Survived))")
-executor("levels(df$Sex)")
+# executor("levels(df$Sex)")
+
+train = read.csv(INPUT_PATH)
+# print(train[is.na(train$Embarked)==TRUE, ])
+print(train[train$Embarked == NA ])
+# print(train[na.omit(train$Embarked !=NA),])
