@@ -15,6 +15,8 @@
     * Set the environment variable **$MONGO_HOME** to the path where Mongo is installed
     * Start: `sh scripts/common/start_mongo.sh &`
     * Stop: `sh scripts/common/sh_stop_mongo.sh`
+4 **Environment**
+   * Set **SLACC_HOME** to the folder where the repository was cloned.
  
 ### Organization
 * Jars
