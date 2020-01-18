@@ -65,8 +65,11 @@
     * Extract Metadata: Run `sh scripts/python/extract_metadata.sh <dataset>`
   * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
 4. **Execute**
-  * Run `sh scripts/<dataset>/<language>/execute_parallel.sh`
-  * Executed java functions stored in `functions_executed` and `py_functions_executed`
+  * Java:
+    * Run `sh scripts/java/execute_parallel.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
+  * Python:
+    * Run `sh scripts/python/execute_parallel.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
 5. **Cluster**
-  * Run `sh scripts/<dataset>/python/cluster.sh`
+  * Run `sh scripts/common/python/cluster.sh <dataset>`
+  * Run `sh scripts/common/python/analyze.sh <dataset>`
   * Results stored in `meta_results/<dataset>/clusters/`
