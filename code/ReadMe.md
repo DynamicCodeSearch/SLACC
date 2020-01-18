@@ -58,14 +58,12 @@
     * For snipping and permutating the functions, Run run `sh scripts/python/snip.sh <dataset>`
 3. **Arguments - Metadata**
   * Java:
-    * Store Objects: Run `sh scripts/<dataset>/java/store_objects.sh`
-    * Extract Primitive Arguments: Run `sh scripts/<dataset>/java/extract_primitive_arguments.sh`
-    * Extract Fuzzed Arguments: Run `sh scripts/<dataset>/java/extract_fuzzed_arguments.sh <do_delete_old>`
-    * Extract Metadata: Run `sh scripts/<dataset>/java/extract_metadata.sh`
+    * Store Objects: Run `sh scripts/java/store_objects.sh <dataset>`
+    * Extract Primitive Arguments: Run `sh scripts/java/extract_primitive_arguments.sh <dataset>`
+    * Extract Fuzzed Arguments: Run `sh scripts/java/extract_fuzzed_arguments.sh <dataset> <do_delete_old>`
   * Python:
-    * Extract File Metadata: Run `sh scripts/<dataset>/java/extract_file_meta_data_parallel.sh`
-    * Extract Metadata: Run `sh scripts/<dataset>/java/extract_metadata.sh`
-  * Arguments were stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
+    * Extract Metadata: Run `sh scripts/python/extract_metadata.sh <dataset>`
+  * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
 4. **Execute**
   * Run `sh scripts/<dataset>/<language>/execute_parallel.sh`
   * Executed java functions stored in `functions_executed` and `py_functions_executed`
