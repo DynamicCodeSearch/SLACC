@@ -51,7 +51,11 @@
   * Run `sh scripts/<dataset>/<language>/download.sh`
   * Projects will be downloaded in `../projects/`
 2. **Snip**
-  * Run `sh scripts/<dataset>/<language>/snip_parallel.sh`
+  * Java:
+    * For snipping the functions, run `sh scripts/java/snip.sh <dataset>`
+    * For generating permutations, run `sh scripts/java/permutate.sh <dataset>`
+  * Python:  
+    * For snipping and permutating the functions, Run run `sh scripts/python/snip.sh <dataset>`
 3. **Arguments - Metadata**
   * Java:
     * Store Objects: Run `sh scripts/<dataset>/java/store_objects.sh`
