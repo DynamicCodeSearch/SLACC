@@ -13,14 +13,26 @@ fi
 
 if [ -z "$2" ]
 then
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/$1  -name "generated_class_*.java" -type f -delete
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/$1  -name "temp_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1  -name "generated_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1  -name "permutated_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1  -name "temp_class_*.java" -type f -delete
     java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar snip $1
 else
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/$1/$2  -name "generated_class_*.java" -type f -delete
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/java/$1/$2  -name "temp_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1/$2  -name "generated_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1  -name "permutated_class_*.java" -type f -delete
+    find $SLACC_HOME/projects/src/main/java/$1/$2  -name "temp_class_*.java" -type f -delete
     java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar snip $1 $2
 fi
+
+echo "\n\nBuilding generated files"
+cd $SLACC_HOME/projects
+mvn clean install
+
+cp $SLACC_HOME/projects/target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar $SLACC_HOME/code/jars/
+
+echo "\n\nBuilding source code again"
+cd $SLACC_HOME/code
+mvn clean install
 
 
 ## Codejam

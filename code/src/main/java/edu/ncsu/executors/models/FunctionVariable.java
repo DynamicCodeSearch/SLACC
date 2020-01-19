@@ -165,6 +165,14 @@ public class FunctionVariable {
         return dataType;
     }
 
+    public String getDataTypeAsString() {
+        StringBuilder dt = new StringBuilder();
+        dt.append(dataType);
+        for (int i=0; i < arrayDimensions; i++)
+            dt.append("[]");
+        return dt.toString();
+    }
+
     public int getArrayDimensions() {
         return arrayDimensions;
     }

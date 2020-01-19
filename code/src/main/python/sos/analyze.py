@@ -123,7 +123,7 @@ def cluster_testing(dataset, language="java_python"):
   for clustering_error in errors:
     result_folder = os.path.join(base_folder, "eps_%0.2f" % clustering_error)
     similarity.compute_similarity(dataset, language, functions=functions, base_folder=result_folder,
-                                  clustering_error=clustering_error)
+                                  clustering_error=clustering_error, cluster_suffix="%0.2f" % clustering_error)
 
 
 def cluster_source(dataset, language="java_python"):
@@ -380,5 +380,4 @@ def _test():
 
 
 if __name__ == "__main__":
-  # _main()
-  _test()
+  _main()

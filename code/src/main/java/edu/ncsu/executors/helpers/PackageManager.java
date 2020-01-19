@@ -31,8 +31,10 @@ public class PackageManager {
 
     }
 
-    public static void main(String[] args) {
-        List<Class> classes = PackageManager.findClasses("IntroClassJava");
+    public static void main(String[] args) throws Exception{
+        List<Class> classes = PackageManager.findClasses("Example");
+        Class otherClass = Class.forName("Example.interleave.generated_class_9b05374cd0474736b467bcc1bda4f7b9");
+        System.out.println(String.format("%s.%s", otherClass.getPackage(), otherClass.getSimpleName()));
         for (Class clazz: classes) {
             System.out.println(String.format("%s.%s", clazz.getPackage(), clazz.getName()));
         }

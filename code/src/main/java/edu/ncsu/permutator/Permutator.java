@@ -53,7 +53,7 @@ public class Permutator {
             assert metadata != null;
             metadata.remove("_id");
             String body = function.getAst().getBody().toString();
-            String returnType = function.getReturnVariable().getDataType();
+            String returnType = function.getReturnVariable().getDataTypeAsString();
             if (returnType == null) {
                 returnType = method.getReturnType().getName();
             }
