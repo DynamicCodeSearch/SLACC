@@ -15,6 +15,8 @@
     * Set the environment variable **$MONGO_HOME** to the path where Mongo is installed
     * Start: `sh scripts/common/start_mongo.sh &`
     * Stop: `sh scripts/common/sh_stop_mongo.sh`
+4 **Environment**
+   * Set **SLACC_HOME** to the folder where the repository was cloned.
  
 ### Organization
 * Jars
@@ -49,20 +51,25 @@
   * Run `sh scripts/<dataset>/<language>/download.sh`
   * Projects will be downloaded in `../projects/`
 2. **Snip**
-  * Run `sh scripts/<dataset>/<language>/snip_parallel.sh`
+  * Java:
+    * For snipping the functions, run `sh scripts/java/snip.sh <dataset>`
+    * For generating permutations, run `sh scripts/java/permutate.sh <dataset>`
+  * Python:  
+    * For snipping and permutating the functions, Run run `sh scripts/python/snip.sh <dataset>`
 3. **Arguments - Metadata**
   * Java:
-    * Store Objects: Run `sh scripts/<dataset>/java/store_objects.sh`
-    * Extract Primitive Arguments: Run `sh scripts/<dataset>/java/extract_primitive_arguments.sh`
-    * Extract Fuzzed Arguments: Run `sh scripts/<dataset>/java/extract_fuzzed_arguments.sh <do_delete_old>`
-    * Extract Metadata: Run `sh scripts/<dataset>/java/extract_metadata.sh`
+    * Store Objects: Run `sh scripts/java/store_objects.sh <dataset>`
+    * Extract Primitive Arguments: Run `sh scripts/java/extract_primitive_arguments.sh <dataset>`
+    * Extract Fuzzed Arguments: Run `sh scripts/java/extract_fuzzed_arguments.sh <dataset> <do_delete_old>`
   * Python:
-    * Extract File Metadata: Run `sh scripts/<dataset>/java/extract_file_meta_data_parallel.sh`
-    * Extract Metadata: Run `sh scripts/<dataset>/java/extract_metadata.sh`
-  * Arguments were stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
+    * Extract Metadata: Run `sh scripts/python/extract_metadata.sh <dataset>`
+  * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
 4. **Execute**
-  * Run `sh scripts/<dataset>/<language>/execute_parallel.sh`
-  * Executed java functions stored in `functions_executed` and `py_functions_executed`
+  * Java:
+    * Run `sh scripts/java/execute_parallel.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
+  * Python:
+    * Run `sh scripts/python/execute_parallel.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
 5. **Cluster**
-  * Run `sh scripts/<dataset>/python/cluster.sh`
+  * Run `sh scripts/common/python/cluster.sh <dataset>`
+  * Run `sh scripts/common/python/analyze.sh <dataset>`
   * Results stored in `meta_results/<dataset>/clusters/`
