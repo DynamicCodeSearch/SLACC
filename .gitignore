@@ -148,3 +148,6 @@ code/src/main/python/expt/*.pkl
 code/src/main/python/misconceptions.xlsx
 projects
 subjects/
+Eclipse/
+MocsTestProject/
+mocs/

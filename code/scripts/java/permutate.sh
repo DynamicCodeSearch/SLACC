@@ -15,11 +15,11 @@ fi
 java -jar target/code-1.0-SNAPSHOT-jar-with-dependencies.jar permutate $1
 
 echo "\n\nBuilding generated files"
-cd $SLACC_HOME/projects
+cd ../projects
 mvn clean install
 
-cp $SLACC_HOME/projects/target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar $SLACC_HOME/code/jars/
+cp ../projects/target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar $SLACC_HOME/code/jars/
 
 echo "\n\nBuilding source code again"
-cd $SLACC_HOME/code
+cd ../code
 mvn clean install
