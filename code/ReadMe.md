@@ -66,10 +66,10 @@
   * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
 4. **Execute**
   * Java:
-    * Run `sh scripts/java/execute_parallel.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
+    * Run `sh scripts/java/execute.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
   * Python:
-    * Run `sh scripts/python/execute_parallel.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
+    * Run `sh scripts/python/execute.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
 5. **Cluster**
-  * Run `sh scripts/common/python/cluster.sh <dataset>`
-  * Run `sh scripts/common/python/analyze.sh <dataset>`
+  * Run `sh scripts/common/cluster.sh <dataset>`
+  * Run `sh scripts/common/analyze.sh <dataset>`
   * Results stored in `meta_results/<dataset>/clusters/`
