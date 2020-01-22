@@ -27,7 +27,7 @@ public class Settings {
     /**
      * Project main folder. Includes source code(code), codejam projects(projects) etc.
      */
-    public static String CODESEER_HOME = Utils.pathJoin(ROOT_PATH, "CodeSeer");
+    public static String CODESEER_HOME = Utils.pathJoin(ROOT_PATH, "SLACC");
 
     /**
      * Source code folder

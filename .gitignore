@@ -137,17 +137,4 @@ code.iml
 hs_err_pid*
 
 # Local
-IntroClassJava
 python-projects
-code/meta_store
-code/meta_results
-code/results
-SLACC_FSE
-Readme.txt
-code/src/main/python/expt/*.pkl
-code/src/main/python/misconceptions.xlsx
-projects
-subjects/
-Eclipse/
-MocsTestProject/
-mocs/
