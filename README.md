@@ -13,13 +13,16 @@ The artifacts for SLACC can be installed by following the instructions in [INSTA
 * `Example`: A sample program that contains 3 (2 in python, 1 in java) implementations of interleaving of arrays used in the `Motivation` section of the paper. 
 
 ## Running SLACC
+All code to run SLACC is made from the directory code. Navigate into this folder before executing subsequent scripts.
+```
+> cd code
+```
 
-#### Obtaining Datasets
+### 1. Obtaining Datasets(Optional - Not required to run `CodeJam` or `Example` datasets)
 ##### For `CodeJam`
 * The repository already contains the java and python files in `projects/src/main/java/CodeJam` and `projects/src/main/python/Codejam` respectively.
 * To download these projects again, run 
 ```
-> cd code
 # For java
 > sh scripts/codejam/java/download.sh
 # For python
@@ -28,33 +31,104 @@ The artifacts for SLACC can be installed by following the instructions in [INSTA
 ##### For `Example`
 * The repository already contains the java and python files in `projects/src/main/java/Example` and `projects/src/main/python/Example` respectively.
 
-#### Initializing SLACC
+### 2. Initializing SLACC
+Next up we initialize SLACC for a dataset. This phase reinitializes the database and clears all the old metadata. To run this, execute
+```
+> sh scripts/common/initialize.sh <dataset>
+```
 
-#### Running all stages for a dataset
+For example, to initialize the dataset `Example`, execute
+```
+> sh scripts/common/initialize.sh Example
+```
 
-#### Running each stage separately
+SLACC can then be executed on a dataset by [running all stages at once]() or [each stage independently](). For small datasets like `Example` or prototyping, it is best to run all stages at once as it will take under 2 minutes on the Virtualbox image. For larger datasets like `CodeJam`, we would advice to run each stage independently as the **Function Execution** stage might crash due to excessive memory usage and might need to be restarted. In such instances, the function execution will pick up from where it crashed and no prior execution results will be lost.
 
-2. **Snip**
-  * Java:
-    * For snipping the functions, run `sh scripts/java/snip.sh <dataset>`
-    * For generating permutations, run `sh scripts/java/permutate.sh <dataset>`
-  * Python:  
-    * For snipping and permutating the functions, Run run `sh scripts/python/snip.sh <dataset>`
-3. **Arguments - Metadata**
-  * Java:
-    * Store Objects: Run `sh scripts/java/store_objects.sh <dataset>`
-    * Extract Primitive Arguments: Run `sh scripts/java/extract_primitive_arguments.sh <dataset>`
-    * Extract Fuzzed Arguments: Run `sh scripts/java/extract_fuzzed_arguments.sh <dataset> <do_delete_old>`
-  * Python:
-    * Extract Metadata: Run `sh scripts/python/extract_metadata.sh <dataset>`
-  * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
-4. **Execute**
-  * Java:
-    * Run `sh scripts/java/execute.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
-  * Python:
-    * Run `sh scripts/python/execute.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
-5. **Cluster**
-  * Run `sh scripts/common/analyze.sh <dataset>`
-  * Results stored in 
-    * Clusters as txt and reusable pkl files are stored in `meta_results/<dataset>/clusters/`
-    * Clusters are also stored in the database for thresholds varying between `0.01` and `0.30` in collections approporiately named as `clusters_<threshold>`
+### 3. Running all stages for a dataset
+To run all stages of SLACC for a dataset, execute
+```
+> sh scripts/common/runner.sh <dataset>
+```
+
+For example, to run all stages of SLACC for the dataset `Example`, execute
+```
+> sh scripts/common/runner.sh Example
+```
+The results can be accessed by following the steps in [results]() section below.
+
+### 4. Running each stage separately
+
+#### a) Snip
+
+##### Java
+  * For snipping the functions, run 
+  ```
+  > scripts/java/snip.sh <dataset>
+  ```
+  * For generating permutations for the snipped functions, run 
+  ```
+  > sh scripts/java/permutate.sh <dataset>
+  ```
+##### Python:  
+  * For snipping and permutating the functions, run 
+  ```
+  > sh scripts/python/snip.sh <dataset>
+  ```
+  
+#### b) Extracting arguments and metadata
+##### Java:
+  * First, objects are identified and the metadata is stored in the database. Run
+  ```
+  > sh scripts/java/store_objects.sh <dataset>`
+  ```
+  * Next, we extract the primitive arguments. Run 
+  ```
+  > sh scripts/java/extract_primitive_arguments.sh <dataset>
+  ```
+  * Finally we extract the Fuzzed Arguments. Run 
+  ```
+  > sh scripts/java/extract_fuzzed_arguments.sh <dataset> True
+  ```
+##### Python:
+  * For Python we extract the metadata and any additional argument types not covered by the java argument extractor. Run 
+  ```
+  > sh scripts/python/extract_metadata.sh <dataset>
+  ```
+The extracted arguemnts are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
+
+#### c) Execute functions
+##### Java:
+  To execute the snipped java functions, run 
+  ```
+  sh scripts/java/execute.sh <dataset>
+  ``` 
+  The executed functions stored in `functions_executed` collection in mongo.
+##### Python:
+  To execute the snipped python functions, run 
+  ```
+  > sh scripts/python/execute.sh <dataset>
+  ```
+  The executed functions stored in `py_functions_executed` collection in mongo.
+#### d) Cluster
+  Finally the executed functions are can be clustered by running
+  ```
+  > `sh scripts/common/analyze.sh <dataset>`
+  ```
+  This script ensures that the functions are clustered for similarity thresholds of `0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30`.
+  
+### 5. Results
+  The cluster results are stored as `.txt` files, `.pkl` files and in the database.
+  * `.txt` - These files contains the functions grouped as clusters in a readable format. This can be accessed from the folder `code/meta_results/<dataset>/clusters/cluster_testing/eps_<threshold>/*.txt`. There are four types of `.txt` files in this folder
+    * `java_python.txt` : Contains all the clusters.
+    * `only_java.txt`: Contains all the clusters with only java functions.
+    * `only_python.txt`: Contains all the clusters with only python functions.
+    * `only_mixed.txt`: Contains all the clusters with only mixed functions.
+  * `.pkl` - These files contains the functions grouped as clusters in a reusable python format. This can be accessed from the folder `code/meta_results/<dataset>/clusters/cluster_testing/eps_<threshold>/*.pkl`. Like the `.txt` files, there are four types of `.pkl` files in this folder all representing the same types of clusters.
+  * **Database**: Clusters are also stored in the database for thresholds varying between `0.01` and `0.30` in collections approporiately named as `clusters_<threshold>`.
+  
+  
+  To access the clusters generated for the `Example` dataset, run
+  ```
+  > cat meta_results/Example/clusters/cluster_testing/eps_0.01/only_mixed.txt
+  ```
+  There should be two clusters, one representing the complete interleave and another representing a partial interleave. 
