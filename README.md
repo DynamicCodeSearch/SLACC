@@ -12,3 +12,49 @@ The artifacts for SLACC can be installed by following the instructions in [INSTA
 * `CodeJam` : Study on four problems from Google Code Jam (GCJ) repository and their valid submissions in Java and Python. We use the first problem from the fifth round of GCJ from 2011 to 2014. Overall in this study, we consider 247 projects; 170 from Java and 77 from Python. 
 * `Example`: A sample program that contains 3 (2 in python, 1 in java) implementations of interleaving of arrays used in the `Motivation` section of the paper. 
 
+## Running SLACC
+
+#### Obtaining Datasets
+##### For `CodeJam`
+* The repository already contains the java and python files in `projects/src/main/java/CodeJam` and `projects/src/main/python/Codejam` respectively.
+* To download these projects again, run 
+```
+> cd code
+# For java
+> sh scripts/codejam/java/download.sh
+# For python
+> sh scripts/codejam/python/download.sh
+```
+##### For `Example`
+* The repository already contains the java and python files in `projects/src/main/java/Example` and `projects/src/main/python/Example` respectively.
+
+#### Initializing SLACC
+
+#### Running all stages for a dataset
+
+#### Running each stage separately
+
+2. **Snip**
+  * Java:
+    * For snipping the functions, run `sh scripts/java/snip.sh <dataset>`
+    * For generating permutations, run `sh scripts/java/permutate.sh <dataset>`
+  * Python:  
+    * For snipping and permutating the functions, Run run `sh scripts/python/snip.sh <dataset>`
+3. **Arguments - Metadata**
+  * Java:
+    * Store Objects: Run `sh scripts/java/store_objects.sh <dataset>`
+    * Extract Primitive Arguments: Run `sh scripts/java/extract_primitive_arguments.sh <dataset>`
+    * Extract Fuzzed Arguments: Run `sh scripts/java/extract_fuzzed_arguments.sh <dataset> <do_delete_old>`
+  * Python:
+    * Extract Metadata: Run `sh scripts/python/extract_metadata.sh <dataset>`
+  * Arguments are stored in `primitive_arguments` and `fuzzed_arguments` collection in MongoDB
+4. **Execute**
+  * Java:
+    * Run `sh scripts/java/execute.sh <dataset>`. Executed functions stored in `functions_executed` collection in mongo.
+  * Python:
+    * Run `sh scripts/python/execute.sh <dataset>`. Executed functions stored in `py_functions_executed` collection in mongo.
+5. **Cluster**
+  * Run `sh scripts/common/analyze.sh <dataset>`
+  * Results stored in 
+    * Clusters as txt and reusable pkl files are stored in `meta_results/<dataset>/clusters/`
+    * Clusters are also stored in the database for thresholds varying between `0.01` and `0.30` in collections approporiately named as `clusters_<threshold>`
