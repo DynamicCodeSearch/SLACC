@@ -42,7 +42,7 @@ For example, to initialize the dataset `Example`, execute
 > sh scripts/common/initialize.sh Example
 ```
 
-SLACC can then be executed on a dataset by [running all stages at once]() or [each stage independently](). For small datasets like `Example` or prototyping, it is best to run all stages at once as it will take under 2 minutes on the Virtualbox image. For larger datasets like `CodeJam`, we would advice to run each stage independently as the **Function Execution** stage might crash due to excessive memory usage and might need to be restarted. In such instances, the function execution will pick up from where it crashed and no prior execution results will be lost.
+SLACC can then be executed on a dataset by [running all stages at once](https://github.com/DynamicCodeSearch/SLACC/blob/ICSE20/README.md#3-running-all-stages-for-a-dataset) or [each stage independently](https://github.com/DynamicCodeSearch/SLACC/blob/ICSE20/README.md#4-running-each-stage-separately). For small datasets like `Example` or prototyping, it is best to run all stages at once as it will take under 2 minutes on the Virtualbox image. For larger datasets like `CodeJam`, we would advice to run each stage independently as the **Function Execution** stage might crash due to excessive memory usage and might need to be restarted. In such instances, the function execution will pick up from where it crashed and no prior execution results will be lost.
 
 ### 3. Running all stages for a dataset
 To run all stages of SLACC for a dataset, execute
@@ -54,7 +54,7 @@ For example, to run all stages of SLACC for the dataset `Example`, execute
 ```
 > sh scripts/common/runner.sh Example
 ```
-The results can be accessed by following the steps in [results]() section below.
+The results can be accessed by following the steps in [results](https://github.com/DynamicCodeSearch/SLACC/blob/ICSE20/README.md#5-results) section below.
 
 ### 4. Running each stage separately
 
