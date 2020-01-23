@@ -1,7 +1,11 @@
 # Installing SLACC
-SLACC can be setup from the scratch on a [local machine](#setting-up-from-scratch) or a [preconfigured virtualbox](#preconfigured-image) image can be used. We would recommend the preconfigured virtualbox for prototyping and replicating the ICSE results.
+SLACC can be setup from the scratch on a [local machine](#setting-up-from-scratch) or a [preconfigured virtualbox](#preconfigured-image) image can be used. We would recommend the preconfigured virtualbox for prototyping and while setting up from scratch for replicating the ICSE results.
 
 ## Setting up from Scratch
+Clone SLACC from github using 
+```
+> git clone https://github.com/DynamicCodeSearch/SLACC.git
+```
 
 ### Hardware
 * SLACC requires atleast 4GB of memory to function on smaller programs. Storage and number of processors vary based on the size of the targe code for clone detection.
@@ -24,6 +28,34 @@ SLACC can be setup from the scratch on a [local machine](#setting-up-from-scratc
 
 ### Database
 * Most of the data and meta-data used by SLACC is stored in MongoDB. We use [MongoDB 3.6](https://docs.mongodb.com/manual/installation/) for our experiments but it should work on later versions as well.
-* Set the environment variable **$MONGO_HOME** to the path where Mongo is installed. 
+* Set the environment variable **$MONGO_HOME** to the path where Mongo is installed.
+
+### Properties
+Finally the properties have to be set for Java and Python
+* Open `SLACC/code/src/main/java/edu/ncsu/config/Settings.java` and set the variable `ROOT_PATH` to the parent folder where SLACC is cloned.
+* Open `/SLACC/code/src/main/python/properties.py` and set the variable `ROOT_HOME` to the parent folder where SLACC is cloned.
 
 ## Preconfigured Image
+Setting up SLACC can be a cumbersome task. We have preset SLACC as a virtualbox image with the `CodeJam` dataset used in our study and a sample `Example` dataset which we used in the motivation section of our paper.
+
+### Setting up
+* First download the latest version of [VirtualBox](https://www.virtualbox.org/wiki/Downloads) for your operating system.
+* Download the virtualbox image of [SLACC](https://drive.google.com/drive/u/3/folders/1UqWRvwiSy9ILwFMEDC6_bimzP2mg9m_T).
+* Open Virtualbox and import the image. `File -> Import Appliance`. Please note that the virtual box is configured for smaller experiments so it might not be ideal for large experiments like the one used in our paper.
+* **Hardware Requirements**: 8GB memory, 20GB storage(dynamically expands based on source code)
+
+### Navigating around
+* Once the image is booted up, it can be logged in using the credentials
+```
+USER_NAME :  SLACC
+PASS_WORD: slacc
+```
+* The source code is already downloaded and unpacked in the folder `~/Raise/ProgramRepair/SLACC`. Navigate into this folder
+```
+> cd ~/Raise/ProgramRepair/SLACC
+```
+* Setting up DB. Check if mongoDB is running using the command `mongo`. If not start mongoDB using
+```
+> mongostart
+```
+* You are now set to use SLACC. No changes have to be made to the java or python properties. Head over to the [README](README.md) to try out a on the `Sample` dataset or the `CodeJam` dataset.
