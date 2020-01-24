@@ -19,6 +19,7 @@ All code to run SLACC is made from the directory code. Navigate into this folder
 ```
 
 ### 1. Obtaining Datasets(Optional - Not required to run `CodeJam` or `Example` datasets)
+This stage is not required since the source code for both datasets are automatically added in the `projects/` folder when the repository is cloned. That said, if the datasets need to be changed follow the following commands.
 ##### For `CodeJam`
 * The repository already contains the java and python files in `projects/src/main/java/CodeJam` and `projects/src/main/python/Codejam` respectively.
 * To download these projects again, run 
@@ -29,7 +30,7 @@ All code to run SLACC is made from the directory code. Navigate into this folder
 > sh scripts/codejam/python/download.sh
 ```
 ##### For `Example`
-* The repository already contains the java and python files in `projects/src/main/java/Example` and `projects/src/main/python/Example` respectively.
+* The repository already contains the java and python files in `projects/src/main/java/Example` and `projects/src/main/python/Example` respectively. Modify it and rerun SLACC for observing differnet clusters.
 
 ### 2. Initializing SLACC
 Next up we initialize SLACC for a dataset. This phase reinitializes the database and clears all the old metadata. To run this, execute
