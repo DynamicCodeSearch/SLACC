@@ -131,4 +131,58 @@ The extracted arguemnts are stored in `primitive_arguments` and `fuzzed_argument
   ```
   > cat meta_results/Example/clusters/cluster_testing/eps_0.01/only_mixed.txt
   ```
-  There should be two clusters, one representing the complete interleave and another representing a partial interleave. 
+  There should be two clusters, one representing the complete interleave and another representing a partial interleave. The clusters should look as show below
+  ```
+  
+
+****** Cluster 68 ******
+public static String func_29bae602199d4dc7accf137be62131e0(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return result;
+}
+def func_4e0f71a6fbd248af83dc763c508a14e5(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    return result
+
+
+
+****** Cluster 20 ******
+public static String func_d5770ad5257d4e5da0ff719987570b1a(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return result;
+}
+public static String func_31fe2eac986843068d97c5d5883d2708(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return result;
+}
+def func_6552277742934f47bca79259b014f81c(l1, l2):
+    zipped = chain.from_iterable(zip(l1, l2))
+    return ''.join([str(x) for x in zipped])
+
+  ```
