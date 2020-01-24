@@ -18,7 +18,7 @@ All code to run SLACC is made from the directory code. Navigate into this folder
 > cd code
 ```
 
-### 1. Obtaining Datasets(Optional - Not required to run `CodeJam` or `Example` datasets)
+### 1. Obtaining Datasets(OPTIONAL)
 This stage is not required since the source code for both datasets are automatically added in the `projects/` folder when the repository is cloned. That said, if the datasets need to be changed follow the following commands.
 ##### For `CodeJam`
 * The repository already contains the java and python files in `projects/src/main/java/CodeJam` and `projects/src/main/python/Codejam` respectively.
