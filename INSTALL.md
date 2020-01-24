@@ -1,5 +1,5 @@
 # Installing SLACC
-SLACC can be setup from the scratch on a [local machine](#setting-up-from-scratch) or a [preconfigured virtualbox](#preconfigured-image) image can be used. We would recommend the preconfigured virtualbox for prototyping and while setting up from scratch for replicating the ICSE results.
+SLACC can be setup from scratch on a [local machine](#setting-up-from-scratch) or a [preconfigured virtualbox](#preconfigured-image) image can be used. We would recommend the preconfigured virtualbox for prototyping and while setting up from scratch for replicating the ICSE results.
 
 ## Setting up from Scratch
 Clone SLACC from github using 
