@@ -24,7 +24,7 @@ PASS_WORD: slacc
 ```
 > mongostart
 ```
-* You are now set to use SLACC. No changes have to be made to the java or python properties. Head over to the [README](https://github.com/DynamicCodeSearch/SLACC/blob/ICSE20/README.md) to try out a on the `Sample` dataset or the `CodeJam` dataset.
+* You are now set to use SLACC. No changes have to be made to the java or python properties. Head over to the [README](https://github.com/DynamicCodeSearch/SLACC/tree/ICSE20/README.md#running-slacc) to try out a on the `Example` dataset or the `CodeJam` dataset.
 
 
 ## Setting up from Scratch
