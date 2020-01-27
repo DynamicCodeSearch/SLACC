@@ -174,6 +174,7 @@ def save_only_target_functions(dataset, mixed_file_base_name, target_language):
   for folder in sorted(cache.list_dir(clusters_base_folder, is_absolute=False)):
     LOGGER.info("Processing '%s' ..." % folder)
     folder_path = os.path.join(clusters_base_folder, folder)
+    cache.mkdir(folder_path)
     base_clusters_file = os.path.join(folder_path, "%s.pkl" % mixed_file_base_name)
     base_clusters = cache.load_pickle(base_clusters_file)
     target_clusters = {}
@@ -211,6 +212,7 @@ def save_only_mixed_clusters(dataset, mixed_file_base_name):
   for folder in sorted(cache.list_dir(clusters_base_folder, is_absolute=False)):
     LOGGER.info("Processing '%s' ..." % folder)
     folder_path = os.path.join(clusters_base_folder, folder)
+    cache.mkdir(folder_path)
     base_clusters_file = os.path.join(folder_path, "%s.pkl" % mixed_file_base_name)
     base_clusters = cache.load_pickle(base_clusters_file)
     mixed_clusters = {}

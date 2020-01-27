@@ -18,7 +18,7 @@ echo "\n\nBuilding generated files"
 cd ../projects
 mvn clean install
 
-cp ../projects/target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar $SLACC_HOME/code/jars/
+cp ../projects/target/projects-1.0-SNAPSHOT-jar-with-dependencies.jar ../code/jars/
 
 echo "\n\nBuilding source code again"
 cd ../code

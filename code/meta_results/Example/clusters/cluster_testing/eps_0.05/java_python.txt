@@ -1,107 +1,190 @@
 
 
 ****** Cluster 0 ******
-public static String func_a7e8672083da4eae808ee7c84948dce4(String result, Integer[] b, Integer[] a){
+public static Integer func_6b6e55eba14b4dcea3faa3ce6825b958(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
-    return result;
+    return i;
 }
-public static String func_4428a647afc74a55af28e53b4ebb4430(String result, Integer[] b, Integer[] a){
+public static Integer func_02357fa7894a4576bff307c15bce1e4c(Integer[] a, Integer[] b, String result){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return i;
+}
+public static Integer func_f72142c45fbc4d67b5aeafa8bbf3f5dd(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return result;
+    return i;
 }
-
-
-****** Cluster 1 ******
-public static String func_c81e9b3edb384a3b848ff77ee410897b(String result, Integer[] a, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return result;
-}
-public static String func_8ca7c7bbf61f401382d18bea700d80d7(String result, Integer[] a, Integer[] b){
+public static Integer func_14acc4cc9acb45ddaf69f74c70a595cd(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return result;
+    return i;
+}
+public static Integer func_d153b6ce67bb4e14a3fefbfd601ceacb(Integer[] a, Integer[] b, String result){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
+}
+public static Integer func_7be59cae3b4345049bc990d824e53f1a(Integer[] b, Integer[] a, String result){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
 }
 
 
 ****** Cluster 2 ******
-public static String func_f29342ae5b56475b8b7e1780a7ebb729(Integer[] a, String result, Integer[] b){
+public static Integer func_1792eaff51834fff85125013ed6d4a63(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
-    return result;
+    return i;
 }
-public static String func_69744c00174e4648b0a1b3b9c7568bfe(Integer[] a, String result, Integer[] b){
+public static Integer func_58dc05a594554bd4b32493d9415fec5c(Integer[] b, String result, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return i;
+}
+public static Integer func_dd6a010607b0481994596f477c0e210f(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return result;
+    return i;
 }
-
-
-****** Cluster 3 ******
-public static String func_8c38cc4765ff4530bb12e894637b2d33(Integer[] a, Integer[] b, String result){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return result;
-}
-public static String func_31b6729974204953ba61acd0cd3bf039(Integer[] a, Integer[] b, String result){
+public static Integer func_8a08e3428f3b48278404c2499083f51a(Integer[] b, String result, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return result;
+    return i;
+}
+public static Integer func_511bfb68e4e1451cbb6e523c32f23318(Integer[] a, String result, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
+}
+public static Integer func_9456025663a94cd19e16401472b3b9fe(Integer[] b, String result, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
 }
 
 
 ****** Cluster 4 ******
-public static String func_8774487f03cb493eb269c1897cf052f1(Integer[] b, Integer[] a, String result){
+public static Integer func_526781c6746d49138dacbb4227b8b92c(String result, Integer[] b, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
-    return result;
+    return i;
 }
-public static String func_f8140e61b18642b8a729027ab1b8155c(Integer[] b, Integer[] a, String result){
+public static Integer func_d64ae66219a94bc1b0a63c5e64b16deb(String result, Integer[] a, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return i;
+}
+public static Integer func_f3e58b080bb3484192b157e0e618cddc(String result, Integer[] b, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return result;
+    return i;
+}
+public static Integer func_9a5d1c487b574218931eef7f92c7c028(String result, Integer[] a, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return i;
+}
+public static Integer func_a4307d6dd5b247d493244bc5a3d03150(String result, Integer[] b, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
+}
+public static Integer func_be31b6eb747f4571af4262d8b699a7a1(String result, Integer[] a, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
 }
 
 
 ****** Cluster 5 ******
-public static String func_ab48851c9703431d936e30f803c452db(Integer[] b, String result, Integer[] a){
+public static String func_059186348362403fafe7f91834df9403(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -109,7 +192,7 @@ public static String func_ab48851c9703431d936e30f803c452db(Integer[] b, String r
     }
     return result;
 }
-public static String func_c152a19faaac440aa8a7f5242525e29f(Integer[] b, String result, Integer[] a){
+public static String func_6e3aab8bd42d44e5a43e2fbfc9c7fe36(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -117,194 +200,111 @@ public static String func_c152a19faaac440aa8a7f5242525e29f(Integer[] b, String r
     }
     Integer[] remaining = a.length < b.length ? b : a;
     return result;
-}
-
-
-****** Cluster 6 ******
-public static Integer func_563eebfc95474bcd922bfdd9ca90cb47(String result, Integer[] a, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_a2040c23a11d4d60b6fdf1cc5c36d24c(String result, Integer[] b, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_0f042d57cf5b4bcd8ff34061bb9a60ee(String result, Integer[] a, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_b18340ce17bb4e7295526480db5dcba2(String result, Integer[] b, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_d0628996ed574269adcee7d8c6661a70(String result, Integer[] a, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
-}
-public static Integer func_bca2c1a4d0874663b1b59aa24d62041f(String result, Integer[] b, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
 }
 
 
 ****** Cluster 7 ******
-public static Integer func_63080accf7e9482c928ce866724108b4(Integer[] a, String result, Integer[] b){
+public static String func_d917545619a74473b02137580f793b1d(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
-    return i;
+    return result;
 }
-public static Integer func_d60bf258e102419e8f2520e33f4425e4(Integer[] b, String result, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_93637d44f2164e9daeda0b2730e4fbc2(Integer[] a, String result, Integer[] b){
+public static String func_403c1c104db54ed9b955e264376d75fc(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_f055b39b2aba4247a316d70ec534d776(Integer[] b, String result, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_1ce1414105824d9681c776dd166dfc86(Integer[] a, String result, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
-}
-public static Integer func_d4029b4b00824334bd54878d40e4c2d2(Integer[] b, String result, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
+    return result;
 }
 
 
 ****** Cluster 8 ******
-public static Integer func_0775a0442dce40bdb2e1d4b201fd0f75(Integer[] a, Integer[] b, String result){
+public static String func_d321044d1cbd4747a59f73113b831bcb(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
-    return i;
+    return result;
 }
-public static Integer func_efb038dc4945444285cf9ebc24474dca(Integer[] b, Integer[] a, String result){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_cc4c99f4dbce430782d160dbd02f6ffb(Integer[] a, Integer[] b, String result){
+public static String func_babbaee477d84e8ba0affa34d5a3a09b(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return i;
+    return result;
 }
-public static Integer func_5b2d2ca90644402291bee97578340b4e(Integer[] b, Integer[] a, String result){
+
+
+****** Cluster 9 ******
+public static String func_3092822debb54e0388ce55601b0efcc1(Integer[] b, String result, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return result;
+}
+public static String func_9eaa9e4f3d5e43a086aae12803d0a8ff(Integer[] b, String result, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    return i;
+    return result;
 }
-public static Integer func_8b294573fef54f22ae38316ce1ffac2a(Integer[] a, Integer[] b, String result){
+
+
+****** Cluster 10 ******
+public static String func_7c5b9c67ed2944dc8e15593f10e65429(String result, Integer[] b, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return result;
+}
+public static String func_626dbc2de52e46bcb8193a9bf36d60e4(String result, Integer[] b, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
+    return result;
 }
-public static Integer func_ea7628f3443c426ea007a218c4323cd5(Integer[] b, Integer[] a, String result){
+
+
+****** Cluster 11 ******
+public static String func_58d4b3ffa5004561b592ff584ead48ea(String result, Integer[] a, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return result;
+}
+public static String func_b042b75ddec048c6b20011772b3cd670(String result, Integer[] a, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
         result += b[i];
     }
     Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
+    return result;
 }
 
 
 ****** Cluster 12 ******
-public static String func_de114505e97b450ab7ca10a8c8aa1c1d(String result, Integer[] remaining, Integer i){
+public static String func_fa8f3b17ff16477b962ec8d6e9fb186b(Integer i, Integer[] remaining, String result){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -313,7 +313,7 @@ public static String func_de114505e97b450ab7ca10a8c8aa1c1d(String result, Intege
 
 
 ****** Cluster 13 ******
-public static String func_b040748de9754eea9c46be10632e2bd7(Integer[] remaining, Integer i, String result){
+public static String func_de660644f48e4985bf33698687477670(Integer[] remaining, Integer i, String result){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -322,7 +322,7 @@ public static String func_b040748de9754eea9c46be10632e2bd7(Integer[] remaining, 
 
 
 ****** Cluster 14 ******
-public static String func_a00e9ff6dfe940a3844c42b2bfe5f569(Integer[] remaining, String result, Integer i){
+public static String func_b548c0e13e974f37a842ee51da26ed8b(Integer[] remaining, String result, Integer i){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -331,7 +331,7 @@ public static String func_a00e9ff6dfe940a3844c42b2bfe5f569(Integer[] remaining, 
 
 
 ****** Cluster 15 ******
-public static String func_da2f25c8d834439d86de02e9039e2794(String result, Integer i, Integer[] remaining){
+public static String func_322e28cc9aa44f91a71a553b93086403(Integer i, String result, Integer[] remaining){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -340,7 +340,7 @@ public static String func_da2f25c8d834439d86de02e9039e2794(String result, Intege
 
 
 ****** Cluster 16 ******
-public static String func_8453a6cfa31044d1a5c52f26aafb3833(Integer i, Integer[] remaining, String result){
+public static String func_55c5e04c766d4f2e8a0c1927835d7ee7(String result, Integer i, Integer[] remaining){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -349,7 +349,7 @@ public static String func_8453a6cfa31044d1a5c52f26aafb3833(Integer i, Integer[] 
 
 
 ****** Cluster 17 ******
-public static String func_26b5c6c7ed49485b822dc5e269517240(Integer i, String result, Integer[] remaining){
+public static String func_480370fd4b364dc9b285de6e8e40d189(String result, Integer[] remaining, Integer i){
     for (int j = i; j < remaining.length; j++) {
         result += remaining[j];
     }
@@ -358,7 +358,74 @@ public static String func_26b5c6c7ed49485b822dc5e269517240(Integer i, String res
 
 
 ****** Cluster 18 ******
-public static String func_b831121325c54145b7e7909ce48c7605(Integer[] a, Integer[] b){
+public static Integer func_48c7d3da97224dbdab6385e4c1aab6e3(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return i;
+}
+public static Integer func_172f92948ea04e60b403af4747cb004e(Integer[] b, Integer[] a){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return i;
+}
+public static Integer func_d59b099ee7374e4eacacc5de25cf5625(Integer[] b, Integer[] a){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return i;
+}
+public static Integer func_0b933d538c134b98875a5bde2134bfaf(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return i;
+}
+public static Integer func_2ea741b4779a41b181c45a2b4a2ac358(Integer[] b, Integer[] a){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
+}
+public static Integer func_b7c385058bc647f5942cdd46cffdf33f(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return i;
+}
+
+
+****** Cluster 20 ******
+public static String func_c9c3d7a07d0844bab4e8df481c9d9aea(Integer[] b, Integer[] a){
     String result = "";
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
@@ -367,7 +434,7 @@ public static String func_b831121325c54145b7e7909ce48c7605(Integer[] a, Integer[
     }
     return result;
 }
-public static String func_7bf9643b856f41f2902eef69107061a4(Integer[] a, Integer[] b){
+public static String func_d2307f33e25d4f12b84f83f99607c0da(Integer[] b, Integer[] a){
     String result = "";
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
@@ -377,103 +444,36 @@ public static String func_7bf9643b856f41f2902eef69107061a4(Integer[] a, Integer[
     Integer[] remaining = a.length < b.length ? b : a;
     return result;
 }
-def func_9f1e4741ceef44269b80c1753d391d81(l1, l2):
+
+
+****** Cluster 21 ******
+public static String func_09ff0adac1c148d8910d898d98b817a6(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    return result;
+}
+public static String func_ea4e6a212d1743c88c40a82d7a1d7aff(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return result;
+}
+def func_7657001a98594013a9b18869bb10033f(l1, l2):
     zipped = chain.from_iterable(zip(l1, l2))
     return ''.join([str(x) for x in zipped])
 
 
 
-****** Cluster 19 ******
-public static String func_5dfb1c4687de46639bb96d852f8337ec(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return result;
-}
-public static String func_72e479e80e704a82814184d64c295367(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return result;
-}
-
-
-****** Cluster 20 ******
-public static Integer func_d2ab070874ba4b3189941b1066fe4f91(Integer[] a, Integer[] b){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_c98b5bd6529f48358ead3fc7196e219f(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    return i;
-}
-public static Integer func_280a69c19f90402f827cb5ced0dc428c(Integer[] a, Integer[] b){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_04103fb8462f433686cae5096c117cca(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return i;
-}
-public static Integer func_0a956ea7b3004783a8e8cce0cbdced8c(Integer[] a, Integer[] b){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
-}
-public static Integer func_b047544fb52b4121bb793e8a612d5280(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return i;
-}
-
-
 ****** Cluster 28 ******
-public static Integer[] func_d6665800a95e47e9898abcdae579c967(String result, Integer[] a, Integer[] b){
+public static Integer[] func_64c0b85800104e2287b157b471edd59d(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -482,7 +482,7 @@ public static Integer[] func_d6665800a95e47e9898abcdae579c967(String result, Int
     Integer[] remaining = a.length < b.length ? b : a;
     return remaining;
 }
-public static Integer[] func_8125f46645d94fc28e40d167763be47d(String result, Integer[] b, Integer[] a){
+public static Integer[] func_42539360f3704e529e3fc6855e6b758c(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -491,19 +491,7 @@ public static Integer[] func_8125f46645d94fc28e40d167763be47d(String result, Int
     Integer[] remaining = a.length < b.length ? b : a;
     return remaining;
 }
-public static Integer[] func_a8708a8ead37473883f1290191e0b7eb(String result, Integer[] a, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return remaining;
-}
-public static Integer[] func_63aa4ac004964eb7a7a9b5b8a4f3dfc7(String result, Integer[] b, Integer[] a){
+public static Integer[] func_69539f7d38a148f08ae7233b30b03224(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -515,40 +503,7 @@ public static Integer[] func_63aa4ac004964eb7a7a9b5b8a4f3dfc7(String result, Int
     }
     return remaining;
 }
-
-
-****** Cluster 29 ******
-public static Integer[] func_638777d3e78244b9a0fb817c906e4ee3(Integer[] a, String result, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return remaining;
-}
-public static Integer[] func_ef307b3408c646ff97b6f5fc1ed822b6(Integer[] b, String result, Integer[] a){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return remaining;
-}
-public static Integer[] func_3018603ecaf14797a00804ee376d5d2c(Integer[] a, String result, Integer[] b){
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return remaining;
-}
-public static Integer[] func_8dcacaa9df8d434495978bbba0acebea(Integer[] b, String result, Integer[] a){
+public static Integer[] func_6d8330ba278b461a8b9e0097782feb18(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -563,7 +518,7 @@ public static Integer[] func_8dcacaa9df8d434495978bbba0acebea(Integer[] b, Strin
 
 
 ****** Cluster 30 ******
-public static Integer[] func_e113dfbd214547fab4cbb1027567c3d2(Integer[] a, Integer[] b, String result){
+public static Integer[] func_55d96257ffc84de1b8bf17cbe01271cf(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -572,7 +527,7 @@ public static Integer[] func_e113dfbd214547fab4cbb1027567c3d2(Integer[] a, Integ
     Integer[] remaining = a.length < b.length ? b : a;
     return remaining;
 }
-public static Integer[] func_801509a776eb47eaa6f2eec3fbe58895(Integer[] b, Integer[] a, String result){
+public static Integer[] func_47d740e48bd444fda0826dd43792efd3(Integer[] b, String result, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -581,7 +536,7 @@ public static Integer[] func_801509a776eb47eaa6f2eec3fbe58895(Integer[] b, Integ
     Integer[] remaining = a.length < b.length ? b : a;
     return remaining;
 }
-public static Integer[] func_bde5ea01fa084f72b2281d1a49d19c0c(Integer[] a, Integer[] b, String result){
+public static Integer[] func_e2e50af2a1a14afbb929db62356cc819(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -593,7 +548,55 @@ public static Integer[] func_bde5ea01fa084f72b2281d1a49d19c0c(Integer[] a, Integ
     }
     return remaining;
 }
-public static Integer[] func_0846a660c2eb42b296b43a82bf62290d(Integer[] b, Integer[] a, String result){
+public static Integer[] func_941eff0d535a43a8ad12820d694ab80d(Integer[] b, String result, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return remaining;
+}
+
+
+****** Cluster 32 ******
+public static Integer[] func_39ac39cc23df409fbfda43587265e101(String result, Integer[] b, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return remaining;
+}
+public static Integer[] func_c8ff4a6ffb4f49fd840f7a21deb441ca(String result, Integer[] b, Integer[] a){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return remaining;
+}
+
+
+****** Cluster 34 ******
+public static Integer[] func_4a77352adcf24060a101cd274ca7d608(String result, Integer[] a, Integer[] b){
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return remaining;
+}
+public static Integer[] func_2913be90106e46cc9b58b724d01b1154(String result, Integer[] a, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -608,7 +611,7 @@ public static Integer[] func_0846a660c2eb42b296b43a82bf62290d(Integer[] b, Integ
 
 
 ****** Cluster 42 ******
-public static Integer[] func_21be8c124843413faa7c60fa9e720955(Integer[] a, Integer[] b){
+public static Integer[] func_dafcd48efe4b4cecb812e6553817759f(Integer[] b, Integer[] a){
     String result = "";
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
@@ -618,30 +621,7 @@ public static Integer[] func_21be8c124843413faa7c60fa9e720955(Integer[] a, Integ
     Integer[] remaining = a.length < b.length ? b : a;
     return remaining;
 }
-public static Integer[] func_572c8a596b9647e8ad459cbbec9c80ae(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    return remaining;
-}
-public static Integer[] func_77fe8679b42949b8af6e40750e563f35(Integer[] a, Integer[] b){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return remaining;
-}
-public static Integer[] func_94b2b8c0a7894461901fdda68f0e4aad(Integer[] b, Integer[] a){
+public static Integer[] func_47ad44df2a0348e080058fe3370e1f7c(Integer[] b, Integer[] a){
     String result = "";
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
@@ -656,8 +636,34 @@ public static Integer[] func_94b2b8c0a7894461901fdda68f0e4aad(Integer[] b, Integ
 }
 
 
-****** Cluster 46 ******
-public static String func_d3f6b0e57b8a49d1a378960b3a1d592d(String result, Integer[] a, Integer[] b){
+****** Cluster 43 ******
+public static Integer[] func_11abc2f76cee4ff69dab81cb227c3aae(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    return remaining;
+}
+public static Integer[] func_5a2ec93f24b24ff8a0574cdb887677af(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return remaining;
+}
+
+
+****** Cluster 58 ******
+public static String func_a5c24e7ccf9543c0a1110feb9fb50d4a(Integer[] b, Integer[] a, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -671,8 +677,8 @@ public static String func_d3f6b0e57b8a49d1a378960b3a1d592d(String result, Intege
 }
 
 
-****** Cluster 47 ******
-public static String func_40244740b2424d9182f9abfa8d531cca(Integer[] a, String result, Integer[] b){
+****** Cluster 59 ******
+public static String func_0c5fc8c23aa543698e7f473de582e39d(Integer[] a, Integer[] b, String result){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -686,8 +692,8 @@ public static String func_40244740b2424d9182f9abfa8d531cca(Integer[] a, String r
 }
 
 
-****** Cluster 48 ******
-public static String func_fc5abbcf4a9045fea8189cf0c0282f3e(Integer[] a, Integer[] b, String result){
+****** Cluster 60 ******
+public static String func_9be4ad84c2444e1dbf050b2a5ccd1073(Integer[] a, String result, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -701,8 +707,8 @@ public static String func_fc5abbcf4a9045fea8189cf0c0282f3e(Integer[] a, Integer[
 }
 
 
-****** Cluster 49 ******
-public static String func_b9f9971cdd71487e87b86a75fcb48a19(String result, Integer[] b, Integer[] a){
+****** Cluster 61 ******
+public static String func_9a6bcd9f3af945d9a80e31534291b81d(String result, Integer[] b, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -716,8 +722,8 @@ public static String func_b9f9971cdd71487e87b86a75fcb48a19(String result, Intege
 }
 
 
-****** Cluster 50 ******
-public static String func_b9217e947a7f48e1aadac1638fbaf9bc(Integer[] b, String result, Integer[] a){
+****** Cluster 62 ******
+public static String func_377ec017d8934552afa5543d32cf1d5c(Integer[] b, String result, Integer[] a){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -731,8 +737,8 @@ public static String func_b9217e947a7f48e1aadac1638fbaf9bc(Integer[] b, String r
 }
 
 
-****** Cluster 51 ******
-public static String func_2dde96e64dad4d9c9cb8e277a4998697(Integer[] b, Integer[] a, String result){
+****** Cluster 63 ******
+public static String func_fbf7e58be1a540e6849939b99552a220(String result, Integer[] a, Integer[] b){
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
         result += a[i];
@@ -746,8 +752,8 @@ public static String func_2dde96e64dad4d9c9cb8e277a4998697(Integer[] b, Integer[
 }
 
 
-****** Cluster 64 ******
-public static String func_51732dd2658c42d2a0f44f7b309b527e(Integer[] a, Integer[] b){
+****** Cluster 68 ******
+public static String func_f83a15d37b564c6aa28fdb2c7df267d7(Integer[] b, Integer[] a){
     String result = "";
     int i = 0;
     for (i = 0; i < a.length && i < b.length; i++) {
@@ -760,7 +766,23 @@ public static String func_51732dd2658c42d2a0f44f7b309b527e(Integer[] a, Integer[
     }
     return result;
 }
-def func_ba38cec1834f46b8b77d4f4930278494(l1, l2):
+
+
+****** Cluster 69 ******
+public static String func_1880707d3159410ebdf74eb1a9600d66(Integer[] a, Integer[] b){
+    String result = "";
+    int i = 0;
+    for (i = 0; i < a.length && i < b.length; i++) {
+        result += a[i];
+        result += b[i];
+    }
+    Integer[] remaining = a.length < b.length ? b : a;
+    for (int j = i; j < remaining.length; j++) {
+        result += remaining[j];
+    }
+    return result;
+}
+def func_9cd5d22e9e18461797fe74d0a256dfe8(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -772,24 +794,8 @@ def func_ba38cec1834f46b8b77d4f4930278494(l1, l2):
 
 
 
-****** Cluster 65 ******
-public static String func_badca33d9c0b4e2696481f959207dd56(Integer[] b, Integer[] a){
-    String result = "";
-    int i = 0;
-    for (i = 0; i < a.length && i < b.length; i++) {
-        result += a[i];
-        result += b[i];
-    }
-    Integer[] remaining = a.length < b.length ? b : a;
-    for (int j = i; j < remaining.length; j++) {
-        result += remaining[j];
-    }
-    return result;
-}
-
-
 ****** Cluster 70 ******
-def func_b824afe88dac48268f7234fabacd8889(l1, l2):
+def func_31709b4f79c2413ea52706bb262f0877(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -797,21 +803,9 @@ def func_b824afe88dac48268f7234fabacd8889(l1, l2):
             result += str(l1[i])
         if i < a2:
             result += str(l2[i])
-    return a1
+    return i
 
-def func_1852ecc9b7fb4425a9aac69a02803247(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    for i in range(max(a1, a2)):
-        if i < a1:
-            result += str(l1[i])
-        if i < a2:
-            result += str(l2[i])
-    if i < a1:
-        result += str(l1[i])
-    return a1
-
-def func_49b0b08b129d4d66a8ff7cffdaa1518c(l1, l2):
+def func_debe8797b2034519a15b98683d467678(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -823,17 +817,9 @@ def func_49b0b08b129d4d66a8ff7cffdaa1518c(l1, l2):
         result += str(l1[i])
     if i < a2:
         result += str(l2[i])
-    return a1
+    return i
 
-def func_1132d94861704707bb72dbf23ead4578(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    return a1
-
-
-
-****** Cluster 71 ******
-def func_bce353832a954285b4bc7b305e31cc89(l1, l2):
+def func_66093f68d9e24ef295649acccc1bacef(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -843,12 +829,22 @@ def func_bce353832a954285b4bc7b305e31cc89(l1, l2):
             result += str(l2[i])
     if i < a1:
         result += str(l1[i])
-    return result
+    return i
 
 
 
 ****** Cluster 73 ******
-def func_ed045a27120347f49b885831e9e69ecf(l1, l2):
+def func_3fc4fc48d4fc4859b4c2e2a61de82e40(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    return a2
+
+def func_64e1a3d4c2df48cebc8266aa8dde41b1(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -858,36 +854,9 @@ def func_ed045a27120347f49b885831e9e69ecf(l1, l2):
             result += str(l2[i])
     if i < a1:
         result += str(l1[i])
-    return i
+    return a2
 
-def func_643661b9739d4e3a95dd380ca267f014(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    for i in range(max(a1, a2)):
-        if i < a1:
-            result += str(l1[i])
-        if i < a2:
-            result += str(l2[i])
-    return i
-
-def func_e30856770e034fa9acc4ef8b5b9f694e(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    for i in range(max(a1, a2)):
-        if i < a1:
-            result += str(l1[i])
-        if i < a2:
-            result += str(l2[i])
-    if i < a1:
-        result += str(l1[i])
-    if i < a2:
-        result += str(l2[i])
-    return i
-
-
-
-****** Cluster 74 ******
-def func_8b4314ac878742d0bf1b4f6042ec03fa(l1, l2):
+def func_04a2a0b1bc5f4f44946bf447ef74fe53(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -901,37 +870,15 @@ def func_8b4314ac878742d0bf1b4f6042ec03fa(l1, l2):
         result += str(l2[i])
     return a2
 
-def func_09bf1732fec54d9699908c818dda33af(l1, l2):
+def func_6f6676fd448f4477b6e75a72f98077bb(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     return a2
 
-def func_770091ce2fe94b48a595f5d43b219473(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    for i in range(max(a1, a2)):
-        if i < a1:
-            result += str(l1[i])
-        if i < a2:
-            result += str(l2[i])
-    return a2
-
-def func_dd2773a224cb454481b119a720d3d6dc(l1, l2):
-    result = ''
-    a1, a2 = len(l1), len(l2)
-    for i in range(max(a1, a2)):
-        if i < a1:
-            result += str(l1[i])
-        if i < a2:
-            result += str(l2[i])
-    if i < a1:
-        result += str(l1[i])
-    return a2
 
 
-
-****** Cluster 79 ******
-def func_febb948b9d184ced82b1201519b7e38c(l1, l2):
+****** Cluster 75 ******
+def func_6193363cafba4ca4bdc0fd697617a96c(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -945,7 +892,7 @@ def func_febb948b9d184ced82b1201519b7e38c(l1, l2):
         result += str(l2[i])
     return result
 
-def func_80e8a83da2eb47cdac87de229fc2aa92(l1, l2):
+def func_c2bc852965224099970ba39b9380ef49(l1, l2):
     result = ''
     a1, a2 = len(l1), len(l2)
     for i in range(max(a1, a2)):
@@ -957,4 +904,63 @@ def func_80e8a83da2eb47cdac87de229fc2aa92(l1, l2):
         result += str(l1[i])
     if i < a2:
         result += str(l2[i])
+    return result
+
+
+
+****** Cluster 77 ******
+def func_45b86ed719464227a3f40d83de77a9e5(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    return a1
+
+def func_bce3ba44739640ad85ba6545fc1a5c96(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    return a1
+
+def func_178e71063b754031b818bb74c08e9ba4(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    if i < a1:
+        result += str(l1[i])
+    if i < a2:
+        result += str(l2[i])
+    return a1
+
+def func_ea02f7a639b9478bacfea54ea0bdedc2(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    if i < a1:
+        result += str(l1[i])
+    return a1
+
+
+
+****** Cluster 79 ******
+def func_3f2d6a0160f1465b9cf42732a9ecf0a8(l1, l2):
+    result = ''
+    a1, a2 = len(l1), len(l2)
+    for i in range(max(a1, a2)):
+        if i < a1:
+            result += str(l1[i])
+        if i < a2:
+            result += str(l2[i])
+    if i < a1:
+        result += str(l1[i])
     return result

@@ -138,3 +138,10 @@ hs_err_pid*
 
 # Local
 python-projects
+
+# Generated classes
+projects/**/generated_class_*.java
+projects/**/permutated_class_*.java
+projects/**/generated_py_*.py
+
+code/meta_results/*

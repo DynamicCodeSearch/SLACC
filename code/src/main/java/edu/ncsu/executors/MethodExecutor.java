@@ -361,6 +361,7 @@ public class MethodExecutor {
             functionTasks.addAll(executor.getFunctionTasks());
         }
         MethodExecutor.executeFunctionTasks(functionTasks);
+        System.exit(0);
     }
 
     public static void executeProblem(String dataset, String problem) {
