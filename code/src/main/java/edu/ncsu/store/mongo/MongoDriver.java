@@ -39,7 +39,7 @@ public class MongoDriver {
     private static String getDefaultHostName() {
         try {
             String hostName = InetAddress.getLocalHost().getHostName();
-            return hostName;
+            return "localhost";
         } catch (UnknownHostException e) {
             LOGGER.severe(String.format("Failed to fetch host name. Exception: %s", e.getMessage()));
             throw new RuntimeException(e);
