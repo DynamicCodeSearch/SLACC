@@ -30,7 +30,7 @@ sh scripts/java/store_objects.sh $1
 echo "\n Extracting Primitive Arguments"
 sh scripts/java/extract_primitive_arguments.sh $1
 
-echo "\n Extracting Fuzzed Arguments"Ø
+echo "\n Extracting Fuzzed Arguments"
 sh scripts/java/extract_fuzzed_arguments.sh $1 True
 
 echo "\n Extracting metadata for python"

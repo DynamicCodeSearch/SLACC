@@ -14,12 +14,12 @@ fi
 cd src/main/python
 if [ -z "$2" ]
 then
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1  -name "generated_py_*.py" -type f -delete
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1  -name "tmp_py_*.py" -type f -delete
+    find ~/Raise/ProgramRepair/SLACC/projects/src/main/python/$1  -name "generated_py_*.py" -type f -delete
+    find ~/Raise/ProgramRepair/SLACC/projects/src/main/python/$1  -name "tmp_py_*.py" -type f -delete
     python mains/snipper.py $1
 else
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1/$2  -name "generated_py_*.py" -type f -delete
-    find ~/Raise/ProgramRepair/CodeSeer/projects/src/main/python/$1/$2  -name "tmp_py_*.py" -type f -delete
+    find ~/Raise/ProgramRepair/SLACC/projects/src/main/python/$1/$2  -name "generated_py_*.py" -type f -delete
+    find ~/Raise/ProgramRepair/SLACC/projects/src/main/python/$1/$2  -name "tmp_py_*.py" -type f -delete
     python mains/snipper.py $1 $2
 fi
 
