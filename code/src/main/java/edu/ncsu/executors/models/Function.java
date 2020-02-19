@@ -384,5 +384,19 @@ public class Function {
 //        metadata.add("argNamesKeysMap", Utils.toJson(getArgComboKeyMap()));
         return metadata;
     }
+
+    public static String getMethodReturnTypeAsString(Method method) {
+        Class returnType = method.getReturnType();
+        StringBuilder arrDimensions = new StringBuilder();
+        while (returnType.isArray()) {
+            arrDimensions.append("[]");
+            returnType = returnType.getComponentType();
+        }
+        String baseType = returnType.getSimpleName();
+        if (returnType.getPackage() != null) {
+            baseType = returnType.getCanonicalName().substring(returnType.getPackage().getName().length() + 1);
+        }
+        return String.format("%s%s", baseType, arrDimensions.toString());
+    }
 }
 

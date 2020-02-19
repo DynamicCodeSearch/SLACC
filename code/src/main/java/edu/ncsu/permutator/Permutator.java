@@ -53,10 +53,7 @@ public class Permutator {
             assert metadata != null;
             metadata.remove("_id");
             String body = function.getAst().getBody().toString();
-            String returnType = function.getReturnVariable().getDataTypeAsString();
-            if (returnType == null) {
-                returnType = method.getReturnType().getName();
-            }
+            String returnType = Function.getMethodReturnTypeAsString(method);
             List<Object> functionParameters = new ArrayList<Object>(function.getArguments());
             List<List<Object>> argPermutations = Function.getPermutations(functionParameters);
             for(List<Object> argPermutation : argPermutations) {
@@ -99,6 +96,6 @@ public class Permutator {
     }
 
     public static void main(String[] args) {
-        permutateFile("IntroClassJava", "/Users/panzer/Raise/ProgramRepair/CodeSeer/projects/src/main/java/IntroClassJava/digits/digits_65e02c1a_015/generated_class_7dfb0e91f5f64432814ecd68964bc88e.java");
+        permutateFile("CodeJam", "/Users/panzer/Raise/ProgramRepair/SLACC/projects/src/main/java/CodeJam/Y11R5P1/mikhailOK/generated_class_3b6ef4e3337f40cf81145eb07d0b916b.java");
     }
 }
