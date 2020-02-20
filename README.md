@@ -127,11 +127,15 @@ The extracted arguemnts are stored in `primitive_arguments` and `fuzzed_argument
   ```
   > `sh scripts/common/analyze.sh <dataset>`
   ```
-  This script ensures that the functions are clustered for similarity thresholds of `0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30`.
+  This script ensures that the functions are clustered for `similarity_thresholds` of `0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00`. The clusters though are saved in terms of the `tolerance_threshold`. 
+  ```
+  tolerance_threshold = 1 - similarity threshold
+  ```
+A similarity threshold of `0.9` implies that for two functions two be considered similar, they should produce the same output on atleast 90\% of the inputs. This also means that the cluster is tolerant with a `tolerance_threshold` of 0.1 or can produce different of outputs on atmost 10\% of the inputs.
   
 ### 5. Results
   The cluster results are stored as `.txt` files, `.pkl` files and in the database.
-  * `.txt` - These files contains the functions grouped as clusters in a readable format. This can be accessed from the folder `code/meta_results/<dataset>/clusters/cluster_testing/eps_<threshold>/*.txt`. There are four types of `.txt` files in this folder
+  * `.txt` - These files contains the functions grouped as clusters in a readable format. This can be accessed from the folder `code/meta_results/<dataset>/clusters/cluster_testing/eps_<tolerance_threshold>/*.txt`. There are four types of `.txt` files in this folder
     * `java_python.txt` : Contains all the clusters.
     * `only_java.txt`: Contains all the clusters with only java functions.
     * `only_python.txt`: Contains all the clusters with only python functions.
