@@ -118,7 +118,7 @@ def random_testing(dataset, language="java_python", n_folds=10):
 def cluster_testing(dataset, language="java_python"):
   LOGGER.info("Testing different cluster sizes for dataset '%s' and language '%s'" % (dataset, language))
   functions = similarity.load_functions(dataset) + similarity.load_py_functions(dataset)
-  errors = [0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30]
+  errors = properties.TOLERANCE_THRESHOLDS
   base_folder = os.path.join(lib.get_clusters_folder(dataset), "cluster_testing")
   for clustering_error in errors:
     result_folder = os.path.join(base_folder, "eps_%0.2f" % clustering_error)
