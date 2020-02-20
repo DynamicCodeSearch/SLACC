@@ -127,7 +127,7 @@ The extracted arguemnts are stored in `primitive_arguments` and `fuzzed_argument
   ```
   > `sh scripts/common/analyze.sh <dataset>`
   ```
-  This script ensures that the functions are clustered for `similarity_thresholds` of `0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 1.00`. The clusters though are saved in terms of the `tolerance_threshold`. 
+  This script ensures that the functions are clustered for `similarity_thresholds` of `0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 0.99`. The clusters though are saved in terms of the `tolerance_threshold`. 
   ```
   tolerance_threshold = 1 - similarity threshold
   ```
