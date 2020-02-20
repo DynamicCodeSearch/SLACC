@@ -21,6 +21,21 @@ For a new dataset, source code has to be added in the folder `SLACC/projects/src
 * For `<language>` = `java`, the package name has to be prepended with `<dataset>`. This is because the source folder for java code is in the folder `SLACC/projects/src/main/java`.
 * Once the dataset is stored in this format, SLACC can be run on it by following the steps below.
 
+## Configuring SLACC
+Configurations and Hyperparameters for SLACC are stored in [Settings.java](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/java/edu/ncsu/config/Settings.java) and [properties.py].
+* Minimimum size of snippet(`MIN_STMT`).
+   * For Java - [MIN_STMT](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/java/edu/ncsu/config/Settings.java#L88)
+   * For Python - [MIN_STMT](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/python/properties.py#L37)
+* Maximum number of arguments(`ARG_MAX`)
+   * For Java - [ARG_MAX](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/java/edu/ncsu/config/Settings.java#L93)
+   * For Python - [ARG_MAX](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/python/properties.py#L38)
+* Number of executions
+   * For Java - [EXECUTIONS](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/java/edu/ncsu/config/Settings.java#L104)
+   * For Python - [EXECUTIONS](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/python/properties.py#L33)
+* Tolerance Threshold(`TOLERANCE_THRESHOLD`)
+  * This is equivalent to `1 - SIMT` used in the paper
+  * A range of tolerance thresholds can be set at [TOLERANCE_THRESHOLDS](https://github.com/DynamicCodeSearch/SLACC/blob/master/code/src/main/python/properties.py#L39)
+
 
 ## Running SLACC
 Make sure [SLACC is setup](https://github.com/DynamicCodeSearch/SLACC/blob/ICSE20/INSTALL.md) and the database is running before trying to run the following scripts.
